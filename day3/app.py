@@ -63,6 +63,13 @@ def intersect_bounding_boxes(b1: BoundingBox, b2: BoundingBox) -> BoundingBox:
     return BoundingBox(x_max=x_max, x_min=x_min, y_max=y_max, y_min=y_min)
 
 
+def get_distance_to_point(point: Tuple[int, int], wire: List[Tuple[int, int]]) -> int:
+    for idx, wire_point in enumerate(wire):
+        if point == wire_point:
+            return idx + 1
+    raise Exception("Point is not on wire")
+
+
 if __name__ == "__main__":
     this_dir = os.path.dirname(os.path.abspath(__file__))
     input_path = os.path.join(this_dir, 'input.txt')
@@ -81,11 +88,23 @@ if __name__ == "__main__":
         def filter_func(x: Tuple[int, int]) -> bool:
             return x[0] < bounding.x_max and x[0] > bounding.x_min and x[1] < bounding.y_max and x[1] > bounding.y_min
 
-        wire_1 = list(filter(filter_func, wire_1))
-        wire_2 = list(filter(filter_func, wire_2))
+        filtered_wire_1 = list(filter(filter_func, wire_1))
+        filtered_wire_2 = list(filter(filter_func, wire_2))
 
-        common = [x for x in wire_1 if x in wire_2]
+        common = [x for x in filtered_wire_1 if x in filtered_wire_2]
         manhattan = list(map(lambda x: abs(x[0]) + abs(x[1]), common))
 
         print('Part 1')
         print('Distance = {}'.format(min(manhattan)))
+
+        min_distance = -1
+
+        for point in common:
+            wire_1_distance = get_distance_to_point(point, wire_1)
+            wire_2_distance = get_distance_to_point(point, wire_2)
+
+            if min_distance < 0 or (wire_1_distance + wire_2_distance < min_distance):
+                min_distance = wire_1_distance + wire_2_distance
+
+        print('Part 2')
+        print('Distance = {}'.format(min_distance))
