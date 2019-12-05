@@ -1,3 +1,7 @@
 {
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "python.pythonPath": "/Users/peterb/.local/share/virtualenvs/adventofcode2019--SbNDGED/bin/python",
+  "python.linting.mypyEnabled": true,
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": false
 }
