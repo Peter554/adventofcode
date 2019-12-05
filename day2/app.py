@@ -2,10 +2,6 @@ import os
 import copy
 
 
-this_dir = os.path.dirname(os.path.abspath(__file__))
-input_path = os.path.join(this_dir, 'input.txt')
-
-
 def add_values(lst, idx_x, idx_y, idx_insert):
     lst[idx_insert] = lst[idx_x] + lst[idx_y]
 
@@ -49,6 +45,9 @@ def compute_noun_and_verb(code, required_output):
 
 
 if __name__ == "__main__":
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    input_path = os.path.join(this_dir, 'input.txt')
+
     with open(input_path) as f:
         line = f.readline()
         code = list(map(lambda x: int(x), line.strip().split(',')))

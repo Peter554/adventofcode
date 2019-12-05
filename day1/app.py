@@ -1,9 +1,6 @@
 import os
 import math
 
-this_dir = os.path.dirname(os.path.abspath(__file__))
-input_path = os.path.join(this_dir, 'input.txt')
-
 
 def calculate_fuel_for_mass(mass):
     return math.floor(mass / 3) - 2
@@ -19,6 +16,9 @@ def calculate_fuel_for_mass_2(mass):
 
 
 if __name__ == "__main__":
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    input_path = os.path.join(this_dir, 'input.txt')
+
     with open(input_path) as f:
         total_fuel = 0
 
