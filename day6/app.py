@@ -39,6 +39,26 @@ def count_tree_orbits(tree):
     return orbits
 
 
+def find_node(tree, key):
+    if tree.name == key:
+        return tree
+
+    for child in tree.children:
+        found = find_node(child, key)
+        if found is not None:
+            return found
+
+    return None
+
+
+def get_parent_list(node):
+    parents = []
+    if node.parent is not None:
+        parents.append(node.parent)
+        parents.extend(get_parent_list(node.parent))
+    return parents
+
+
 if __name__ == "__main__":
     this_dir = os.path.dirname(os.path.abspath(__file__))
     input_path = os.path.join(this_dir, 'input.txt')
@@ -54,3 +74,18 @@ if __name__ == "__main__":
 
         print('Part 1')
         print('Total orbits = {}'.format(count_tree_orbits(tree)))
+
+        santa = find_node(tree, 'SAN')
+        me = find_node(tree, 'YOU')
+
+        santas_parents = get_parent_list(santa)
+        my_parents = get_parent_list(me)
+
+        common = [node for node in santas_parents if node in my_parents]
+        first_common = common[0]
+
+        shortest_path_length = \
+            santas_parents.index(first_common) + my_parents.index(first_common)
+
+        print('Part 2')
+        print('Shortest path length = {}'.format(shortest_path_length))
