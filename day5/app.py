@@ -9,7 +9,9 @@ if __name__ == "__main__":
     with open(input_path) as f:
         raw_code = f.readline()
         intcode = IntCode(raw_code)
-        output = intcode.run(1)
 
         print('Part 1')
-        print('Output = {}'.format(output))
+        print('Output = {}'.format(intcode.run(1)))
+
+        print('Part 2')
+        print('Output = {}'.format(intcode.run(5)))
