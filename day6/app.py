@@ -26,8 +26,16 @@ def count_node_orbits(node):
     active_node = node
     orbits = 0
     while (active_node.parent is not None):
-        orbits = orbits + 1
+        orbits += 1
         active_node = active_node.parent
+    return orbits
+
+
+def count_tree_orbits(tree):
+    orbits = 0
+    orbits += count_node_orbits(tree)
+    for child in tree.children:
+        orbits += count_tree_orbits(child)
     return orbits
 
 
@@ -44,4 +52,5 @@ if __name__ == "__main__":
 
         build_children(tree, all_orbits)
 
-        print(count_node_orbits(tree.children[0].children[0]))
+        print('Part 1')
+        print('Total orbits = {}'.format(count_tree_orbits(tree)))
