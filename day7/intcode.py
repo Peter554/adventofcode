@@ -13,12 +13,12 @@ class IntCode():
         self._inputs = inputs
         self._input_idx = 0
         self._output = []
-        self._running = True
+        self._was_halted = False
 
-        while self._running:
+        while (not self._was_halted) and (self._location < len(self._code) - 1):
             self._step()
 
-        return self._output
+        return (self._output[-1], self._was_halted)
 
     def _step(self):
         op = self._code[self._location]
@@ -55,7 +55,7 @@ class IntCode():
             parameters = self._get_parameters(parameter_modes)
             self._handle_equal(parameters)
         elif (op_type == 99):
-            self._running = False
+            self._was_halted = True
         else:
             msg = 'Operation of type {} not supported'.format(op_type)
             raise Exception(msg)
