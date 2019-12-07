@@ -1,4 +1,5 @@
 import copy
+from typing import List
 
 
 class IntCode():
@@ -6,10 +7,11 @@ class IntCode():
         self._original_code = \
             list(map(lambda x: int(x), raw_code.strip().split(',')))
 
-    def run(self, input: int):
+    def run(self, inputs: List[int]):
         self._code = copy.deepcopy(self._original_code)
         self._location = 0
-        self._input = input
+        self._inputs = inputs
+        self._input_idx = 0
         self._output = []
         self._running = True
 
@@ -94,7 +96,10 @@ class IntCode():
         self._location += 4
 
     def _handle_input(self):
-        self._code[self._code[self._location + 1]] = self._input
+        self._code[self._code[self._location + 1]] = \
+            self._inputs[self._input_idx]
+        if self._input_idx < len(self._inputs) - 1:
+            self._input_idx += 1
         self._location += 2
 
     def _handle_output(self, parameters):
