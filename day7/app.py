@@ -1,45 +1,69 @@
 import os
 import itertools
+import queue
+import threading
 
 from intcode import IntCode
 
 
 def run_permutation(permutation, raw_code):
     amp_a = IntCode(raw_code)
-    amp_b = IntCode(raw_code)
-    amp_c = IntCode(raw_code)
-    amp_d = IntCode(raw_code)
-    amp_e = IntCode(raw_code)
+    amp_b = IntCode(raw_code, amp_a.output_queue)
+    amp_c = IntCode(raw_code, amp_b.output_queue)
+    amp_d = IntCode(raw_code, amp_c.output_queue)
+    amp_e = IntCode(raw_code, amp_d.output_queue)
+    amp_a.input_queue = queue.SimpleQueue()
 
-    signal, _ = amp_a.run([permutation[0], 0])
-    signal, _ = amp_b.run([permutation[1], signal])
-    signal, _ = amp_c.run([permutation[2], signal])
-    signal, _ = amp_d.run([permutation[3], signal])
-    signal, _ = amp_e.run([permutation[4], signal])
+    amp_a.input_queue.put(permutation[0])
+    amp_a.input_queue.put(0)
+    amp_b.input_queue.put(permutation[1])
+    amp_c.input_queue.put(permutation[2])
+    amp_d.input_queue.put(permutation[3])
+    amp_e.input_queue.put(permutation[4])
 
-    return signal
+    amp_a.run()
+    amp_b.run()
+    amp_c.run()
+    amp_d.run()
+    return amp_e.run()
 
 
 def run_permutation_with_feedback(permutation, raw_code):
     amp_a = IntCode(raw_code)
-    amp_b = IntCode(raw_code)
-    amp_c = IntCode(raw_code)
-    amp_d = IntCode(raw_code)
-    amp_e = IntCode(raw_code)
+    amp_b = IntCode(raw_code, amp_a.output_queue)
+    amp_c = IntCode(raw_code, amp_b.output_queue)
+    amp_d = IntCode(raw_code, amp_c.output_queue)
+    amp_e = IntCode(raw_code, amp_d.output_queue)
+    amp_a.input_queue = amp_e.output_queue
 
-    signal = None
-    halted = False
+    amp_a.input_queue.put(permutation[0])
+    amp_a.input_queue.put(0)
+    amp_b.input_queue.put(permutation[1])
+    amp_c.input_queue.put(permutation[2])
+    amp_d.input_queue.put(permutation[3])
+    amp_e.input_queue.put(permutation[4])
 
-    while not halted:
-        signal, _ = amp_a.run(
-            [permutation[0], 0 if signal is None else signal])
+    def run_a():
+        amp_a.run()
+    thread_a = threading.Thread(target=run_a)
+    thread_a.start()
 
-        signal, _ = amp_b.run([permutation[1], signal])
-        signal, _ = amp_c.run([permutation[2], signal])
-        signal, _ = amp_d.run([permutation[3], signal])
-        signal, halted = amp_e.run([permutation[4], signal])
+    def run_b():
+        amp_b.run()
+    thread_b = threading.Thread(target=run_b)
+    thread_b.start()
 
-    return signal
+    def run_c():
+        amp_c.run()
+    thread_c = threading.Thread(target=run_c)
+    thread_c.start()
+
+    def run_d():
+        amp_d.run()
+    thread_d = threading.Thread(target=run_d)
+    thread_d.start()
+
+    return amp_e.run()
 
 
 if __name__ == "__main__":

@@ -1,24 +1,24 @@
 import copy
-from typing import List
+import queue
 
 
 class IntCode():
-    def __init__(self, raw_code):
+    def __init__(self, raw_code, input_queue=None):
         self._original_code = \
             list(map(lambda x: int(x), raw_code.strip().split(',')))
+        self.input_queue = input_queue
+        self.output_queue = queue.SimpleQueue()
 
-    def run(self, inputs: List[int]):
+    def run(self):
         self._code = copy.deepcopy(self._original_code)
         self._location = 0
-        self._inputs = inputs
-        self._input_idx = 0
-        self._output = []
-        self._was_halted = False
+        self._last_output = None
+        self._done = False
 
-        while (not self._was_halted) and (self._location < len(self._code) - 1):
+        while not self._done:
             self._step()
 
-        return (self._output[-1], self._was_halted)
+        return self._last_output
 
     def _step(self):
         op = self._code[self._location]
@@ -55,7 +55,7 @@ class IntCode():
             parameters = self._get_parameters(parameter_modes)
             self._handle_equal(parameters)
         elif (op_type == 99):
-            self._was_halted = True
+            self._done = True
         else:
             msg = 'Operation of type {} not supported'.format(op_type)
             raise Exception(msg)
@@ -96,15 +96,14 @@ class IntCode():
         self._location += 4
 
     def _handle_input(self):
-        self._code[self._code[self._location + 1]] = \
-            self._inputs[self._input_idx]
-        if self._input_idx < len(self._inputs) - 1:
-            self._input_idx += 1
+        inpt = self.input_queue.get()
+        self._code[self._code[self._location + 1]] = inpt
         self._location += 2
 
     def _handle_output(self, parameters):
         value = parameters[0]
-        self._output.append(value)
+        self._last_output = value
+        self.output_queue.put(value)
         self._location += 2
 
     def _handle_jump_if_true(self, parameters):
