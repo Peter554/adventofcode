@@ -1,54 +1,41 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strconv"
+
+	"github.com/peter554/adventofcode/2018/common"
 )
 
 func main() {
-	data := readFile("./input.txt")
-	frequencies := data.toInts()
+	lines := common.Readlines("./input.txt")
+	frequencies := toInts(lines)
 	fmt.Println("Part 1")
-	fmt.Printf("Sum = %d\n", frequencies.sum())
+	fmt.Printf("Sum = %d\n", sum(frequencies))
 	fmt.Println("Part 2")
-	fmt.Printf("First repeating sum = %d\n", frequencies.firstRepeatingSum())
+	fmt.Printf("First repeating sum = %d\n", firstRepeatingSum(frequencies))
 
 }
 
-type lines []string
-type ints []int
-
-func readFile(location string) lines {
-	file, _ := os.Open(location)
-	scanner := bufio.NewScanner(file)
-	out := make(lines, 0)
-	for scanner.Scan() {
-		out = append(out, scanner.Text())
-	}
-	return out
-}
-
-func (o lines) toInts() ints {
-	out := make(ints, 0)
-	for _, line := range o {
+func toInts(lines []string) []int {
+	out := make([]int, 0)
+	for _, line := range lines {
 		i, _ := strconv.Atoi(line)
 		out = append(out, i)
 	}
 	return out
 }
 
-func (o ints) sum() int {
+func sum(ints []int) int {
 	total := 0
-	for _, v := range o {
+	for _, v := range ints {
 		total += v
 	}
 	return total
 }
 
-func (o ints) contains(i int) bool {
-	for _, v := range o {
+func contains(ints []int, i int) bool {
+	for _, v := range ints {
 		if v == i {
 			return true
 		}
@@ -56,12 +43,12 @@ func (o ints) contains(i int) bool {
 	return false
 }
 
-func (o ints) firstRepeatingSum() int {
-	sums := make(ints, 1)
+func firstRepeatingSum(ints []int) int {
+	sums := make([]int, 1)
 	for {
-		for _, v := range o {
+		for _, v := range ints {
 			next := sums[len(sums)-1] + v
-			if sums.contains(next) {
+			if contains(sums, next) {
 				return next
 			}
 			sums = append(sums, next)
