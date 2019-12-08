@@ -33,23 +33,22 @@ func getlenghtafterreaction2(units []string) int {
 }
 
 func react(units []string) []string {
-	cpy := copyunits(units)
 	for {
 		didreact := false
-		for idx, _ := range cpy {
+		for idx, _ := range units {
 			if idx == 0 {
 				continue
 			}
-			sametype := aresametype(cpy[idx-1], cpy[idx])
-			oppositepolarity := areoppositepolarity(cpy[idx-1], cpy[idx])
+			sametype := aresametype(units[idx-1], units[idx])
+			oppositepolarity := areoppositepolarity(units[idx-1], units[idx])
 			if sametype && oppositepolarity {
-				cpy = removepair(cpy, idx-1)
+				units = removepair(units, idx-1)
 				didreact = true
 				break
 			}
 		}
 		if !didreact {
-			return cpy
+			return units
 		}
 	}
 }
@@ -71,6 +70,7 @@ func areoppositepolarity(a string, b string) bool {
 }
 
 func removepair(units []string, at int) []string {
+	units = copyunits(units)
 	return append(units[:at], units[at+2:]...)
 }
 
@@ -90,7 +90,7 @@ func getalphabet() []string {
 	return strings.Split(alphabet, "")
 }
 
-// Why is this required?
+// TODO Why is this required?
 func copyunits(units []string) []string {
 	out := make([]string, len(units))
 	copy(out, units)
