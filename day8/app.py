@@ -10,6 +10,8 @@ def build_layers(raw_data, width, height):
 
 
 def apply_layer(img, layer):
+    if img is None:
+        img = [2] * len(layer)
     for idx in range(len(img)):
         if img[idx] == 2:
             img[idx] = layer[idx]
@@ -18,7 +20,7 @@ def apply_layer(img, layer):
 
 def decode(raw_data, width, height):
     layers = build_layers(raw_data, width, height)
-    img = functools.reduce(apply_layer, layers, [2] * len(layers[0]))
+    img = functools.reduce(apply_layer, layers)
     return [img[i:i+width] for i in range(0, len(img), width)]
 
 
