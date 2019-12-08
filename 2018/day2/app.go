@@ -11,6 +11,7 @@ func main() {
 	fmt.Println("Part 1")
 	fmt.Printf("Checksum = %d\n", getchecksum(lines))
 	fmt.Println("Part 2")
+	fmt.Printf("Boxes = %s\n", findboxes(lines))
 }
 
 func getchecksum(lines []string) int {
@@ -47,4 +48,25 @@ func somevalueequals(m map[rune]int, n int) bool {
 		}
 	}
 	return false
+}
+
+func findboxes(lines []string) string {
+	for _, l1 := range lines {
+		for _, l2 := range lines {
+			if computedifference(l1, l2) == 1 {
+				return fmt.Sprintf("%s %s", l1, l2)
+			}
+		}
+	}
+	return ""
+}
+
+func computedifference(s1 string, s2 string) int {
+	out := 0
+	for idx, r := range s1 {
+		if r != []rune(s2)[idx] {
+			out++
+		}
+	}
+	return out
 }
