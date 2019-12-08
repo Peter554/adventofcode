@@ -1,0 +1,7 @@
+{
+  "editor.formatOnSave": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.mypyEnabled": true,
+  "python.linting.enabled": true,
+  "python.pythonPath": "/Users/peterb/.local/share/virtualenvs/2019-2k-Efn-V/bin/python"
+}
