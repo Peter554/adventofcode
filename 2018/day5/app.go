@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/peter554/adventofcode/2018/common"
 )
@@ -17,40 +18,55 @@ func main() {
 }
 
 func getlenghtafterreaction(units []string) int {
-	return len(react(units))
+	return len(react(units, ""))
 }
 
 func getlenghtafterreaction2(units []string) int {
 	min := -1
+	wg := sync.WaitGroup{}
 	alphabet := getalphabet()
 	for _, letter := range alphabet {
-		reacted := react(removeunit(units, letter))
-		if min == -1 || len(reacted) < min {
-			min = len(reacted)
-		}
+		wg.Add(1)
+		go func(letter string) {
+			reacted := react(units, letter)
+			if min == -1 || len(reacted) < min {
+				min = len(reacted)
+			}
+			wg.Done()
+		}(letter)
 	}
+	wg.Wait()
 	return min
 }
 
-func react(units []string) []string {
+func react(units []string, remove string) []string {
+	units = copyunits(units)
+	units = removeunit(units, remove)
 	for {
-		didreact := false
-		for idx, _ := range units {
+		reactat := -1
+		for idx := range units {
 			if idx == 0 {
 				continue
 			}
 			sametype := aresametype(units[idx-1], units[idx])
 			oppositepolarity := areoppositepolarity(units[idx-1], units[idx])
 			if sametype && oppositepolarity {
-				units = removepair(units, idx-1)
-				didreact = true
+				reactat = idx - 1
 				break
 			}
 		}
-		if !didreact {
+		if reactat == -1 {
 			return units
 		}
+		units = removepair(units, reactat)
 	}
+}
+
+// TODO Why is this required?
+func copyunits(units []string) []string {
+	out := make([]string, len(units))
+	copy(out, units)
+	return out
 }
 
 func aresametype(a string, b string) bool {
@@ -70,7 +86,6 @@ func areoppositepolarity(a string, b string) bool {
 }
 
 func removepair(units []string, at int) []string {
-	units = copyunits(units)
 	return append(units[:at], units[at+2:]...)
 }
 
@@ -88,11 +103,4 @@ func removeunit(units []string, unit string) []string {
 func getalphabet() []string {
 	alphabet := "abcdefghijklmnopqrstuvwxyz"
 	return strings.Split(alphabet, "")
-}
-
-// TODO Why is this required?
-func copyunits(units []string) []string {
-	out := make([]string, len(units))
-	copy(out, units)
-	return out
 }
