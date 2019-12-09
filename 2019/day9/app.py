@@ -5,4 +5,7 @@ if __name__ == '__main__':
     input_path = os.path.join(this_dir, 'input.txt')
 
     with open(input_path) as f:
-        print(f.readline())
+        raw_data = f.readline()
+        print('Part 1')
+
+        print('Part 2')
