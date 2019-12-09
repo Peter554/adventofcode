@@ -48,13 +48,7 @@ class IntCode():
 
     def _parse_op_code(self, op_code):
         op_type = op_code % 100
-        if op_type in [1, 2, 5, 6, 7, 8]:
-            parameter_modes = self._get_parameter_modes(op_code, 3)
-        elif op_type in [3, 4]:
-            # TODO review
-            parameter_modes = self._get_parameter_modes(op_code, 2)
-        else:
-            raise Exception(f'Operation {op_type} not supported')
+        parameter_modes = self._get_parameter_modes(op_code, 3)
         return op_type, parameter_modes
 
     def _get_parameter_modes(self, op_code, require_n):
@@ -65,12 +59,13 @@ class IntCode():
         return l
 
     def _get_parameter(self, offset, parameter_mode):
+        value_at_offset = self._code[self._location + offset]
         if parameter_mode == 0:
-            return self._code[self._code[self._location + offset]]
+            return self._code[value_at_offset]
         elif parameter_mode == 1:
-            return self._code[self._location + offset]
+            return value_at_offset
         elif parameter_mode == 2:
-            return self._code[self._relative_base + self._code[self._location + offset]]
+            return self._code[self._relative_base + value_at_offset]
         else:
             raise Exception(f'Parameter mode {parameter_mode} not supported')
 
