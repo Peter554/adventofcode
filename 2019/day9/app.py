@@ -21,3 +21,4 @@ if __name__ == '__main__':
         print('Part 1')
         print(f'Keycode = {run_intcode(raw_code, [1])}')
         print('Part 2')
+        print(f'Keycode = {run_intcode(raw_code, [2])}')
