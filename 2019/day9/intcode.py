@@ -6,8 +6,7 @@ from large_array import LargeArray
 
 class IntCode():
     def __init__(self, raw_code, input_queue=None):
-        self._original_code = \
-            list(map(lambda x: int(x), raw_code.strip().split(',')))
+        self._original_code = [int(x) for x in raw_code.strip().split(',')]
         self.input_queue = input_queue
         self.output_queue = queue.SimpleQueue()
 
