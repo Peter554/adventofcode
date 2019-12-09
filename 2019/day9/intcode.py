@@ -16,16 +16,13 @@ class IntCode():
         self._relative_base = 0
         self._last_output = None
         self._done = False
-
         while not self._done:
             self._step()
-
         return self._last_output
 
     def _step(self):
         op_code = self._code[self._location]
         op_type, parameter_modes = self._parse_op_code(op_code)
-
         if (op_type == 1):
             self._handle_add(parameter_modes)
         elif (op_type == 2):
@@ -72,42 +69,31 @@ class IntCode():
         else:
             raise Exception(f'Parameter mode {parameter_mode} not supported')
 
+    def _write(self, value, parameter_offset, parameter_mode):
+        parameter = self._code[self._location + parameter_offset]
+        if parameter_mode == 0:
+            self._code[parameter] = value
+        elif parameter_mode == 2:
+            self._code[self._relative_base + parameter] = value
+        else:
+            msg = f'Write could not handle parameter mode {parameter_modes[2]}'
+            raise Exception(msg)
+
     def _handle_add(self, parameter_modes):
         left = self._get_parameter(1, parameter_modes[0])
         right = self._get_parameter(2, parameter_modes[1])
-        if parameter_modes[2] == 0:
-            self._code[self._code[self._location + 3]] = left + right
-        elif parameter_modes[2] == 2:
-            self._code[self._relative_base +
-                       self._code[self._location + 3]] = left + right
-        else:
-            msg = f'Add could not handle parameter mode {parameter_modes[2]}'
-            raise Exception(msg)
+        self._write(left + right, 3, parameter_modes[2])
         self._location += 4
 
     def _handle_mulitply(self, parameter_modes):
         left = self._get_parameter(1, parameter_modes[0])
         right = self._get_parameter(2, parameter_modes[1])
-        if parameter_modes[2] == 0:
-            self._code[self._code[self._location + 3]] = left * right
-        elif parameter_modes[2] == 2:
-            self._code[self._relative_base +
-                       self._code[self._location + 3]] = left * right
-        else:
-            msg = f'Multiply could not handle parameter mode {parameter_modes[2]}'
-            raise Exception(msg)
+        self._write(left * right, 3, parameter_modes[2])
         self._location += 4
 
     def _handle_input(self, parameter_modes):
         inpt = self.input_queue.get()
-        if parameter_modes[0] == 0:
-            self._code[self._code[self._location + 1]] = inpt
-        elif parameter_modes[0] == 2:
-            self._code[self._relative_base +
-                       self._code[self._location + 1]] = inpt
-        else:
-            msg = f'Input could not handle parameter mode {parameter_modes[0]}'
-            raise Exception(msg)
+        self._write(inpt, 1, parameter_modes[0])
         self._location += 2
 
     def _handle_output(self, parameter_modes):
@@ -134,28 +120,14 @@ class IntCode():
         left = self._get_parameter(1, parameter_modes[0])
         right = self._get_parameter(2, parameter_modes[1])
         value = 1 if left < right else 0
-        if parameter_modes[2] == 0:
-            self._code[self._code[self._location + 3]] = value
-        elif parameter_modes[2] == 2:
-            self._code[self._relative_base +
-                       self._code[self._location + 3]] = value
-        else:
-            msg = f'Less than could not handle parameter mode {parameter_modes[2]}'
-            raise Exception(msg)
+        self._write(value, 3, parameter_modes[2])
         self._location += 4
 
     def _handle_equal(self, parameter_modes):
         left = self._get_parameter(1, parameter_modes[0])
         right = self._get_parameter(2, parameter_modes[1])
         value = 1 if left == right else 0
-        if parameter_modes[2] == 0:
-            self._code[self._code[self._location + 3]] = value
-        elif parameter_modes[2] == 2:
-            self._code[self._relative_base +
-                       self._code[self._location + 3]] = value
-        else:
-            msg = f'Equal could not handle parameter mode {parameter_modes[2]}'
-            raise Exception(msg)
+        self._write(value, 3, parameter_modes[2])
         self._location += 4
 
     def _handle_adjust_relative_base(self, parameter_modes):

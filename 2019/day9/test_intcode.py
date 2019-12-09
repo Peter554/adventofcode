@@ -83,13 +83,10 @@ class TestIncode():
         amp_d.input_queue.put(permutation[3])
         amp_e.input_queue.put(permutation[4])
 
-        def run_amp(amp):
+        for amp in [amp_a, amp_b, amp_c, amp_d]:
             def target():
                 amp.run()
             thread = threading.Thread(target=target)
             thread.start()
-
-        for amp in [amp_a, amp_b, amp_c, amp_d]:
-            run_amp(amp)
 
         return amp_e.run()
