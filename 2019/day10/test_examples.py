@@ -77,12 +77,15 @@ def test_example_3():
 
 
 def test_compare_func_1():
-    targets = [(-1, 0), (0, 1), (1, 0), (0, -2), (2, 0), (0, 2), (0, -1)]
+    targets = [(-1, 0), (0, 1), (1, 0), (0, -2),
+               (2, 0), (0, 2), (0, -1), (1, -1)]
+
     targets.sort(key=functools.cmp_to_key(compare_func))
     assert targets[0] == (0, -1)
     assert targets[1] == (0, -2)
-    assert targets[2] == (1, 0)
-    assert targets[3] == (2, 0)
-    assert targets[4] == (0, 1)
-    assert targets[5] == (0, 2)
-    assert targets[6] == (-1, 0)
+    assert targets[2] == (1, -1)
+    assert targets[3] == (1, 0)
+    assert targets[4] == (2, 0)
+    assert targets[5] == (0, 1)
+    assert targets[6] == (0, 2)
+    assert targets[7] == (-1, 0)
