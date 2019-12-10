@@ -44,12 +44,12 @@ def get_displacement(go_to, go_from):
 
 def contains(displacement, displacements):
     for v in displacements:
-        if are_equal(displacement, v):
+        if are_same_direction(displacement, v):
             return True
     return False
 
 
-def are_equal(d_1, d_2):
+def are_same_direction(d_1, d_2):
     if d_1[0] * d_2[0] < 0 or d_1[1] * d_2[1] < 0:
         return False
     elif d_1[0] == 0:

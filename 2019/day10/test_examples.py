@@ -1,23 +1,23 @@
-from app import find_best_location, are_equal
+from app import find_best_location, are_same_direction
 
 
 def test_are_equal_1():
-    assert are_equal((0, 0), (0, 0))
-    assert are_equal((1, 1), (1, 1))
-    assert are_equal((-1, -1), (-1, -1))
-    assert are_equal((3, 7), (9, 21))
-    assert are_equal((10000001, 1), (10000001, 1))
-    assert are_equal((-2, 0), (-10, 0))
-    assert are_equal((0, 1), (0, 3))
+    assert are_same_direction((0, 0), (0, 0))
+    assert are_same_direction((1, 1), (1, 1))
+    assert are_same_direction((-1, -1), (-1, -1))
+    assert are_same_direction((3, 7), (9, 21))
+    assert are_same_direction((10000001, 1), (10000001, 1))
+    assert are_same_direction((-2, 0), (-10, 0))
+    assert are_same_direction((0, 1), (0, 3))
 
 
 def test_are_equal_2():
-    assert not are_equal((0, 1), (0, 0))
-    assert not are_equal((1, 0), (0, 0))
-    assert not are_equal((0, 0), (1, 0))
-    assert not are_equal((0, 0), (0, 1))
-    assert not are_equal((1, 1), (-1, -1))
-    assert not are_equal((10000001, 1), (10000002, 1))
+    assert not are_same_direction((0, 1), (0, 0))
+    assert not are_same_direction((1, 0), (0, 0))
+    assert not are_same_direction((0, 0), (1, 0))
+    assert not are_same_direction((0, 0), (0, 1))
+    assert not are_same_direction((1, 1), (-1, -1))
+    assert not are_same_direction((10000001, 1), (10000002, 1))
 
 
 def test_example_1():
