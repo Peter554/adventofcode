@@ -26,18 +26,46 @@ def build_points(raw_data):
 
 
 def count_visible(point, points):
-    displacements = set()
+    displacements = []
     for other in points:
-        if other != point:
-            displacements.add(get_displacement(other, point))
+        if other == point:
+            continue
+        displacement = get_displacement(other, point)
+        if not contains(displacement, displacements):
+            displacements.append(displacement)
     return len(displacements)
 
 
 def get_displacement(go_to, go_from):
-    x = go_to[0] - go_from[0]
-    y = go_to[1] - go_from[1]
-    d = math.sqrt(x**2 + y**2)
-    return (x/d, y/d)
+    dx = go_to[0] - go_from[0]
+    dy = go_to[1] - go_from[1]
+    return (dx, dy)
+
+
+def contains(displacement, displacements):
+    for v in displacements:
+        if are_equal(displacement, v):
+            return True
+    return False
+
+
+def are_equal(d_1, d_2):
+    if d_1[0] * d_2[0] < 0 or d_1[1] * d_2[1] < 0:
+        return False
+    elif d_1[0] == 0:
+        return d_2[0] == 0 and (d_1[1] == d_2[1] or d_1[1] * d_2[1] > 0)
+    elif d_1[1] == 0:
+        return d_2[1] == 0 and (d_1[0] == d_2[0] or d_1[0] * d_2[0] > 0)
+    elif d_2[0] == 0:
+        return d_1[0] == 0 and (d_1[1] == d_2[1] or d_1[1] * d_2[1] > 0)
+    elif d_2[1] == 0:
+        return d_1[1] == 0 and (d_1[0] == d_2[0] or d_1[0] * d_2[0] > 0)
+    elif abs(d_1[0]) > abs(d_2[0]):
+        factor = d_1[0] / d_2[0]
+        return d_1[1] == d_2[1] * factor
+    else:
+        factor = d_2[0] / d_1[0]
+        return d_2[1] == d_1[1] * factor
 
 
 if __name__ == '__main__':
