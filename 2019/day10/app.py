@@ -1,5 +1,6 @@
 import os
 import math
+import functools
 
 
 def find_best_location(raw_data):
@@ -14,6 +15,14 @@ def find_best_location(raw_data):
             best_location = k
             best_count = v
     return best_location, best_count
+
+
+def find_nth_destroyed(raw_data):
+    points = build_points(raw_data)
+    best_location, _ = find_best_location(raw_data)
+    targets = [get_displacement(p, best_location)
+               for p in points if p != best_location]
+    targets.sort(key=functools.cmp_to_key(compare_func))
 
 
 def build_points(raw_data):
@@ -66,6 +75,24 @@ def are_same_direction(d_1, d_2):
     else:
         factor = d_2[0] / d_1[0]
         return d_2[1] == d_1[1] * factor
+
+
+def compare_func(d_1, d_2):
+    angle_1 = get_angle(d_1)
+    angle_2 = get_angle(d_2)
+    if not are_same_direction(d_1, d_2):
+        return +1 if angle_1 > angle_2 else -1
+    size_1 = get_size(d_1)
+    size_2 = get_size(d_2)
+    return +1 if size_1 > size_2 else -1
+
+
+def get_size(d):
+    return math.sqrt(d[0]**2+d[1]**2)
+
+
+def get_angle(d):
+    return math.atan2(d[1], d[0])
 
 
 if __name__ == '__main__':

@@ -1,4 +1,6 @@
-from app import find_best_location, are_same_direction
+import functools
+
+from app import find_best_location, are_same_direction, compare_func
 
 
 def test_are_equal_1():
@@ -72,3 +74,15 @@ def test_example_3():
     best_location, best_count = find_best_location(raw_data)
     assert best_location == (6, 3)
     assert best_count == 41
+
+
+def test_compare_func_1():
+    targets = [(-1, 0), (0, 1), (1, 0), (0, -2), (2, 0), (0, 2), (0, -1)]
+    targets.sort(key=functools.cmp_to_key(compare_func))
+    assert targets[0] == (0, -1)
+    assert targets[1] == (0, -2)
+    assert targets[2] == (1, 0)
+    assert targets[3] == (2, 0)
+    assert targets[4] == (0, 1)
+    assert targets[5] == (0, 2)
+    assert targets[6] == (-1, 0)
