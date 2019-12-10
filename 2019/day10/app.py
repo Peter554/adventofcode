@@ -107,7 +107,11 @@ def get_size(d):
 
 
 def get_angle(d):
-    return math.atan2(d[1], d[0])
+    angle = math.atan2(d[1], d[0])
+    angle += 0.5 * math.pi
+    if angle < 0:
+        angle += 2 * math.pi
+    return angle
 
 
 if __name__ == '__main__':

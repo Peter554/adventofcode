@@ -1,6 +1,6 @@
 import functools
 
-from app import find_best_location, are_same_direction, compare_func
+from app import find_best_location, are_same_direction, compare_func, get_angle
 
 
 def test_are_equal_1():
@@ -76,9 +76,20 @@ def test_example_3():
     assert best_count == 41
 
 
+def test_get_angle_1():
+    angle_1 = get_angle((0, -1))
+    angle_2 = get_angle((1, 0))
+    angle_3 = get_angle((0, 1))
+    angle_4 = get_angle((-1, 0))
+    assert round(angle_1, 2) == 0.00
+    assert round(angle_2, 2) == 1.57
+    assert round(angle_3, 2) == 3.14
+    assert round(angle_4, 2) == 4.71
+
+
 def test_compare_func_1():
-    targets = [(-1, 0), (0, 1), (1, 0), (0, -2),
-               (2, 0), (0, 2), (0, -1), (1, -1)]
+    targets = [(-1, -1), (-1, 0), (0, 1), (1, 0), (0, -2),
+               (2, 0), (0, 2), (0, -1), (1, -1), (-1, 1)]
 
     targets.sort(key=functools.cmp_to_key(compare_func))
     assert targets[0] == (0, -1)
@@ -88,4 +99,6 @@ def test_compare_func_1():
     assert targets[4] == (2, 0)
     assert targets[5] == (0, 1)
     assert targets[6] == (0, 2)
-    assert targets[7] == (-1, 0)
+    assert targets[7] == (-1, 1)
+    assert targets[8] == (-1, 0)
+    assert targets[9] == (-1, -1)
