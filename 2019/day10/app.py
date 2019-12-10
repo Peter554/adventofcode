@@ -17,12 +17,27 @@ def find_best_location(raw_data):
     return best_location, best_count
 
 
-def find_nth_destroyed(raw_data):
+def find_nth_destroyed(raw_data, n):
     points = build_points(raw_data)
     best_location, _ = find_best_location(raw_data)
     targets = [get_displacement(p, best_location)
                for p in points if p != best_location]
     targets.sort(key=functools.cmp_to_key(compare_func))
+    destroyed_idxs = []
+    last_destroyed = None
+    done = False
+    while not done:
+        for idx, target in enumerate(targets):
+            if idx in destroyed_idxs:
+                continue
+            if last_destroyed is not None and are_same_direction(last_destroyed, target):
+                continue
+            destroyed_idxs.append(idx)
+            last_destroyed = target
+            if len(destroyed_idxs) == n:
+                done = True
+                break
+    return (best_location[0] + last_destroyed[0], best_location[1] + last_destroyed[1])
 
 
 def build_points(raw_data):
@@ -103,3 +118,4 @@ if __name__ == '__main__':
         print('Part 1')
         print(f'Best location = {find_best_location(raw_data)}')
         print('Part 2')
+        print(f'200th destroyed = {find_nth_destroyed(raw_data, 200)}')
