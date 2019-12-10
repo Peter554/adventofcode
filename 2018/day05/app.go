@@ -40,7 +40,6 @@ func getlenghtafterreaction2(units []string) int {
 }
 
 func react(units []string, remove string) []string {
-	units = copyunits(units)
 	units = removeunit(units, remove)
 	for {
 		reactat := -1
@@ -62,11 +61,9 @@ func react(units []string, remove string) []string {
 	}
 }
 
-// TODO Why is this required?
-func copyunits(units []string) []string {
-	out := make([]string, len(units))
-	copy(out, units)
-	return out
+func getalphabet() []string {
+	alphabet := "abcdefghijklmnopqrstuvwxyz"
+	return strings.Split(alphabet, "")
 }
 
 func aresametype(a string, b string) bool {
@@ -85,10 +82,6 @@ func areoppositepolarity(a string, b string) bool {
 	return (islower(a) && isupper(b)) || (isupper(a) && islower(b))
 }
 
-func removepair(units []string, at int) []string {
-	return append(units[:at], units[at+2:]...)
-}
-
 func removeunit(units []string, unit string) []string {
 	out := make([]string, 0)
 	for _, v := range units {
@@ -100,7 +93,14 @@ func removeunit(units []string, unit string) []string {
 	return out
 }
 
-func getalphabet() []string {
-	alphabet := "abcdefghijklmnopqrstuvwxyz"
-	return strings.Split(alphabet, "")
+// See gotcha at https://gist.github.com/Peter554/711c1035c5168289d1542e9458cc2823
+func removepair(units []string, at int) []string {
+	units = copyunits(units)
+	return append(units[:at], units[at+2:]...)
+}
+
+func copyunits(units []string) []string {
+	out := make([]string, len(units))
+	copy(out, units)
+	return out
 }
