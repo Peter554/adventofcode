@@ -1,6 +1,7 @@
 import os
 import queue
 import threading
+import matplotlib.pyplot as plt
 
 from intcode import IntCode
 
@@ -67,6 +68,11 @@ class Robot():
         self.current_position = next_position
 
 
+def get_white_points(painted):
+    white_points = [k for k, v in painted.items() if v[-1] == 1]
+    return white_points
+
+
 if __name__ == '__main__':
     this_dir = os.path.dirname(os.path.abspath(__file__))
     input_path = os.path.join(this_dir, 'input.txt')
@@ -78,4 +84,7 @@ if __name__ == '__main__':
         print('Part 1')
         print(f'# panels painted at least once = {len(robot.painted.keys())}')
         print('Part 2')
-        print(f'')
+        white_points = get_white_points(robot.painted)
+        plt.scatter([v[0] for v in white_points], [v[1] for v in white_points])
+        plt.show()
+        # LRZECGFE
