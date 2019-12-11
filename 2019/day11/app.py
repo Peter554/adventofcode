@@ -11,7 +11,7 @@ class Robot():
         self.computer = IntCode(raw_data, self.input_queue)
         self.current_position = (0, 0)
         self.current_direction = 0
-        self.painted = {}
+        self.painted = {(0, 0): [1]}
         self.computer_output = None
 
     def run(self):
