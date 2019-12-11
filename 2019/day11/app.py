@@ -5,63 +5,66 @@ import threading
 from intcode import IntCode
 
 
-def run_robot(raw_data):
-    input_queue = queue.SimpleQueue()
-    computer = IntCode(raw_data, input_queue)
-    current_position = (0, 0)
-    current_direction = 0
-    painted = {}
-    done = False
+class Robot():
+    def __init__(self, raw_data):
+        self.input_queue = queue.SimpleQueue()
+        self.computer = IntCode(raw_data, self.input_queue)
+        self.current_position = (0, 0)
+        self.current_direction = 0
+        self.painted = {}
+        self.done = False
 
-    def target():
-        while not done:
-            inpt = get_next_input(painted, current_position)
-            input_queue.put(inpt)
-            color = computer.output_queue.get()
-            turn = computer.output_queue.get()
-            paint(painted, current_position, color)
-            current_position = \
-                apply_turn(current_position, current_direction, turn)
+    def run(self):
+        def target():
+            while not self.done:
+                inpt = self._get_next_input()
+                self.input_queue.put(inpt)
+                color = self.computer.output_queue.get()
+                turn = self.computer.output_queue.get()
+                self._paint(color)
+                self._apply_turn(turn)
 
-    thread = threading.Thread(target=target)
-    thread.start()
+        thread = threading.Thread(target=target)
+        thread.start()
 
-    _ = computer.run()
-    done = True
-    return painted
+        _ = self.computer.run()
+        self.done = True
 
+    def _get_next_input(self):
+        if self.current_position in self.painted:
+            return self.painted[self.current_position][-1]
+        else:
+            return 0
 
-def get_next_input(painted, current_position):
-    if not (current_position in painted):
-        return 0
-    return painted[current_position][-1]
+    def _paint(self, color):
+        if not (color in [0, 1]):
+            raise Exception(f'Could not paint color {color}')
+        if self.current_position in self.painted:
+            self.painted[self.current_position].append(color)
+        else:
+            self.painted[self.current_position] = [color]
 
-
-def paint(painted, current_position, color):
-    if not (current_position in painted):
-        painted[current_position] = [color]
-        return
-    painted[current_position].append(color)
-
-
-def apply_turn(current_position, current_direction, turn):
-    if turn == 0:
-        next_direction = (current_direction - 1 + 4) % 4
-    elif turn == 1:
-        next_direction = (current_direction + 1) % 4
-    else:
-        raise Exception(f'Turn type {turn} not supported')
-    if next_direction == 0:
-        dx, dy = 0, 1
-    elif next_direction == 1:
-        dx, dy = 1, 0
-    elif next_direction == 2:
-        dx, dy = 0, -1
-    elif next_direction == 3:
-        dx, dy = -1, 0
-    else:
-        raise Exception(f'Could not handle next direction {next_direction}')
-    return (current_position[0] + dx, current_position[1] + dy)
+    def _apply_turn(self, turn):
+        if turn == 0:
+            next_direction = (self.current_direction - 1 + 4) % 4
+        elif turn == 1:
+            next_direction = (self.current_direction + 1) % 4
+        else:
+            raise Exception(f'Turn type {turn} not supported')
+        if next_direction == 0:
+            dx, dy = 0, 1
+        elif next_direction == 1:
+            dx, dy = 1, 0
+        elif next_direction == 2:
+            dx, dy = 0, -1
+        elif next_direction == 3:
+            dx, dy = -1, 0
+        else:
+            raise Exception(
+                f'Could not handle next direction {next_direction}')
+        next_position = (
+            self.current_position[0] + dx, self.current_position[1] + dy)
+        self.current_position = next_position
 
 
 if __name__ == '__main__':
@@ -69,9 +72,10 @@ if __name__ == '__main__':
     input_path = os.path.join(this_dir, 'input.txt')
 
     with open(input_path) as f:
-        raw_code = f.readline()
-        painted = run_robot(raw_code)
+        raw_data = f.readline()
+        robot = Robot(raw_data)
+        robot.run()
         print('Part 1')
-        print(f'# panels painted at least once = {len(painted.keys())}')
+        print(f'# panels painted at least once = {len(robot.painted.keys())}')
         print('Part 2')
         print(f'')
