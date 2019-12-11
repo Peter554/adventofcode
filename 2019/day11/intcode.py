@@ -1,5 +1,5 @@
 import copy
-import queue
+import asyncio
 
 from large_array import LargeArray
 
@@ -8,19 +8,20 @@ class IntCode():
     def __init__(self, raw_code, input_queue=None):
         self._original_code = [int(x) for x in raw_code.strip().split(',')]
         self.input_queue = input_queue
-        self.output_queue = queue.SimpleQueue()
+        self.output_queue = asyncio.Queue()
+        self.done = False
 
-    def run(self):
+    async def run(self):
         self._code = LargeArray(self._original_code)
         self._location = 0
         self._relative_base = 0
         self._last_output = None
-        self._done = False
-        while not self._done:
-            self._step()
+        self.done = False
+        while not self.done:
+            await self._step()
         return self._last_output
 
-    def _step(self):
+    async def _step(self):
         op_code = self._code[self._location]
         op_type, parameter_modes = self._parse_op_code(op_code)
         if (op_type == 1):
@@ -28,9 +29,9 @@ class IntCode():
         elif (op_type == 2):
             self._handle_mulitply(parameter_modes)
         elif (op_type == 3):
-            self._handle_input(parameter_modes)
+            await self._handle_input(parameter_modes)
         elif (op_type == 4):
-            self._handle_output(parameter_modes)
+            await self._handle_output(parameter_modes)
         elif (op_type == 5):
             self._handle_jump_if_true(parameter_modes)
         elif (op_type == 6):
@@ -42,7 +43,7 @@ class IntCode():
         elif (op_type == 9):
             self._handle_adjust_relative_base(parameter_modes)
         elif (op_type == 99):
-            self._done = True
+            self.done = True
         else:
             raise Exception(f'Operation {op_type} not supported')
 
@@ -91,15 +92,15 @@ class IntCode():
         self._write(left * right, 3, parameter_modes[2])
         self._location += 4
 
-    def _handle_input(self, parameter_modes):
-        inpt = self.input_queue.get()
+    async def _handle_input(self, parameter_modes):
+        inpt = await self.input_queue.get()
         self._write(inpt, 1, parameter_modes[0])
         self._location += 2
 
-    def _handle_output(self, parameter_modes):
+    async def _handle_output(self, parameter_modes):
         value = self._get_parameter(1, parameter_modes[0])
         self._last_output = value
-        self.output_queue.put(value)
+        await self.output_queue.put(value)
         self._location += 2
 
     def _handle_jump_if_true(self, parameter_modes):
