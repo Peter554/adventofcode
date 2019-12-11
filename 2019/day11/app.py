@@ -12,11 +12,11 @@ class Robot():
         self.current_position = (0, 0)
         self.current_direction = 0
         self.painted = {}
-        self.done = False
+        self.computer_output = None
 
     def run(self):
         def target():
-            while not self.done:
+            while self.computer_output is None:
                 inpt = self._get_next_input()
                 self.input_queue.put(inpt)
                 color = self.computer.output_queue.get()
@@ -26,9 +26,8 @@ class Robot():
 
         thread = threading.Thread(target=target)
         thread.start()
-
-        _ = self.computer.run()
-        self.done = True
+        self.computer_output = self.computer.run()
+        thread.join()
 
     def _get_next_input(self):
         if self.current_position in self.painted:
@@ -64,6 +63,7 @@ class Robot():
                 f'Could not handle next direction {next_direction}')
         next_position = (
             self.current_position[0] + dx, self.current_position[1] + dy)
+        self.current_direction = next_direction
         self.current_position = next_position
 
 
