@@ -41,12 +41,16 @@ class Moon():
         self.p = self._parse_raw_data(raw_data)
         self.v = Coordinate(0, 0, 0)
 
-    def update(self, others):
+    def update_velocity(self, moons):
         dv = Coordinate(0, 0, 0)
-        for other in others:
-            difference = other.p - self.p
+        for moon in moons:
+            if moon == self:
+                continue
+            difference = moon.p - self.p
             dv += difference.truncate()
         self.v += dv
+
+    def update_position(self):
         self.p += self.v
 
     def energy(self):

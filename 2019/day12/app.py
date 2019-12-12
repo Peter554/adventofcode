@@ -7,9 +7,10 @@ from moon import Moon
 def run_simulation(raw_data, n_steps):
     moons = [Moon(line) for line in raw_data]
     for i in range(n_steps):
-        copied = copy.deepcopy(moons)
         for moon in moons:
-            moon.update(copied)
+            moon.update_velocity(moons)
+        for moon in moons:
+            moon.update_position()
     return moons
 
 
