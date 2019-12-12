@@ -1,39 +1,7 @@
 import collections
 import re
 
-
-def sign(x):
-    if x > 0:
-        return +1
-    elif x < 0:
-        return -1
-    else:
-        return 0
-
-
-class Coordinate():
-    def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
-
-    def __add__(self, other):
-        x = self.x + other.x
-        y = self.y + other.y
-        z = self.z + other.z
-        return Coordinate(x, y, z)
-
-    def __sub__(self, other):
-        x = self.x - other.x
-        y = self.y - other.y
-        z = self.z - other.z
-        return Coordinate(x, y, z)
-
-    def truncate(self):
-        x = sign(self.x)
-        y = sign(self.y)
-        z = sign(self.z)
-        return Coordinate(x, y, z)
+from coordinate import Coordinate
 
 
 class Moon():
@@ -47,7 +15,7 @@ class Moon():
             if moon == self:
                 continue
             difference = moon.p - self.p
-            dv += difference.truncate()
+            dv += difference.sign()
         self.v += dv
 
     def update_position(self):
