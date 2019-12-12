@@ -2,6 +2,8 @@ import os
 import math
 import functools
 
+# TODO Refactor to use math.gcd
+
 
 def find_best_location(raw_data):
     points = build_points(raw_data)
