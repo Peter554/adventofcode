@@ -54,7 +54,7 @@ class Moon():
         self.p += self.v
 
     def energy(self):
-        return self.potential_energy() + self.kinetic_energy()
+        return self.potential_energy() * self.kinetic_energy()
 
     def potential_energy(self):
         return abs(self.p.x) + abs(self.p.y) + abs(self.p.z)
