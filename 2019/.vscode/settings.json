@@ -3,5 +3,5 @@
   "python.linting.pylintEnabled": false,
   "python.linting.mypyEnabled": true,
   "python.linting.enabled": true,
-  "python.pythonPath": "C:\\Users\\peterb\\.virtualenvs\\adventofcode2019-lHoEdJyC\\Scripts\\python.exe"
+  "python.pythonPath": "/Users/peterb/.local/share/virtualenvs/2019-bqTRz8Uf/bin/python"
 }
