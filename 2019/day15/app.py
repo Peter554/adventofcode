@@ -12,8 +12,8 @@ async def find_oxygen(raw_code):
     asyncio.create_task(computer.run())
     position = (0, 0)
     walls = set()
-    visited = set()
     oxygen = None
+    visited = set()
     while True:
         choice = random.choice([1, 2, 3, 4])
         candidate = update_position(position, choice)
