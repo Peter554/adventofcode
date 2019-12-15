@@ -42,8 +42,7 @@ def get_minutes(walls, oxygen):
     while True:
         start_len = len(s)
         for p in s.copy():
-            candindates = get_cantidates(p)
-            for c in candindates:
+            for c in get_cantidates(p):
                 if not (c in walls):
                     s.add(c)
         if len(s) == start_len:
