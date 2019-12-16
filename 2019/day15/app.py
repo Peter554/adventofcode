@@ -6,49 +6,31 @@ from intcode import IntCode
 
 
 async def find_oxygen(raw_code):
-    input_queue = asyncio.Queue()
-    computer = IntCode(raw_code, input_queue)
-    asyncio.create_task(computer.run())
+    computer = IntCode(raw_code, asyncio.Queue())
+    computer_task = asyncio.create_task(computer.run())
     position = (0, 0)
-    walls = set()
     oxygen = None
-    visited = set()
+    path = set()
+    _walls = set()
     while True:
         choice = random.choice([1, 2, 3, 4])
         candidate = update_position(position, choice)
-        if candidate in walls:
+        if candidate in _walls:
             continue
-        await input_queue.put(choice)
+        await computer.input_queue.put(choice)
         output = await computer.output_queue.get()
-        if not (output in [0, 1, 2]):
-            raise Exception(f'Unexpected output {output}')
+        assert_valid_output(output)
         if output == 0:
-            walls.add(candidate)
+            _walls.add(candidate)
         else:
-            if candidate in visited:
-                visited.remove(position)
+            if candidate in path:
+                path.remove(position)
             position = candidate
-            visited.add(position)
+            path.add(position)
         if output == 2:
             oxygen = position
             break
-    return walls, oxygen, visited
-
-
-def get_minutes(walls, oxygen):
-    s = set()
-    s.add(oxygen)
-    minutes = 0
-    while True:
-        start_len = len(s)
-        for p in s.copy():
-            for c in get_cantidates(p):
-                if not (c in walls):
-                    s.add(c)
-        if len(s) == start_len:
-            break
-        minutes += 1
-    return minutes
+    return oxygen, path
 
 
 def update_position(start, choice):
@@ -64,8 +46,9 @@ def update_position(start, choice):
         raise Exception(f'Choice {choice} not supported')
 
 
-def get_cantidates(p):
-    return ((p[0]+1, p[1]), (p[0]-1, p[1]), (p[0], p[1]+1), (p[0], p[1] - 1))
+def assert_valid_output(output):
+    if not (output in [0, 1, 2]):
+        raise Exception(f'Unexpected output {output}')
 
 
 async def main():
@@ -74,11 +57,8 @@ async def main():
     with open(input_path) as f:
         raw_code = f.readline()
         print('Part 1')
-        walls, oxygen, visited = await find_oxygen(raw_code)
-        print(f'Steps = {len(visited)}')
-        print('Part 2')
-        minutes = get_minutes(walls, oxygen)
-        print(f'Minutes = {minutes}')
+        oxygen, path = await find_oxygen(raw_code)
+        print(f'Steps = {len(path)}')
 
 if __name__ == "__main__":
     asyncio.run(main())
