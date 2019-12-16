@@ -8,5 +8,6 @@ if __name__ == "__main__":
     with open(input_path) as f:
         raw_code = f.readline()
         fft = Fft(raw_code)
+        fft.advance_n(100)
         print('Part 1')
-        print(f'')
+        print(f'{fft.get_state()}')
