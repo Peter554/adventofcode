@@ -9,19 +9,19 @@ async def find_oxygen(raw_code):
     computer = IntCode(raw_code, asyncio.Queue())
     computer_task = asyncio.create_task(computer.run())
     position = (0, 0)
+    walls = set()
     oxygen = None
     path = set()
-    _walls = set()
     while True:
         choice = random.choice([1, 2, 3, 4])
         candidate = update_position(position, choice)
-        if candidate in _walls:
+        if candidate in walls:
             continue
         await computer.input_queue.put(choice)
         output = await computer.output_queue.get()
         assert_valid_output(output)
         if output == 0:
-            _walls.add(candidate)
+            walls.add(candidate)
         else:
             if candidate in path:
                 path.remove(position)
