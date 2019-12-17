@@ -20,6 +20,10 @@ class IntCode():
             await self._step()
         return self._last_output
 
+    async def stop(self):
+        self._done = True
+        await self.input_queue.put(None)
+
     async def _step(self):
         op_code = self._code[self._location]
         op_type, parameter_modes = self._parse_op_code(op_code)
@@ -93,6 +97,8 @@ class IntCode():
 
     async def _handle_input(self, parameter_modes):
         inpt = await self.input_queue.get()
+        if inpt == None:
+            return
         self._write(inpt, 1, parameter_modes[0])
         self._location += 2
 

@@ -1,54 +1,41 @@
 import os
 import random
 import asyncio
+import matplotlib.pyplot as plt
 
-from intcode import IntCode
+from explorer import Explorer
 
 
-async def find_oxygen(raw_code):
-    computer = IntCode(raw_code, asyncio.Queue())
-    computer_task = asyncio.create_task(computer.run())
-    position = (0, 0)
-    walls = set()
-    oxygen = None
-    path = set()
+def find_shortest_path_to_oxygen(paths, oxygen):
+    paths = tuple(p for p in paths if oxygen in p)
+    path_lengths = tuple(p.index(oxygen) for p in paths)
+    return min(path_lengths)
+
+
+def find_minutes_to_fill(walls, oxygen):
+    visited = set([oxygen])
+    minutes = 0
     while True:
-        choice = random.choice([1, 2, 3, 4])
-        candidate = update_position(position, choice)
-        if candidate in walls:
-            continue
-        await computer.input_queue.put(choice)
-        output = await computer.output_queue.get()
-        assert_valid_output(output)
-        if output == 0:
-            walls.add(candidate)
-        else:
-            if candidate in path:
-                path.remove(position)
-            position = candidate
-            path.add(position)
-        if output == 2:
-            oxygen = position
+        start_len = len(visited)
+        for p in visited.copy():
+            neighbors = get_neighbors(p, walls)
+            for n in neighbors:
+                visited.add(n)
+        if len(visited) == start_len:
             break
-    return oxygen, path
+        minutes += 1
+    return minutes
 
 
-def update_position(start, choice):
-    if choice == 1:
-        return (start[0] + 1, start[1])
-    elif choice == 2:
-        return (start[0] - 1, start[1])
-    elif choice == 3:
-        return (start[0], start[1] - 1)
-    elif choice == 4:
-        return (start[0], start[1] + 1)
-    else:
-        raise Exception(f'Choice {choice} not supported')
+def get_neighbors(p, walls):
+    out = [
+        (p[0]+1, p[1]),
+        (p[0]-1, p[1]),
+        (p[0], p[1]+1),
+        (p[0], p[1]-1),
+    ]
 
-
-def assert_valid_output(output):
-    if not (output in [0, 1, 2]):
-        raise Exception(f'Unexpected output {output}')
+    return [o for o in out if o not in walls]
 
 
 async def main():
@@ -57,8 +44,11 @@ async def main():
     with open(input_path) as f:
         raw_code = f.readline()
         print('Part 1')
-        oxygen, path = await find_oxygen(raw_code)
-        print(f'Steps = {len(path)}')
+        explorer = Explorer(raw_code)
+        paths, oxygen, walls = await explorer.explore()
+        print(f'Steps = {find_shortest_path_to_oxygen(paths, oxygen)}')
+        print('Part 2')
+        print(f'Minutes = {find_minutes_to_fill(walls, oxygen)}')
 
 if __name__ == "__main__":
     asyncio.run(main())
