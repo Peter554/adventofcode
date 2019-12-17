@@ -21,9 +21,9 @@ def find_minutes_to_fill(walls, oxygen):
             neighbors = get_neighbors(p, walls)
             for n in neighbors:
                 visited.add(n)
-        minutes += 1
         if len(visited) == start_len:
             break
+        minutes += 1
     return minutes
 
 
