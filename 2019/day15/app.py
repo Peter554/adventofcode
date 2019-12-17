@@ -3,6 +3,7 @@ import random
 import asyncio
 
 from intcode import IntCode
+from explorer import Explorer
 
 
 async def find_oxygen(raw_code):
@@ -56,9 +57,12 @@ async def main():
     input_path = os.path.join(this_dir, 'input.txt')
     with open(input_path) as f:
         raw_code = f.readline()
-        print('Part 1')
-        oxygen, path = await find_oxygen(raw_code)
-        print(f'Steps = {len(path)}')
+        # print('Part 1')
+        # oxygen, path = await find_oxygen(raw_code)
+        # print(f'Steps = {len(path)}')
+        print('Part 2')
+        explorer = Explorer(raw_code)
+        await explorer.explore()
 
 if __name__ == "__main__":
     asyncio.run(main())
