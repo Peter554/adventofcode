@@ -25,7 +25,7 @@ class Nat():
             try:
                 inpt = await asyncio.wait_for(self._q.get(), 1)
             except asyncio.TimeoutError:
-                break
+                continue
             self._packet = inpt
 
     async def _deliver(self):
@@ -35,7 +35,7 @@ class Nat():
                 if (self._last_sent is not None) and self._last_sent[1] == self._packet[1]:
                     print(f'NAT repeated Y value = {self._packet[1]}')
                     self.stop()
-                    break
+                    continue
                 self._last_sent = self._packet
                 self._computers[0].input_queue.put_nowait(self._packet[0])
                 self._computers[0].input_queue.put_nowait(self._packet[1])
@@ -60,7 +60,7 @@ class PacketHandler():
             try:
                 packet.append(await asyncio.wait_for(computer.output_queue.get(), 1))
             except asyncio.TimeoutError:
-                break
+                continue
             if len(packet) == 3:
                 target_idx = packet[0]
                 if target_idx < len(computers):
