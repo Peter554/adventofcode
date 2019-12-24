@@ -20,9 +20,9 @@ class IntCode():
             await self._step()
         return self._last_output
 
-    async def stop(self):
+    def stop(self):
         self._done = True
-        await self.input_queue.put(None)
+        self.input_queue.put_nowait(None)
 
     async def _step(self):
         op_code = self._code[self._location]

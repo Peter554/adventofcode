@@ -9,7 +9,6 @@ async def main():
     input_path = os.path.join(this_dir, 'input.txt')
     with open(input_path) as f:
         raw_code = f.readline()
-        print('Part 1')
         e = Ensemble(raw_code)
         await e.run()
 
