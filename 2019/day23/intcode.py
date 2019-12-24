@@ -96,10 +96,10 @@ class IntCode():
         self._location += 4
 
     async def _handle_input(self, parameter_modes):
-        await asyncio.sleep(0.01)
         try:
             inpt = self.input_queue.get_nowait()
         except asyncio.QueueEmpty:
+            await asyncio.sleep(0.01)
             inpt = -1
         if inpt == None:
             return
