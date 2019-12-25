@@ -1,26 +1,25 @@
 import copy
-import asyncio
 
 from large_array import LargeArray
 
 
 class IntCode():
-    def __init__(self, raw_code, input_queue=None):
+    def __init__(self, raw_code, handle_input, handle_output):
         self._original_code = [int(x) for x in raw_code.strip().split(',')]
-        self.input_queue = input_queue
-        self.output_queue = asyncio.Queue()
+        self._get_input = handle_input
+        self._push_output = handle_output
 
-    async def run(self):
+    def run(self):
         self._code = LargeArray(self._original_code)
         self._location = 0
         self._relative_base = 0
         self._last_output = None
         self._done = False
         while not self._done:
-            await self._step()
+            self._step()
         return self._last_output
 
-    async def _step(self):
+    def _step(self):
         op_code = self._code[self._location]
         op_type, parameter_modes = self._parse_op_code(op_code)
         if (op_type == 1):
@@ -28,9 +27,9 @@ class IntCode():
         elif (op_type == 2):
             self._handle_mulitply(parameter_modes)
         elif (op_type == 3):
-            await self._handle_input(parameter_modes)
+            self._handle_input(parameter_modes)
         elif (op_type == 4):
-            await self._handle_output(parameter_modes)
+            self._handle_output(parameter_modes)
         elif (op_type == 5):
             self._handle_jump_if_true(parameter_modes)
         elif (op_type == 6):
@@ -91,15 +90,15 @@ class IntCode():
         self._write(left * right, 3, parameter_modes[2])
         self._location += 4
 
-    async def _handle_input(self, parameter_modes):
-        inpt = await self.input_queue.get()
+    def _handle_input(self, parameter_modes):
+        inpt = self._get_input()
         self._write(inpt, 1, parameter_modes[0])
         self._location += 2
 
-    async def _handle_output(self, parameter_modes):
+    def _handle_output(self, parameter_modes):
         value = self._get_parameter(1, parameter_modes[0])
         self._last_output = value
-        await self.output_queue.put(value)
+        self._push_output(value)
         self._location += 2
 
     def _handle_jump_if_true(self, parameter_modes):
