@@ -41,12 +41,12 @@ class Nat():
                 self._computers[0].input_queue.put_nowait(self._packet[1])
 
     async def _idle(self):
-        await asyncio.sleep(0.01)
-        empty = all([c.input_queue.empty() for c in self._computers])
-        if not empty:
-            return False
-        await asyncio.sleep(0.01)
-        return all([c.input_queue.empty() for c in self._computers])
+        for _ in range(5):
+            await asyncio.sleep(0.01)
+            empty = all([c.input_queue.empty() for c in self._computers])
+            if not empty:
+                return False
+        return True
 
 
 class PacketHandler():
