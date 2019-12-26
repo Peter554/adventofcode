@@ -18,14 +18,14 @@ class Program():
         self._d = {}
         self._computer.run()
         self._draw(self._d)
-        print(f'Dust = {self._dust_count}')
+        print(f'\nDust = {self._dust_count}\n')
 
     def _init_inputs(self):
         raw = [
             ['A', 'B', 'C'],
-            ['R', '8', 'R', '8'],
-            ['R', '8', 'R', '8'],
-            ['R', '8', 'R', '8'],
+            ['R', '8', '4'],
+            ['L', '8'],
+            ['R', '8'],
             ['n']
         ]
         out = []
@@ -46,7 +46,7 @@ class Program():
             self._dust_count = value
             return
         if value == 10:
-            self._y += 1
+            self._y -= 1
             self._x = 0
         else:
             self._d[(self._x, self._y)] = value
