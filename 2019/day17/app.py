@@ -14,6 +14,7 @@ class Program():
         self._y = 0
         self._d = {}
         self._computer.run()
+        self._draw()
         alignment = self._get_alignment()
         print(f'Alignment = {alignment}')
 
@@ -29,7 +30,7 @@ class Program():
             self._x += 1
 
     def _draw(self):
-        key = {35: '#', 46: '.'}
+        key = {i: str(chr(i)) for i in range(127)}
         drawer = ConsoleDrawer(key)
         drawer.draw(self._d)
 
