@@ -30,7 +30,7 @@ class Program():
             self._x += 1
 
     def _draw(self):
-        key = {i: str(chr(i)) for i in range(127)}
+        key = {i: str(chr(i)) for i in range(128)}
         drawer = ConsoleDrawer(key)
         drawer.draw(self._d)
 
