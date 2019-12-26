@@ -23,15 +23,19 @@ class Program():
     def _init_inputs(self):
         raw = [
             ['A', 'B', 'C'],
-            ['R', '8', '4'],
-            ['L', '8'],
-            ['R', '8'],
+            ['R', 12, 'L', 8, 'R', 12],
+            ['0'],
+            ['0'],
             ['n']
         ]
         out = []
         for row in raw:
             for s in row:
-                out.append(ord(s))
+                if isinstance(s, int):
+                    for o in str(s):
+                        out.append(ord(o))
+                else:
+                    out.append(ord(s))
                 out.append(ord(','))
             out.pop()
             out.append(ord('\n'))
