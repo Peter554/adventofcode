@@ -17,7 +17,7 @@ class Program():
         self._y = 0
         self._d = {}
         self._computer.run()
-        self._draw()
+        self._draw(self._d)
         print(f'Dust = {self._dust_count}')
 
     def _init_inputs(self):
@@ -52,10 +52,10 @@ class Program():
             self._d[(self._x, self._y)] = value
             self._x += 1
 
-    def _draw(self):
+    def _draw(self, d):
         key = {i: str(chr(i)) for i in range(128)}
         drawer = ConsoleDrawer(key)
-        drawer.draw(self._d)
+        drawer.draw(d)
 
     def _get_alignment(self):
         out = 0
