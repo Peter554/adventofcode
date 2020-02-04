@@ -11,16 +11,31 @@ import (
 func main() {
 	lines := common.Readlines("./input.txt")
 	points := getPoints(lines)
+
 	box := getBox(points)
-	dict := getInitialDict(points)
+	areaCounts := getZeroedDict(points)
+
 	for i := box.bottomLeft.x; i <= box.bottomLeft.x+box.width; i++ {
 		for j := box.bottomLeft.y; j <= box.bottomLeft.y+box.height; j++ {
 			t := Point{x: i, y: j}
+			closestPoint := points[0]
+			minDistance := box.width + box.height
+			distances := make([]int, 0)
 			for _, p := range points {
-				d := getDistance(t, p)
+				distance := getDistance(t, p)
+				if distance < minDistance {
+					closestPoint = p
+					minDistance = distance
+				}
+				distances = append(distances, distance)
+			}
+			if count(distances, minDistance) == 1 {
+				areaCounts[closestPoint]++
 			}
 		}
 	}
+
+	println(getMaxValue(areaCounts))
 }
 
 type Point struct {
@@ -85,10 +100,39 @@ func abs(i int) int {
 	return int(math.Abs(float64(i)))
 }
 
-func getInitialDict(points []Point) map[Point]int {
+func contains(a []Point, b Point) bool {
+	for i := 0; i < len(a); i++ {
+		if a[i] == b {
+			return true
+		}
+	}
+	return false
+}
+
+func getZeroedDict(points []Point) map[Point]int {
 	m := make(map[Point]int)
 	for _, p := range points {
 		m[p] = 0
 	}
 	return m
+}
+
+func count(a []int, b int) int {
+	o := 0
+	for i := 0; i < len(a); i++ {
+		if a[i] == b {
+			o++
+		}
+	}
+	return o
+}
+
+func getMaxValue(d map[Point]int) int {
+	o := -1
+	for _, v := range d {
+		if v > o {
+			o = v
+		}
+	}
+	return o
 }
