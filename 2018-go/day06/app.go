@@ -3,6 +3,7 @@ package main
 import (
 	"math"
 	"regexp"
+	"sort"
 	"strconv"
 
 	"github.com/peter554/adventofcode/2018-go/common"
@@ -10,11 +11,11 @@ import (
 
 func main() {
 	lines := common.Readlines("./input.txt")
+
 	points := getPoints(lines)
-
 	box := getBox(points)
-	areaCounts := getZeroedDict(points)
 
+	areaCounts := getZeroedDict(points)
 	for i := box.bottomLeft.x; i <= box.bottomLeft.x+box.width; i++ {
 		for j := box.bottomLeft.y; j <= box.bottomLeft.y+box.height; j++ {
 			t := Point{x: i, y: j}
@@ -34,8 +35,24 @@ func main() {
 			}
 		}
 	}
-
 	println(getMaxValue(areaCounts))
+
+	d := make(map[Point]int)
+	for i := box.bottomLeft.x; i <= box.bottomLeft.x+box.width; i++ {
+		for j := box.bottomLeft.y; j <= box.bottomLeft.y+box.height; j++ {
+			t := Point{x: i, y: j}
+			d[t] = 0
+			for _, p := range points {
+				d[t] += getDistance(t, p)
+			}
+		}
+	}
+	ds := getValues(d)
+	sort.Ints(ds)
+	cs := cumSum(ds)
+	println(len(filter(cs, func(i int) bool {
+		return i < 10000
+	})))
 }
 
 type Point struct {
@@ -132,6 +149,34 @@ func getMaxValue(d map[Point]int) int {
 	for _, v := range d {
 		if v > o {
 			o = v
+		}
+	}
+	return o
+}
+
+func getValues(d map[Point]int) []int {
+	o := make([]int, 0)
+	for _, v := range d {
+		o = append(o, v)
+	}
+	return o
+}
+
+func cumSum(a []int) []int {
+	o := make([]int, 0)
+	sum := 0
+	for _, v := range a {
+		sum += v
+		o = append(o, v)
+	}
+	return o
+}
+
+func filter(a []int, f func(int) bool) []int {
+	o := make([]int, 0)
+	for _, v := range a {
+		if f(v) {
+			o = append(o, v)
 		}
 	}
 	return o
