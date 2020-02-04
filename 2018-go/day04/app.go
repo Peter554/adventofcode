@@ -44,14 +44,19 @@ func main() {
 		}
 	}
 
-	mostSleepyId := counter.FindMostSleepy()
+	mostSleepyId := counter.FindMostSleepy1()
 	mostSleepyMinute := counter.FindMostSleepyMinute(mostSleepyId)
+	println(mostSleepyId * mostSleepyMinute)
+
+	mostSleepyId = counter.FindMostSleepy2()
+	mostSleepyMinute = counter.FindMostSleepyMinute(mostSleepyId)
 	println(mostSleepyId * mostSleepyMinute)
 }
 
 type SleepCounter interface {
 	Sleep(id int, from int, to int)
-	FindMostSleepy() int
+	FindMostSleepy1() int
+	FindMostSleepy2() int
 	FindMostSleepyMinute(id int) int
 }
 
@@ -71,7 +76,7 @@ func (o *basicSleepCounter) Sleep(id int, from int, to int) {
 	}
 }
 
-func (o *basicSleepCounter) FindMostSleepy() int {
+func (o *basicSleepCounter) FindMostSleepy1() int {
 	i := -1
 	vMax := -1
 	for k, slice := range o.data {
@@ -84,9 +89,23 @@ func (o *basicSleepCounter) FindMostSleepy() int {
 	return i
 }
 
+func (o *basicSleepCounter) FindMostSleepy2() int {
+	i := -1
+	vMax := -1
+	for k, slice := range o.data {
+		_, v := o.max(slice)
+		if v > vMax {
+			vMax = v
+			i = k
+		}
+	}
+	return i
+}
+
 func (o *basicSleepCounter) FindMostSleepyMinute(id int) int {
 	slice := o.get(id)
-	return o.idxMax(slice)
+	idx, _ := o.max(slice)
+	return idx
 }
 
 func (o *basicSleepCounter) get(id int) []int {
@@ -104,7 +123,7 @@ func (o *basicSleepCounter) sum(ints []int) int {
 	return total
 }
 
-func (o *basicSleepCounter) idxMax(ints []int) int {
+func (o *basicSleepCounter) max(ints []int) (int, int) {
 	i := -1
 	vMax := -1
 	for idx, v := range ints {
@@ -113,7 +132,7 @@ func (o *basicSleepCounter) idxMax(ints []int) int {
 			i = idx
 		}
 	}
-	return i
+	return i, vMax
 }
 
 func isGuardLine(line string) (bool, error) {
