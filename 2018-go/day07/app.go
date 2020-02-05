@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"sort"
+	"strings"
 
 	"github.com/peter554/adventofcode/2018-go/common"
 )
@@ -15,7 +16,41 @@ func main() {
 	for _, line := range lines {
 		steps.AddDependency(getDependency(line))
 	}
-	fmt.Println(steps.GetOrder())
+
+	fmt.Println(strings.Join(steps.GetOrder(), ""))
+
+	inProgress := make([]string, 0)
+	completed := make([]string, 0)
+	workers := [5]Worker{NewWorker(), NewWorker(), NewWorker(), NewWorker(), NewWorker()}
+	time := 0
+	for {
+		if steps.IsDone(completed) {
+			break
+		}
+
+		availableJobs := steps.GetAvailableJobs(inProgress, completed)
+		for _, job := range availableJobs {
+			for _, w := range workers {
+				if w.IsAvailable() {
+					w.Accept(job)
+					inProgress = append(inProgress, job)
+					break
+				}
+			}
+		}
+
+		for _, w := range workers {
+			done := w.Tick()
+			if done != "none" {
+				inProgress = filter(inProgress, func(s string) bool {
+					return s != done
+				})
+				completed = append(completed, done)
+			}
+		}
+		time++
+	}
+	fmt.Println(time)
 }
 
 type Dependency struct {
@@ -26,6 +61,8 @@ type Dependency struct {
 type Steps interface {
 	AddDependency(dependency Dependency)
 	GetOrder() []string
+	IsDone(completed []string) bool
+	GetAvailableJobs(inProgress []string, completed []string) []string
 }
 
 func NewSteps() Steps {
@@ -53,13 +90,43 @@ func (a *basicSteps) GetOrder() []string {
 	clone := a.cloneState()
 	for {
 		next := a.getNext(clone)
-		if next == "done" {
+		if next == "none" {
 			break
 		}
 		o = append(o, next)
 		clone = a.removeStep(clone, next)
 	}
 	return o
+}
+
+func (a *basicSteps) IsDone(completed []string) bool {
+	clone := a.cloneState()
+	for _, v := range completed {
+		clone = a.removeStep(clone, v)
+	}
+	keyCount := 0
+	for range clone {
+		keyCount++
+	}
+	return keyCount == 0
+}
+
+func (a *basicSteps) GetAvailableJobs(inProgress []string, completed []string) []string {
+	clone := a.cloneState()
+	for _, v := range inProgress {
+		clone = a.removeKey(clone, v)
+	}
+	for _, v := range completed {
+		clone = a.removeStep(clone, v)
+	}
+	keys := make([]string, 0)
+	for k, v := range clone {
+		if len(v) == 0 {
+			keys = append(keys, k)
+		}
+	}
+	sort.Strings(keys)
+	return keys
 }
 
 func (a *basicSteps) cloneState() map[string][]string {
@@ -86,10 +153,15 @@ func (*basicSteps) getNext(state map[string][]string) string {
 		}
 	}
 	if len(o) == 0 {
-		return "done"
+		return "none"
 	}
 	sort.Strings(o)
 	return o[0]
+}
+
+func (*basicSteps) removeKey(state map[string][]string, step string) map[string][]string {
+	delete(state, step)
+	return state
 }
 
 func (*basicSteps) removeStep(state map[string][]string, step string) map[string][]string {
@@ -119,4 +191,38 @@ func filter(a []string, f func(string) bool) []string {
 		}
 	}
 	return o
+}
+
+type Worker interface {
+	IsAvailable() bool
+	Accept(job string)
+	Tick() string
+}
+
+func NewWorker() Worker {
+	return &worker{counter: 0, currentJob: "none"}
+}
+
+type worker struct {
+	counter    int
+	currentJob string
+}
+
+func (o *worker) IsAvailable() bool {
+	return o.counter <= 0
+}
+
+func (o *worker) Accept(job string) {
+	o.counter = int(job[0]) - 64 + 60
+	o.currentJob = job
+}
+
+func (o *worker) Tick() string {
+	o.counter--
+	if o.counter == 0 {
+		completedJob := o.currentJob
+		o.currentJob = "none"
+		return completedJob
+	}
+	return "none"
 }
