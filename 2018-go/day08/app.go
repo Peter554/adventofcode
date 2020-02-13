@@ -13,6 +13,7 @@ func main() {
 	ints := processLines(lines)
 	tree, _ := readNode(ints, nil)
 	fmt.Println(sumMeta(tree))
+	fmt.Println(getValue(tree))
 }
 
 func processLines(lines []string) []int {
@@ -66,6 +67,23 @@ func sumMeta(node *Node) int {
 	}
 	for _, child := range node.Children {
 		o += sumMeta(child)
+	}
+	return o
+}
+
+func getValue(node *Node) int {
+	o := 0
+	if len(node.Children) == 0 {
+		for _, meta := range node.Metadata {
+			o += meta
+		}
+	} else {
+		for _, meta := range node.Metadata {
+			childIdx := meta - 1
+			if childIdx >= 0 && childIdx < len(node.Children) {
+				o += getValue(node.Children[childIdx])
+			}
+		}
 	}
 	return o
 }
