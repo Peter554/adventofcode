@@ -23,6 +23,7 @@ func NewPointCloud(lines []string) PointCloud {
 	}
 	return &pointCloud{
 		points: points,
+		time:   0,
 	}
 }
 
