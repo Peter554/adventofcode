@@ -6,28 +6,45 @@ import (
 
 func main() {
 	nPlayers := 446
-	lastMarble := 71522
-	topPlayer, highScore := runMarbleGame(nPlayers, lastMarble)
+	lastMarbleValue := 71522
+
+	topPlayer, highScore := runMarbleGame(nPlayers, lastMarbleValue)
+	fmt.Printf("Highscore: Player %v scored %v\n", topPlayer, highScore)
+
+	topPlayer, highScore = runMarbleGame(nPlayers, lastMarbleValue*100)
 	fmt.Printf("Highscore: Player %v scored %v\n", topPlayer, highScore)
 }
 
-func runMarbleGame(nPlayers int, lastMarble int) (int, int) {
+func runMarbleGame(nPlayers int, lastMarbleValue int) (int, int) {
 	scoreCounter := NewScoreCounter()
-	marbles := []int{0}
-	currentIdx := 0
-	for marble := 1; marble <= lastMarble; marble++ {
-		currentPlayer := (marble-1)%nPlayers + 1
-		if marble%23 == 0 {
-			removeIdx := (currentIdx - 7 + len(marbles)) % len(marbles)
-			scoreCounter.IncrementScore(currentPlayer, marble)
-			scoreCounter.IncrementScore(currentPlayer, marbles[removeIdx])
-			marbles = append(marbles[:removeIdx], marbles[removeIdx+1:]...)
-			currentIdx = removeIdx
+	currentMarble := &node{value: 0}
+	currentMarble.previous = currentMarble
+	currentMarble.next = currentMarble
+	for marbleValue := 1; marbleValue <= lastMarbleValue; marbleValue++ {
+		currentPlayer := (marbleValue-1)%nPlayers + 1
+		if marbleValue%23 == 0 {
+			removeMarble := currentMarble.previous.previous.previous.previous.previous.previous.previous
+			scoreCounter.IncrementScore(currentPlayer, marbleValue)
+			scoreCounter.IncrementScore(currentPlayer, removeMarble.value)
+			connectNodes(removeMarble.previous, removeMarble.next)
+			currentMarble = removeMarble.next
 		} else {
-			insertIdx := (currentIdx + 2) % len(marbles)
-			marbles = append(marbles[:insertIdx], append([]int{marble}, marbles[insertIdx:]...)...)
-			currentIdx = insertIdx
+			addMarble := &node{value: marbleValue}
+			connectNodes(addMarble, currentMarble.next.next)
+			connectNodes(currentMarble.next, addMarble)
+			currentMarble = addMarble
 		}
 	}
 	return scoreCounter.GetHighscore()
+}
+
+type node struct {
+	previous *node
+	next     *node
+	value    int
+}
+
+func connectNodes(from *node, to *node) {
+	from.next = to
+	to.previous = from
 }
