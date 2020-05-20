@@ -21,32 +21,47 @@ func getCellFuelLevel(x int, y int, offset int) int {
 	return o
 }
 
-func getGridFuelLevel(x int, y int, offset int) int {
+func getGridFuelLevel(x int, y int, gridSize int, offset int) int {
 	t := 0
-	for i := x; i < x+3; i++ {
-		for j := y; j < y+3; j++ {
+	for i := x; i < x+gridSize; i++ {
+		for j := y; j < y+gridSize; j++ {
 			t += getCellFuelLevel(i, j, offset)
 		}
 	}
 	return t
 }
 
-func main() {
-	offset := 9221
+func findMaxFuelGrid(gridSize int, offset int) (int, int, int) {
+	maxFuel := getGridFuelLevel(1, 1, gridSize, offset)
 	maxX := 1
 	maxY := 1
-	maxFuel := getGridFuelLevel(maxX, maxY, offset)
-
-	for i := 1; i <= 300; i++ {
-		for j := 1; j <= 300; j++ {
-			fuel := getGridFuelLevel(i, j, offset)
+	for x := 1; x <= 300-gridSize; x++ {
+		for y := 1; y <= 300-gridSize; y++ {
+			fuel := getGridFuelLevel(x, y, gridSize, offset)
 			if fuel > maxFuel {
-				maxX = i
-				maxY = j
+				maxX = x
+				maxY = y
 				maxFuel = fuel
 			}
 		}
 	}
+	return maxFuel, maxX, maxY
+}
 
-	fmt.Printf("(%d, %d)\n", maxX, maxY)
+func main() {
+	offset := 9221
+	maxFuel := getGridFuelLevel(1, 1, 1, offset)
+	maxSize := 1
+	maxX := 1
+	maxY := 1
+	for size := 1; size <= 300; size++ {
+		fuel, x, y := findMaxFuelGrid(size, offset)
+		if fuel > maxFuel {
+			maxFuel = fuel
+			maxX = x
+			maxY = y
+			maxSize = size
+		}
+	}
+	fmt.Printf("(%d, %d, %d)\n", maxX, maxY, maxSize)
 }
