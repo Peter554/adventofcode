@@ -28,19 +28,29 @@ func main() {
 		}
 	}
 
-	for g := 0; g < 20; g++ {
+	gMax := 1000000
+	logAt := 10000
+	for g := 0; g < gMax; g++ {
+		if g%logAt == 0 {
+			percentDone := (float64(g) / float64(gMax) * 100)
+			fmt.Printf("g = %d\n", g)
+			fmt.Printf("%f percent done\n", percentDone)
+			fmt.Printf("sum is %d\n\n", state.Sum())
+		}
 		nextState := newIntSet()
-		for i := state.Min() - 2; i <= state.Max()+2; i++ {
-			pattern := ""
-			for j := i - 2; j <= i+2; j++ {
-				if state.Contains(j) {
-					pattern += "#"
-				} else {
-					pattern += "."
+		for _, v := range state.Values() {
+			for i := v - 2; i <= v+2; i++ {
+				pattern := ""
+				for j := i - 2; j <= i+2; j++ {
+					if state.Contains(j) {
+						pattern += "#"
+					} else {
+						pattern += "."
+					}
 				}
-			}
-			if rules[pattern] {
-				nextState.Add(i)
+				if rules[pattern] {
+					nextState.Add(i)
+				}
 			}
 		}
 		state = nextState
@@ -55,6 +65,7 @@ type IntSet interface {
 	Min() int
 	Max() int
 	Sum() int
+	Values() []int
 }
 
 func newIntSet() IntSet {
@@ -102,6 +113,14 @@ func (s *intSet) Sum() int {
 	o := 0
 	for k, _ := range s.data {
 		o += k
+	}
+	return o
+}
+
+func (s *intSet) Values() []int {
+	o := make([]int, 0)
+	for k, _ := range s.data {
+		o = append(o, k)
 	}
 	return o
 }
