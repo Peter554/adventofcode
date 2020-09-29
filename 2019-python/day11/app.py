@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from intcode import IntCode
 
 
-class Robot():
+class Robot:
     def __init__(self, raw_data):
         self.input_queue = asyncio.Queue()
         self.computer = IntCode(raw_data, self.input_queue)
@@ -35,7 +35,7 @@ class Robot():
 
     def _paint(self, color):
         if not (color in [0, 1]):
-            raise Exception(f'Could not paint color {color}')
+            raise Exception(f"Could not paint color {color}")
         if self._current_position in self.painted:
             self.painted[self._current_position].append(color)
         else:
@@ -47,7 +47,7 @@ class Robot():
         elif turn == 1:
             next_direction = (self._current_direction + 1) % 4
         else:
-            raise Exception(f'Turn type {turn} not supported')
+            raise Exception(f"Turn type {turn} not supported")
         if next_direction == 0:
             dx, dy = 0, 1
         elif next_direction == 1:
@@ -57,10 +57,8 @@ class Robot():
         elif next_direction == 3:
             dx, dy = -1, 0
         else:
-            raise Exception(
-                f'Could not handle next direction {next_direction}')
-        next_position = (
-            self._current_position[0] + dx, self._current_position[1] + dy)
+            raise Exception(f"Could not handle next direction {next_direction}")
+        next_position = (self._current_position[0] + dx, self._current_position[1] + dy)
         self._current_direction = next_direction
         self._current_position = next_position
 
@@ -72,20 +70,21 @@ def get_white_points(painted):
 
 async def main():
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    input_path = os.path.join(this_dir, 'input.txt')
+    input_path = os.path.join(this_dir, "input.txt")
 
     with open(input_path) as f:
         raw_data = f.readline()
         robot = Robot(raw_data)
-        print('Part 1')
+        print("Part 1")
         await robot.run()
-        print(f'# panels painted at least once = {len(robot.painted.keys())}')
-        print('Part 2')
+        print(f"# panels painted at least once = {len(robot.painted.keys())}")
+        print("Part 2")
         await robot.run(1)
         white_points = get_white_points(robot.painted)
         plt.scatter([v[0] for v in white_points], [v[1] for v in white_points])
         plt.show()
         # LRZECGFE
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     asyncio.run(main())

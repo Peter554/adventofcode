@@ -5,7 +5,7 @@ import functools
 
 def build_layers(raw_data, width, height):
     size = width * height
-    layers = [raw_data[i:i+size] for i in range(0, len(raw_data), size)]
+    layers = [raw_data[i : i + size] for i in range(0, len(raw_data), size)]
     return [[int(x) for x in layer] for layer in layers]
 
 
@@ -21,7 +21,7 @@ def apply_layer(img, layer):
 def decode(raw_data, width, height):
     layers = build_layers(raw_data, width, height)
     img = functools.reduce(apply_layer, layers)
-    return [img[i:i+width] for i in range(0, len(img), width)]
+    return [img[i : i + width] for i in range(0, len(img), width)]
 
 
 if __name__ == "__main__":
@@ -34,6 +34,7 @@ if __name__ == "__main__":
 
         def count_zeros(layer):
             return len([x for x in layer if x == 0])
+
         zeros_per_layer = [count_zeros(layer) for layer in layers]
         idx = zeros_per_layer.index(min(zeros_per_layer))
         ones = len([x for x in layers[idx] if x == 1])

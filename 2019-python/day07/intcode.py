@@ -2,10 +2,9 @@ import copy
 import queue
 
 
-class IntCode():
+class IntCode:
     def __init__(self, raw_code, input_queue=None):
-        self._original_code = \
-            list(map(lambda x: int(x), raw_code.strip().split(',')))
+        self._original_code = list(map(lambda x: int(x), raw_code.strip().split(",")))
         self.input_queue = input_queue
         self.output_queue = queue.SimpleQueue()
 
@@ -24,40 +23,40 @@ class IntCode():
         op = self._code[self._location]
         op_type = self._get_op_type(op)
 
-        if (op_type == 1):
+        if op_type == 1:
             parameter_modes = self._get_parameter_modes(op, 2)
             parameters = self._get_parameters(parameter_modes)
             self._handle_add(parameters)
-        elif (op_type == 2):
+        elif op_type == 2:
             parameter_modes = self._get_parameter_modes(op, 2)
             parameters = self._get_parameters(parameter_modes)
             self._handle_mulitply(parameters)
-        elif (op_type == 3):
+        elif op_type == 3:
             self._handle_input()
-        elif (op_type == 4):
+        elif op_type == 4:
             parameter_modes = self._get_parameter_modes(op, 1)
             parameters = self._get_parameters(parameter_modes)
             self._handle_output(parameters)
-        elif (op_type == 5):
+        elif op_type == 5:
             parameter_modes = self._get_parameter_modes(op, 2)
             parameters = self._get_parameters(parameter_modes)
             self._handle_jump_if_true(parameters)
-        elif (op_type == 6):
+        elif op_type == 6:
             parameter_modes = self._get_parameter_modes(op, 2)
             parameters = self._get_parameters(parameter_modes)
             self._handle_jump_if_false(parameters)
-        elif (op_type == 7):
+        elif op_type == 7:
             parameter_modes = self._get_parameter_modes(op, 2)
             parameters = self._get_parameters(parameter_modes)
             self._handle_less_than(parameters)
-        elif (op_type == 8):
+        elif op_type == 8:
             parameter_modes = self._get_parameter_modes(op, 2)
             parameters = self._get_parameters(parameter_modes)
             self._handle_equal(parameters)
-        elif (op_type == 99):
+        elif op_type == 99:
             self._done = True
         else:
-            msg = 'Operation of type {} not supported'.format(op_type)
+            msg = "Operation of type {} not supported".format(op_type)
             raise Exception(msg)
 
     def _get_op_type(self, op):

@@ -1,7 +1,7 @@
 import os
 
 
-class Node():
+class Node:
     def __init__(self, name, parent):
         self.name = name
         self.parent = parent
@@ -25,7 +25,7 @@ def build_children(node, all_orbits):
 def count_node_orbits(node):
     active_node = node
     orbits = 0
-    while (active_node.parent is not None):
+    while active_node.parent is not None:
         orbits += 1
         active_node = active_node.parent
     return orbits
@@ -61,22 +61,22 @@ def get_parent_list(node):
 
 if __name__ == "__main__":
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    input_path = os.path.join(this_dir, 'input.txt')
+    input_path = os.path.join(this_dir, "input.txt")
 
     with open(input_path) as f:
         lines = f.readlines()
         lines = list(map(lambda line: line.strip(), lines))
         all_orbits = list(map(lambda line: (line[0:3], line[4:]), lines))
 
-        tree = Node('COM', None)
+        tree = Node("COM", None)
 
         build_children(tree, all_orbits)
 
-        print('Part 1')
-        print('Total orbits = {}'.format(count_tree_orbits(tree)))
+        print("Part 1")
+        print("Total orbits = {}".format(count_tree_orbits(tree)))
 
-        santa = find_node(tree, 'SAN')
-        me = find_node(tree, 'YOU')
+        santa = find_node(tree, "SAN")
+        me = find_node(tree, "YOU")
 
         santas_parents = get_parent_list(santa)
         my_parents = get_parent_list(me)
@@ -84,8 +84,9 @@ if __name__ == "__main__":
         common = [node for node in santas_parents if node in my_parents]
         first_common = common[0]
 
-        shortest_path_length = \
-            santas_parents.index(first_common) + my_parents.index(first_common)
+        shortest_path_length = santas_parents.index(first_common) + my_parents.index(
+            first_common
+        )
 
-        print('Part 2')
-        print('Shortest path length = {}'.format(shortest_path_length))
+        print("Part 2")
+        print("Shortest path length = {}".format(shortest_path_length))

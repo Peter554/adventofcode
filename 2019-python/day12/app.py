@@ -15,9 +15,9 @@ def run_simulation(raw_data, n_steps):
 
 def find_period(raw_data):
     moons = [Moon(line) for line in raw_data]
-    x_calculator = MoonsPeriodCalculator(lambda m: f'{m.p.x}:{m.v.x}', moons)
-    y_calculator = MoonsPeriodCalculator(lambda m: f'{m.p.y}:{m.v.y}', moons)
-    z_calculator = MoonsPeriodCalculator(lambda m: f'{m.p.z}:{m.v.z}', moons)
+    x_calculator = MoonsPeriodCalculator(lambda m: f"{m.p.x}:{m.v.x}", moons)
+    y_calculator = MoonsPeriodCalculator(lambda m: f"{m.p.y}:{m.v.y}", moons)
+    z_calculator = MoonsPeriodCalculator(lambda m: f"{m.p.z}:{m.v.z}", moons)
     x_period = None
     y_period = None
     z_period = None
@@ -38,14 +38,14 @@ def step(moons):
         moon.update_position()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    input_path = os.path.join(this_dir, 'input.txt')
+    input_path = os.path.join(this_dir, "input.txt")
     with open(input_path) as f:
         raw_data = f.readlines()
-        print('Part 1')
+        print("Part 1")
         moons = run_simulation(raw_data, 1000)
-        print(f'Total energy = {sum([m.energy() for m in moons])}')
-        print('Part 2')
+        print(f"Total energy = {sum([m.energy() for m in moons])}")
+        print("Part 2")
         period = find_period(raw_data)
-        print(f'Period = {period}')
+        print(f"Period = {period}")

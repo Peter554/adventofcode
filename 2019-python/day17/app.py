@@ -5,9 +5,9 @@ from intcode import IntCode
 from consoledrawer import ConsoleDrawer
 
 
-class Program():
+class Program:
     def __init__(self, raw_code):
-        raw_code = '2' + raw_code[1:]
+        raw_code = "2" + raw_code[1:]
         self._computer = IntCode(raw_code, self._get_input, self._push_output)
 
     def run(self):
@@ -18,15 +18,15 @@ class Program():
         self._d = {}
         self._computer.run()
         self._draw(self._d)
-        print(f'\nDust = {self._dust_count}\n')
+        print(f"\nDust = {self._dust_count}\n")
 
     def _init_inputs(self):
         raw = [
-            ['A', 'B', 'A', 'B', 'C', 'C', 'B', 'C', 'B', 'A'],
-            ['R', 12, 'L', 8, 'R', 12],
-            ['R', 8, 'R', 6, 'R', 6, 'R', 8],
-            ['R', 8, 'L', 8, 'R', 8, 'R', 4, 'R', 4],
-            ['n']
+            ["A", "B", "A", "B", "C", "C", "B", "C", "B", "A"],
+            ["R", 12, "L", 8, "R", 12],
+            ["R", 8, "R", 6, "R", 6, "R", 8],
+            ["R", 8, "L", 8, "R", 8, "R", 4, "R", 4],
+            ["n"],
         ]
         out = []
         for row in raw:
@@ -36,9 +36,9 @@ class Program():
                         out.append(ord(o))
                 else:
                     out.append(ord(s))
-                out.append(ord(','))
+                out.append(ord(","))
             out.pop()
-            out.append(ord('\n'))
+            out.append(ord("\n"))
         return out
 
     def _get_input(self):
@@ -72,17 +72,19 @@ class Program():
         return out
 
     def _get_neighbors(self, p):
-        return set([
-            (p[0]+1, p[1]),
-            (p[0]-1, p[1]),
-            (p[0], p[1]+1),
-            (p[0], p[1]-1),
-        ])
+        return set(
+            [
+                (p[0] + 1, p[1]),
+                (p[0] - 1, p[1]),
+                (p[0], p[1] + 1),
+                (p[0], p[1] - 1),
+            ]
+        )
 
 
 if __name__ == "__main__":
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    input_path = os.path.join(this_dir, 'input.txt')
+    input_path = os.path.join(this_dir, "input.txt")
     with open(input_path) as f:
         raw_code = f.readline()
         program = Program(raw_code)

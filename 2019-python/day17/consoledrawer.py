@@ -3,9 +3,9 @@ import itertools
 import time
 
 
-class ConsoleDrawer():
+class ConsoleDrawer:
     def __init__(self, key):
-        self._is_windows = os.name == 'nt'
+        self._is_windows = os.name == "nt"
         self._key = key
 
     def draw(self, data):
@@ -30,11 +30,11 @@ class ConsoleDrawer():
             if (x, y) in data:
                 line.append(self._key[data[(x, y)]])
             else:
-                line.append(' ')
-        return ''.join(line)
+                line.append(" ")
+        return "".join(line)
 
     def _clear(self):
         if self._is_windows:
-            os.system('cls')
+            os.system("cls")
         else:
-            os.system('clear')
+            os.system("clear")

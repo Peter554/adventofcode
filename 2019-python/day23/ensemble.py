@@ -3,7 +3,7 @@ import asyncio
 from intcode import IntCode
 
 
-class Nat():
+class Nat:
     def __init__(self, nat_queue, computers):
         self._q = nat_queue
         self._computers = computers
@@ -32,8 +32,10 @@ class Nat():
         while not self._stopped:
             idle = await self._idle()
             if idle and (self._packet is not None):
-                if (self._last_sent is not None) and self._last_sent[1] == self._packet[1]:
-                    print(f'NAT repeated Y value = {self._packet[1]}')
+                if (self._last_sent is not None) and self._last_sent[1] == self._packet[
+                    1
+                ]:
+                    print(f"NAT repeated Y value = {self._packet[1]}")
                     self.stop()
                     continue
                 self._last_sent = self._packet
@@ -49,7 +51,7 @@ class Nat():
         return True
 
 
-class PacketHandler():
+class PacketHandler:
     def __init__(self, nat_queue):
         self._nat_queue = nat_queue
 
@@ -74,7 +76,7 @@ class PacketHandler():
         self._stopped = True
 
 
-class Ensemble():
+class Ensemble:
     def __init__(self, raw_code):
         self._computers = []
         for i in range(50):
@@ -92,8 +94,7 @@ class Ensemble():
             tasks.append(task)
             packet_handler = PacketHandler(nat_queue)
             packet_handlers.append(packet_handler)
-            task = asyncio.create_task(
-                packet_handler.handle(computer, self._computers))
+            task = asyncio.create_task(packet_handler.handle(computer, self._computers))
             tasks.append(task)
         await nat.run()
         for computer in self._computers:

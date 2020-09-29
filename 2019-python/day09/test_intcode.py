@@ -4,7 +4,7 @@ import pytest
 import intcode
 
 
-class TestIncode():
+class TestIncode:
     def _get_sut(self, raw_code):
         input_queue = asyncio.Queue()
         sut = intcode.IntCode(raw_code, input_queue)
@@ -12,21 +12,21 @@ class TestIncode():
 
     @pytest.mark.asyncio
     async def test_1(self):
-        raw_code = '109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99'
+        raw_code = "109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99"
         sut, _ = self._get_sut(raw_code)
         await sut.run()
-        for value in [int(x) for x in raw_code.split(',')]:
+        for value in [int(x) for x in raw_code.split(",")]:
             assert value == await sut.output_queue.get()
 
     @pytest.mark.asyncio
     async def test_2(self):
-        sut, _ = self._get_sut('1102,34915192,34915192,7,4,7,99,0')
+        sut, _ = self._get_sut("1102,34915192,34915192,7,4,7,99,0")
         output = await sut.run()
         assert len(str(output)) == 16
 
     @pytest.mark.asyncio
     async def test_3(self):
-        sut, _ = self._get_sut('104,1125899906842624,99')
+        sut, _ = self._get_sut("104,1125899906842624,99")
         assert (await sut.run()) == 1125899906842624
 
     @pytest.mark.asyncio
@@ -36,7 +36,9 @@ class TestIncode():
 
     @pytest.mark.asyncio
     async def test_amps_2(self):
-        raw_code = "3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0"
+        raw_code = (
+            "3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0"
+        )
         assert (await self._run_amps((0, 1, 2, 3, 4), raw_code)) == 54321
 
     @pytest.mark.asyncio
@@ -92,5 +94,7 @@ class TestIncode():
         await amp_d.input_queue.put(permutation[3])
         await amp_e.input_queue.put(permutation[4])
 
-        output = await asyncio.gather(*(amp.run() for amp in (amp_a, amp_b, amp_c, amp_d, amp_e)))
+        output = await asyncio.gather(
+            *(amp.run() for amp in (amp_a, amp_b, amp_c, amp_d, amp_e))
+        )
         return output[-1]

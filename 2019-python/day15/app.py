@@ -29,10 +29,10 @@ def find_minutes_to_fill(walls, oxygen):
 
 def get_neighbors(p, walls):
     out = [
-        (p[0]+1, p[1]),
-        (p[0]-1, p[1]),
-        (p[0], p[1]+1),
-        (p[0], p[1]-1),
+        (p[0] + 1, p[1]),
+        (p[0] - 1, p[1]),
+        (p[0], p[1] + 1),
+        (p[0], p[1] - 1),
     ]
 
     return [o for o in out if o not in walls]
@@ -40,15 +40,16 @@ def get_neighbors(p, walls):
 
 async def main():
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    input_path = os.path.join(this_dir, 'input.txt')
+    input_path = os.path.join(this_dir, "input.txt")
     with open(input_path) as f:
         raw_code = f.readline()
-        print('Part 1')
+        print("Part 1")
         explorer = Explorer(raw_code)
         paths, oxygen, walls = await explorer.explore()
-        print(f'Steps = {find_shortest_path_to_oxygen(paths, oxygen)}')
-        print('Part 2')
-        print(f'Minutes = {find_minutes_to_fill(walls, oxygen)}')
+        print(f"Steps = {find_shortest_path_to_oxygen(paths, oxygen)}")
+        print("Part 2")
+        print(f"Minutes = {find_minutes_to_fill(walls, oxygen)}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

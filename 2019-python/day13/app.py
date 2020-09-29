@@ -5,9 +5,9 @@ from intcode import IntCode
 from consoledrawer import ConsoleDrawer
 
 
-class Arcade():
+class Arcade:
     def run(self, raw_code):
-        raw_code = '2' + raw_code[1:]
+        raw_code = "2" + raw_code[1:]
         self._arcade = {}
         self._score = None
         self._outputs = []
@@ -40,15 +40,15 @@ class Arcade():
 
 
 def draw_arcade(arcade, score):
-    key = {0: ' ', 1: '#', 2: '£', 3: '=', 4: 'o'}
+    key = {0: " ", 1: "#", 2: "£", 3: "=", 4: "o"}
     drawer = ConsoleDrawer(key)
     drawer.draw(arcade)
-    print(f'Score = {score}')
+    print(f"Score = {score}")
 
 
 if __name__ == "__main__":
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    input_path = os.path.join(this_dir, 'input.txt')
+    input_path = os.path.join(this_dir, "input.txt")
     with open(input_path) as f:
         raw_code = f.readline()
         arcade = Arcade()

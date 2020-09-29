@@ -2,7 +2,7 @@ import functools
 import math
 
 
-class Fft():
+class Fft:
     _base_pattern = (0, 1, 0, -1)
 
     def __init__(self, raw_code):
@@ -22,7 +22,7 @@ class Fft():
             self.advance()
 
     def get_state(self):
-        return ''.join((f'{x}' for x in self._state))
+        return "".join((f"{x}" for x in self._state))
 
     @staticmethod
     def get_pattern(dilation, length):

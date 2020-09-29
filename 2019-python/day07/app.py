@@ -45,21 +45,25 @@ def run_permutation_with_feedback(permutation, raw_code):
 
     def run_a():
         amp_a.run()
+
     thread_a = threading.Thread(target=run_a)
     thread_a.start()
 
     def run_b():
         amp_b.run()
+
     thread_b = threading.Thread(target=run_b)
     thread_b.start()
 
     def run_c():
         amp_c.run()
+
     thread_c = threading.Thread(target=run_c)
     thread_c.start()
 
     def run_d():
         amp_d.run()
+
     thread_d = threading.Thread(target=run_d)
     thread_d.start()
 
@@ -77,13 +81,13 @@ if __name__ == "__main__":
             signal = run_permutation(permutation, raw_code)
             if signal > max_signal:
                 max_signal = signal
-        print('Part 1')
-        print('Max signal = {}'.format(max_signal))
+        print("Part 1")
+        print("Max signal = {}".format(max_signal))
 
         max_signal = -1
         for permutation in itertools.permutations([5, 6, 7, 8, 9]):
             signal = run_permutation_with_feedback(permutation, raw_code)
             if signal > max_signal:
                 max_signal = signal
-        print('Part 2')
-        print('Max signal = {}'.format(max_signal))
+        print("Part 2")
+        print("Max signal = {}".format(max_signal))

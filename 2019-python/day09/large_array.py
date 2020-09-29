@@ -1,4 +1,4 @@
-class LargeArray():
+class LargeArray:
     def __init__(self, initializer=[]):
         self._dict = {}
         for idx, value in enumerate(initializer):

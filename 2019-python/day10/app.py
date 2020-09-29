@@ -22,8 +22,7 @@ def find_best_location(raw_data):
 def find_nth_destroyed(raw_data, n):
     points = build_points(raw_data)
     best_location, _ = find_best_location(raw_data)
-    targets = [get_displacement(p, best_location)
-               for p in points if p != best_location]
+    targets = [get_displacement(p, best_location) for p in points if p != best_location]
     targets.sort(key=functools.cmp_to_key(compare_func))
     destroyed_idxs = []
     last_destroyed = None
@@ -32,7 +31,9 @@ def find_nth_destroyed(raw_data, n):
         for idx, target in enumerate(targets):
             if idx in destroyed_idxs:
                 continue
-            if last_destroyed is not None and are_same_direction(last_destroyed, target):
+            if last_destroyed is not None and are_same_direction(
+                last_destroyed, target
+            ):
                 continue
             destroyed_idxs.append(idx)
             last_destroyed = target
@@ -46,7 +47,7 @@ def build_points(raw_data):
     points = []
     for j, line in enumerate(raw_data):
         for i, char in enumerate(list(line)):
-            if char == '#':
+            if char == "#":
                 points.append((i, j))
     return points
 
@@ -105,7 +106,7 @@ def compare_func(d_1, d_2):
 
 
 def get_size(d):
-    return math.sqrt(d[0]**2+d[1]**2)
+    return math.sqrt(d[0] ** 2 + d[1] ** 2)
 
 
 def get_angle(d):
@@ -116,12 +117,12 @@ def get_angle(d):
     return angle
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    input_path = os.path.join(this_dir, 'input.txt')
+    input_path = os.path.join(this_dir, "input.txt")
     with open(input_path) as f:
         raw_data = f.readlines()
-        print('Part 1')
-        print(f'Best location = {find_best_location(raw_data)}')
-        print('Part 2')
-        print(f'200th destroyed = {find_nth_destroyed(raw_data, 200)}')
+        print("Part 1")
+        print(f"Best location = {find_best_location(raw_data)}")
+        print("Part 2")
+        print(f"200th destroyed = {find_nth_destroyed(raw_data, 200)}")

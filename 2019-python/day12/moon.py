@@ -4,7 +4,7 @@ import re
 from coordinate import Coordinate
 
 
-class Moon():
+class Moon:
     def __init__(self, raw_data):
         self.p = self._parse_raw_data(raw_data)
         self.v = Coordinate(0, 0, 0)
@@ -32,6 +32,6 @@ class Moon():
 
     @staticmethod
     def _parse_raw_data(raw_data):
-        r = re.compile(r'<x=(.+?),\sy=(.+?),\sz=(.+?)>')
+        r = re.compile(r"<x=(.+?),\sy=(.+?),\sz=(.+?)>")
         m = r.match(raw_data)
         return Coordinate(int(m.group(1)), int(m.group(2)), int(m.group(3)))

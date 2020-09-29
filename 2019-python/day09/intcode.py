@@ -4,9 +4,9 @@ import asyncio
 from large_array import LargeArray
 
 
-class IntCode():
+class IntCode:
     def __init__(self, raw_code, input_queue=None):
-        self._original_code = [int(x) for x in raw_code.strip().split(',')]
+        self._original_code = [int(x) for x in raw_code.strip().split(",")]
         self.input_queue = input_queue
         self.output_queue = asyncio.Queue()
 
@@ -23,28 +23,28 @@ class IntCode():
     async def _step(self):
         op_code = self._code[self._location]
         op_type, parameter_modes = self._parse_op_code(op_code)
-        if (op_type == 1):
+        if op_type == 1:
             self._handle_add(parameter_modes)
-        elif (op_type == 2):
+        elif op_type == 2:
             self._handle_mulitply(parameter_modes)
-        elif (op_type == 3):
+        elif op_type == 3:
             await self._handle_input(parameter_modes)
-        elif (op_type == 4):
+        elif op_type == 4:
             await self._handle_output(parameter_modes)
-        elif (op_type == 5):
+        elif op_type == 5:
             self._handle_jump_if_true(parameter_modes)
-        elif (op_type == 6):
+        elif op_type == 6:
             self._handle_jump_if_false(parameter_modes)
-        elif (op_type == 7):
+        elif op_type == 7:
             self._handle_less_than(parameter_modes)
-        elif (op_type == 8):
+        elif op_type == 8:
             self._handle_equal(parameter_modes)
-        elif (op_type == 9):
+        elif op_type == 9:
             self._handle_adjust_relative_base(parameter_modes)
-        elif (op_type == 99):
+        elif op_type == 99:
             self._done = True
         else:
-            raise Exception(f'Operation {op_type} not supported')
+            raise Exception(f"Operation {op_type} not supported")
 
     def _parse_op_code(self, op_code):
         op_type = op_code % 100
@@ -67,7 +67,7 @@ class IntCode():
         elif parameter_mode == 2:
             return self._code[self._relative_base + value_at_offset]
         else:
-            raise Exception(f'Parameter mode {parameter_mode} not supported')
+            raise Exception(f"Parameter mode {parameter_mode} not supported")
 
     def _write(self, value, parameter_offset, parameter_mode):
         parameter = self._code[self._location + parameter_offset]
@@ -76,7 +76,7 @@ class IntCode():
         elif parameter_mode == 2:
             self._code[self._relative_base + parameter] = value
         else:
-            msg = f'Write could not handle parameter mode {parameter_modes[2]}'
+            msg = f"Write could not handle parameter mode {parameter_modes[2]}"
             raise Exception(msg)
 
     def _handle_add(self, parameter_modes):

@@ -8,27 +8,35 @@ def apply_command(lst: List[Tuple[int, int]], command: str) -> None:
     direction = command[0]
     amount = int(command[1:])
 
-    if direction == 'u':
+    if direction == "u":
+
         def action(i):
             lst.append((previous[0] + i, previous[1]))
-    elif direction == 'r':
+
+    elif direction == "r":
+
         def action(i):
             lst.append((previous[0], previous[1] + i))
-    elif direction == 'd':
+
+    elif direction == "d":
+
         def action(i):
             lst.append((previous[0] - i, previous[1]))
-    elif direction == 'l':
+
+    elif direction == "l":
+
         def action(i):
             lst.append((previous[0], previous[1] - i))
+
     else:
-        raise Exception('Direction {} not supported'.format(direction))
+        raise Exception("Direction {} not supported".format(direction))
 
     for i in range(amount):
         action(i + 1)
 
 
 def build_wire(text: str) -> List[Tuple[int, int]]:
-    commands = text.strip().lower().split(',')
+    commands = text.strip().lower().split(",")
 
     out = [(0, 0)]
 
@@ -72,7 +80,7 @@ def get_distance_to_point(point: Tuple[int, int], wire: List[Tuple[int, int]]) -
 
 if __name__ == "__main__":
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    input_path = os.path.join(this_dir, 'input.txt')
+    input_path = os.path.join(this_dir, "input.txt")
 
     with open(input_path) as f:
         wire_1_raw = f.readline()
@@ -86,7 +94,12 @@ if __name__ == "__main__":
         bounding = intersect_bounding_boxes(bounding_1, bounding_2)
 
         def filter_func(x: Tuple[int, int]) -> bool:
-            return x[0] < bounding.x_max and x[0] > bounding.x_min and x[1] < bounding.y_max and x[1] > bounding.y_min
+            return (
+                x[0] < bounding.x_max
+                and x[0] > bounding.x_min
+                and x[1] < bounding.y_max
+                and x[1] > bounding.y_min
+            )
 
         filtered_wire_1 = list(filter(filter_func, wire_1))
         filtered_wire_2 = list(filter(filter_func, wire_2))
@@ -94,8 +107,8 @@ if __name__ == "__main__":
         common = [x for x in filtered_wire_1 if x in filtered_wire_2]
         manhattan = list(map(lambda x: abs(x[0]) + abs(x[1]), common))
 
-        print('Part 1')
-        print('Distance = {}'.format(min(manhattan)))
+        print("Part 1")
+        print("Distance = {}".format(min(manhattan)))
 
         min_distance = -1
 
@@ -106,5 +119,5 @@ if __name__ == "__main__":
             if min_distance < 0 or (wire_1_distance + wire_2_distance < min_distance):
                 min_distance = wire_1_distance + wire_2_distance
 
-        print('Part 2')
-        print('Distance = {}'.format(min_distance))
+        print("Part 2")
+        print("Distance = {}".format(min_distance))

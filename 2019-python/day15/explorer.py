@@ -7,15 +7,15 @@ import os
 from intcode import IntCode
 
 
-class Explorer():
+class Explorer:
     def __init__(self, raw_code):
         self._raw_code = raw_code
         this_dir = os.path.dirname(os.path.abspath(__file__))
-        self._results_path = os.path.join(this_dir, 'explorer-results.pickle')
+        self._results_path = os.path.join(this_dir, "explorer-results.pickle")
 
     async def explore(self):
         if os.path.exists(self._results_path):
-            with open(self._results_path, 'rb') as f:
+            with open(self._results_path, "rb") as f:
                 return pickle.load(f)
 
         self._active_paths = set([()])
@@ -24,12 +24,11 @@ class Explorer():
         self._walls = set()
         await self._discover_paths()
 
-        built_paths = tuple(map(lambda x: Explorer._apply_path(x),
-                                tuple(self._paths)))
+        built_paths = tuple(map(lambda x: Explorer._apply_path(x), tuple(self._paths)))
 
         results = (built_paths, self._oxygen, tuple(self._walls))
 
-        with open(self._results_path, 'wb') as f:
+        with open(self._results_path, "wb") as f:
             pickle.dump(results, f)
 
         return results
@@ -99,4 +98,4 @@ class Explorer():
         elif choice == 4:
             return (start[0], start[1] + 1)
         else:
-            raise Exception(f'Choice {choice} not supported')
+            raise Exception(f"Choice {choice} not supported")

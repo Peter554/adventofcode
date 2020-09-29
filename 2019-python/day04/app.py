@@ -19,11 +19,11 @@ def contains_repeating_strict(digits: List[int]) -> bool:
     padded_digits = [-1] + digits + [-1]
 
     for i in range(1, len(digits)):
-        match = padded_digits[i] == padded_digits[i+1]
-        different_left = padded_digits[i-1] != padded_digits[i]
-        different_right = padded_digits[i+2] != padded_digits[i + 1]
+        match = padded_digits[i] == padded_digits[i + 1]
+        different_left = padded_digits[i - 1] != padded_digits[i]
+        different_right = padded_digits[i + 2] != padded_digits[i + 1]
 
-        if (match and different_left and different_right):
+        if match and different_left and different_right:
             return True
 
     return False
@@ -56,10 +56,10 @@ if __name__ == "__main__":
     all_codes = range(lower, upper + 1)
     valid_codes = [code for code in all_codes if is_valid(code)]
 
-    print('Part 1')
-    print('# of valid codes = {}'.format(len(valid_codes)))
+    print("Part 1")
+    print("# of valid codes = {}".format(len(valid_codes)))
 
     valid_codes = [code for code in all_codes if is_valid_2(code)]
 
-    print('Part 2')
-    print('# of valid codes = {}'.format(len(valid_codes)))
+    print("Part 2")
+    print("# of valid codes = {}".format(len(valid_codes)))
