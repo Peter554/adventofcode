@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"log"
 	"os"
-	"strings"
 )
 
 func Readlines(path string) []string {
@@ -17,7 +16,7 @@ func Readlines(path string) []string {
 	out := make([]string, 0)
 	for scanner.Scan() {
 		line := scanner.Text()
-		out = append(out, strings.TrimSpace(line))
+		out = append(out, line)
 	}
 	err = scanner.Err()
 	if err != nil {
