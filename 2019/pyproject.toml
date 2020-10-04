@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "2019-python"
+name = "2019"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]

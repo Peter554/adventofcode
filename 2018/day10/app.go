@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/peter554/adventofcode/2018-go/common"
+	"github.com/peter554/adventofcode/2018/common"
 )
 
 func main() {
