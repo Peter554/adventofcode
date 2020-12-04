@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"strings"
+	"testing"
 )
 
 func Check(err error) {
@@ -28,4 +29,10 @@ func ReadInput() []string {
 func TestLines(raw string) []string {
 	lines := strings.Split(raw, "\n")
 	return lines[1:]
+}
+
+func Expect(t *testing.T, want, got interface{}) {
+	if want != got {
+		t.Errorf("Expected %v, got %v", want, got)
+	}
 }

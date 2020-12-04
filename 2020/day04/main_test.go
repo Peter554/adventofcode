@@ -22,12 +22,7 @@ hgt:179cm
 hcl:#cfa07d eyr:2025 pid:166559648
 iyr:2011 ecl:brn hgt:59in`)
 
-	want := 2
-	got := CountValidPassports(lines, func(p *passport) bool { return p.isValidSimple() })
-
-	if got != want {
-		t.Errorf("Wanted %v, got %v", want, got)
-	}
+	lib.Expect(t, 2, CountValidPassports(lines, func(p *passport) bool { return p.isValidSimple() }))
 }
 
 func TestCountValidPassports_FullValidator(t *testing.T) {
@@ -59,10 +54,5 @@ hgt:59cm ecl:zzz
 eyr:2038 hcl:74454a iyr:2023
 pid:3556412378 byr:2007`)
 
-	want := 4
-	got := CountValidPassports(lines, func(p *passport) bool { return p.isValid() })
-
-	if got != want {
-		t.Errorf("Wanted %v, got %v", want, got)
-	}
+	lib.Expect(t, 4, CountValidPassports(lines, func(p *passport) bool { return p.isValid() }))
 }
