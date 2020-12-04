@@ -3,6 +3,7 @@ package lib
 import (
 	"bufio"
 	"os"
+	"strings"
 )
 
 func Check(err error) {
@@ -22,4 +23,9 @@ func ReadInput() []string {
 	}
 	Check(scanner.Err())
 	return lines
+}
+
+func TestLines(raw string) []string {
+	lines := strings.Split(raw, "\n")
+	return lines[1:]
 }

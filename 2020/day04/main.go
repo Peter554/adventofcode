@@ -11,28 +11,40 @@ import (
 
 func main() {
 	lines := lib.ReadInput()
-	lines = strings.Split(strings.Join(lines, "\n"), "\n\n")
+	validPassportsCount := CountValidPassportsSimple(lines)
+	fmt.Println("# of valid passports (simple) =", validPassportsCount)
+	validPassportsCount = CountValidPassports(lines)
+	fmt.Println("# of valid passports =", validPassportsCount)
+}
 
+func CountValidPassportsSimple(lines []string) int {
+	lines = strings.Split(strings.Join(lines, "\n"), "\n\n")
 	passports := []*passport{}
 	for _, line := range lines {
 		passports = append(passports, readPassport(line))
 	}
-
 	validPassportsCount := 0
 	for _, passport := range passports {
 		if passport.isValidSimple() {
 			validPassportsCount++
 		}
 	}
-	fmt.Println("# of valid passports =", validPassportsCount, "(simple)")
+	return validPassportsCount
+}
 
-	validPassportsCount = 0
+func CountValidPassports(lines []string) int {
+	lines = strings.Split(strings.Join(lines, "\n"), "\n\n")
+	passports := []*passport{}
+	for _, line := range lines {
+		passports = append(passports, readPassport(line))
+	}
+	validPassportsCount := 0
 	for _, passport := range passports {
 		if passport.isValid() {
 			validPassportsCount++
 		}
 	}
-	fmt.Println("# of valid passports =", validPassportsCount)
+	return validPassportsCount
 }
 
 type passport struct {
