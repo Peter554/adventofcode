@@ -1,16 +1,16 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/peter554/adventofcode/2020/lib"
 )
 
 func main() {
-	lines := readInput()
+	lines := lib.ReadInput()
 	batches := batchBy(lines, func(line string) bool { return len(line) == 0 })
 
 	passports := []*passport{}
@@ -33,25 +33,6 @@ func main() {
 		}
 	}
 	fmt.Println("# of valid passports =", validPassportsCount)
-}
-
-func readInput() []string {
-	file, err := os.Open("./input.txt")
-	check(err)
-	defer file.Close()
-	lines := []string{}
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	check(scanner.Err())
-	return lines
-}
-
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
 
 func batchBy(lines []string, f func(line string) bool) [][]string {

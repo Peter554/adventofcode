@@ -1,13 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
+
+	"github.com/peter554/adventofcode/2020/lib"
 )
 
 func main() {
-	lines := readInput()
+	lines := lib.ReadInput()
 	env := asRunes(lines)
 
 	slopes := []slope{
@@ -33,25 +33,6 @@ func main() {
 	}
 
 	fmt.Println("Product of results =", reduce(results, func(acc, next int) int { return acc * next }))
-}
-
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-func readInput() []string {
-	file, err := os.Open("./input.txt")
-	check(err)
-	defer file.Close()
-	lines := []string{}
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	check(scanner.Err())
-	return lines
 }
 
 func asRunes(lines []string) [][]rune {

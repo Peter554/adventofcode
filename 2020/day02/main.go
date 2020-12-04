@@ -1,24 +1,15 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
+
+	"github.com/peter554/adventofcode/2020/lib"
 )
 
 func main() {
-	file, err := os.Open("./input.txt")
-	check(err)
-	defer file.Close()
-
-	lines := []string{}
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	check(scanner.Err())
+	lines := lib.ReadInput()
 
 	records := []record{}
 	for _, line := range lines {
@@ -52,12 +43,6 @@ func main() {
 		}
 	}
 	fmt.Println("# of valid passwords is", validPasswordsCount)
-}
-
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
 
 type record struct {
