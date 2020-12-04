@@ -11,13 +11,13 @@ import (
 
 func main() {
 	lines := lib.ReadInput()
-	validPassportsCount := CountValidPassports(lines, func(p *passport) bool { return p.isValidSimple() })
+	validPassportsCount := countValidPassports(lines, func(p *passport) bool { return p.isValidSimple() })
 	fmt.Println("# of valid passports (simple) =", validPassportsCount)
-	validPassportsCount = CountValidPassports(lines, func(p *passport) bool { return p.isValid() })
+	validPassportsCount = countValidPassports(lines, func(p *passport) bool { return p.isValid() })
 	fmt.Println("# of valid passports =", validPassportsCount)
 }
 
-func CountValidPassports(lines []string, validator func(p *passport) bool) int {
+func countValidPassports(lines []string, validator func(p *passport) bool) int {
 	lines = strings.Split(strings.Join(lines, "\n"), "\n\n")
 	passports := []*passport{}
 	for _, line := range lines {

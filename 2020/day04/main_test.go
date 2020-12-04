@@ -6,7 +6,7 @@ import (
 	"github.com/peter554/adventofcode/2020/lib"
 )
 
-func TestCountValidPassports_SimpleValidator(t *testing.T) {
+func Test_countValidPassports_SimpleValidator(t *testing.T) {
 	lines := lib.TestLines(`
 ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
@@ -22,10 +22,10 @@ hgt:179cm
 hcl:#cfa07d eyr:2025 pid:166559648
 iyr:2011 ecl:brn hgt:59in`)
 
-	lib.Expect(t, 2, CountValidPassports(lines, func(p *passport) bool { return p.isValidSimple() }))
+	lib.Expect(t, 2, countValidPassports(lines, func(p *passport) bool { return p.isValidSimple() }))
 }
 
-func TestCountValidPassports_FullValidator(t *testing.T) {
+func Test_countValidPassports_FullValidator(t *testing.T) {
 	lines := lib.TestLines(`
 pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
 hcl:#623a2f
@@ -54,5 +54,5 @@ hgt:59cm ecl:zzz
 eyr:2038 hcl:74454a iyr:2023
 pid:3556412378 byr:2007`)
 
-	lib.Expect(t, 4, CountValidPassports(lines, func(p *passport) bool { return p.isValid() }))
+	lib.Expect(t, 4, countValidPassports(lines, func(p *passport) bool { return p.isValid() }))
 }
