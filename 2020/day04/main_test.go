@@ -6,7 +6,7 @@ import (
 	"github.com/peter554/adventofcode/2020/lib"
 )
 
-func TestCountValidPassportsSimple(t *testing.T) {
+func TestCountValidPassports_SimpleValidator(t *testing.T) {
 	lines := lib.TestLines(`
 ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
@@ -23,14 +23,14 @@ hcl:#cfa07d eyr:2025 pid:166559648
 iyr:2011 ecl:brn hgt:59in`)
 
 	want := 2
-	got := CountValidPassportsSimple(lines)
+	got := CountValidPassports(lines, func(p *passport) bool { return p.isValidSimple() })
 
 	if got != want {
 		t.Errorf("Wanted %v, got %v", want, got)
 	}
 }
 
-func TestCountValidPassports(t *testing.T) {
+func TestCountValidPassports_FullValidator(t *testing.T) {
 	lines := lib.TestLines(`
 pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
 hcl:#623a2f
@@ -60,7 +60,7 @@ eyr:2038 hcl:74454a iyr:2023
 pid:3556412378 byr:2007`)
 
 	want := 4
-	got := CountValidPassports(lines)
+	got := CountValidPassports(lines, func(p *passport) bool { return p.isValid() })
 
 	if got != want {
 		t.Errorf("Wanted %v, got %v", want, got)
