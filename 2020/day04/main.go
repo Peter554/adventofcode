@@ -1,90 +1,50 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/peter554/adventofcode/2020/lib"
 )
 
 func main() {
-	lines := readInput()
-	batches := batchBy(lines, func(line string) bool { return len(line) == 0 })
-
-	passports := []*passport{}
-	for _, batch := range batches {
-		passports = append(passports, readPassport(batch))
-	}
-
-	validPassportsCount := 0
-	for _, passport := range passports {
-		if passport.isValidSimple() {
-			validPassportsCount++
-		}
-	}
-	fmt.Println("# of valid passports =", validPassportsCount, "(simple)")
-
-	validPassportsCount = 0
-	for _, passport := range passports {
-		if passport.isValid() {
-			validPassportsCount++
-		}
-	}
+	lines := lib.ReadInput()
+	validPassportsCount := countValidPassports(lines, func(p *passport) bool { return p.isValidSimple() })
+	fmt.Println("# of valid passports (simple) =", validPassportsCount)
+	validPassportsCount = countValidPassports(lines, func(p *passport) bool { return p.isValid() })
 	fmt.Println("# of valid passports =", validPassportsCount)
 }
 
-func readInput() []string {
-	file, err := os.Open("./input.txt")
-	check(err)
-	defer file.Close()
-	lines := []string{}
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	check(scanner.Err())
-	return lines
-}
-
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-func batchBy(lines []string, f func(line string) bool) [][]string {
-	batches := [][]string{}
-	batch := []string{}
+func countValidPassports(lines []string, validator func(p *passport) bool) int {
+	lines = strings.Split(strings.Join(lines, "\n"), "\n\n")
+	passports := []*passport{}
 	for _, line := range lines {
-		batch = append(batch, line)
-		if f(line) {
-			batches = append(batches, batch)
-			batch = []string{}
+		passports = append(passports, readPassport(line))
+	}
+	validPassportsCount := 0
+	for _, passport := range passports {
+		if validator(passport) {
+			validPassportsCount++
 		}
 	}
-	if len(batch) > 0 {
-		batches = append(batches, batch)
-	}
-	return batches
+	return validPassportsCount
 }
 
 type passport struct {
 	m map[string]string
 }
 
-func readPassport(batch []string) *passport {
+func readPassport(rawData string) *passport {
 	re := regexp.MustCompile(`([a-z]+):([a-z0-9#]+)`)
 	m := map[string]string{}
-	for _, line := range batch {
-		for _, field := range strings.Fields(line) {
-			match := re.FindStringSubmatch(field)
-			if match == nil {
-				panic(fmt.Sprintf("field %v did not match regex", field))
-			}
-			m[match[1]] = match[2]
+	for _, field := range strings.Fields(rawData) {
+		match := re.FindStringSubmatch(field)
+		if match == nil {
+			panic(fmt.Sprintf("field %v did not match regex", field))
 		}
+		m[match[1]] = match[2]
 	}
 	return &passport{m}
 }

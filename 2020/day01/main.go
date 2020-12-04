@@ -1,25 +1,21 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strconv"
+
+	"github.com/peter554/adventofcode/2020/lib"
 )
 
 func main() {
-	file, err := os.Open("./input.txt")
-	check(err)
-	defer file.Close()
+	lines := lib.ReadInput()
 
 	ints := []int{}
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		i, err := strconv.Atoi(scanner.Text())
-		check(err)
+	for _, line := range lines {
+		i, err := strconv.Atoi(line)
+		lib.Check(err)
 		ints = append(ints, i)
 	}
-	check(scanner.Err())
 
 	for i := 0; i < len(ints); i++ {
 		for j := 0; j < len(ints); j++ {
@@ -33,11 +29,5 @@ func main() {
 				}
 			}
 		}
-	}
-}
-
-func check(err error) {
-	if err != nil {
-		panic(err)
 	}
 }
