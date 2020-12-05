@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -11,24 +12,30 @@ import (
 func main() {
 	lines := lib.ReadInput()
 
-	seats := map[seat]bool{}
-	maxID := 0
+	ids := []int{}
 	for _, line := range lines {
 		seat := readBoardingPass(line)
-		seats[seat] = true
-		ID := seat.ID()
-		if ID > maxID {
-			maxID = ID
+		ids = append(ids, seat.id())
+	}
+
+	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+	fmt.Println("Max ID =", ids[len(ids)-1])
+
+	for idx, id := range ids {
+		if ids[idx+1] != id+1 {
+			fmt.Println("My ID =", id+1)
+			return
 		}
 	}
-	fmt.Println("Max ID =", maxID)
-
-	printSeats(seats)
 }
 
 type seat struct {
-	Row int
-	Col int
+	row int
+	col int
+}
+
+func (s seat) id() int {
+	return s.row*8 + s.col
 }
 
 func readBoardingPass(s string) seat {
@@ -38,24 +45,4 @@ func readBoardingPass(s string) seat {
 	col64, err := strconv.ParseInt(s[7:], 2, 8)
 	lib.Check(err)
 	return seat{int(row64), int(col64)}
-}
-
-func (s seat) ID() int {
-	return s.Row*8 + s.Col
-}
-
-func printSeats(seats map[seat]bool) {
-	s := "\n"
-	for row := 0; row < 256; row++ {
-		s += fmt.Sprintf("%d\t", row)
-		for col := 0; col < 8; col++ {
-			if _, exists := seats[seat{row, col}]; exists {
-				s += "#"
-			} else {
-				s += "."
-			}
-		}
-		s += "\n"
-	}
-	fmt.Println(s)
 }

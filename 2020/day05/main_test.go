@@ -8,19 +8,17 @@ import (
 
 func Test_readBoardingPass(t *testing.T) {
 	cases := []struct {
-		s   string
-		row int
-		col int
+		s  string
+		id int
 	}{
-		{"FBFBBFFRLR", 44, 5},
-		{"BFFFBBFRRR", 70, 7},
-		{"FFFBBBFRRR", 14, 7},
-		{"BBFFBBFRLL", 102, 4},
+		{"FBFBBFFRLR", 357},
+		{"BFFFBBFRRR", 567},
+		{"FFFBBBFRRR", 119},
+		{"BBFFBBFRLL", 820},
 	}
 
 	for _, c := range cases {
 		seat := readBoardingPass(c.s)
-		lib.Expect(t, c.row, seat.Row)
-		lib.Expect(t, c.col, seat.Col)
+		lib.Expect(t, c.id, seat.id())
 	}
 }
