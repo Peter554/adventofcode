@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 
@@ -28,7 +27,7 @@ func main() {
 			validPasswordsCount++
 		}
 	}
-	fmt.Println("# of valid passwords is", validPasswordsCount)
+	lib.PrintResultAndAssert(1, validPasswordsCount, 546)
 
 	validPasswordsCount = 0
 	for _, r := range records {
@@ -42,7 +41,7 @@ func main() {
 			validPasswordsCount++
 		}
 	}
-	fmt.Println("# of valid passwords is", validPasswordsCount)
+	lib.PrintResultAndAssert(2, validPasswordsCount, 275)
 }
 
 type record struct {

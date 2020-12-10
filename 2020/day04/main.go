@@ -12,9 +12,9 @@ import (
 func main() {
 	lines := lib.ReadInput()
 	validPassportsCount := countValidPassports(lines, func(p *passport) bool { return p.isValidSimple() })
-	fmt.Println("# of valid passports (simple) =", validPassportsCount)
+	lib.PrintResultAndAssert(1, validPassportsCount, 250)
 	validPassportsCount = countValidPassports(lines, func(p *passport) bool { return p.isValid() })
-	fmt.Println("# of valid passports =", validPassportsCount)
+	lib.PrintResultAndAssert(2, validPassportsCount, 158)
 }
 
 func countValidPassports(lines []string, validator func(p *passport) bool) int {

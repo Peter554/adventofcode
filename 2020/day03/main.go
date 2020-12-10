@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/peter554/adventofcode/2020/lib"
 )
 
@@ -28,11 +26,10 @@ func main() {
 			x = (x + slope.Dx) % len(env[0])
 			y = y + slope.Dy
 		}
-		fmt.Println("# of trees met =", treeCount, fmt.Sprintf("(slope %v)", slope))
 		results = append(results, treeCount)
 	}
 
-	fmt.Println("Product of results =", reduce(results, func(acc, next int) int { return acc * next }))
+	lib.PrintResultAndAssert(2, reduce(results, func(acc, next int) int { return acc * next }), 2122848000)
 }
 
 func asRunes(lines []string) [][]rune {

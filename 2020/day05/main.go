@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -19,11 +18,11 @@ func main() {
 	}
 
 	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
-	fmt.Println("Max ID =", ids[len(ids)-1])
+	lib.PrintResultAndAssert(1, ids[len(ids)-1], 813)
 
 	for idx, id := range ids {
 		if ids[idx+1] != id+1 {
-			fmt.Println("My ID =", id+1)
+			lib.PrintResultAndAssert(2, id+1, 612)
 			return
 		}
 	}
