@@ -1,32 +1,18 @@
 package main
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/peter554/adventofcode/2020/lib"
 )
 
 func main() {
-	lines := lib.ReadInput()
-	ints := asInts(lines)
+	ints := lib.ReadInputAsInts()
 
 	invalidNumber := firstInvalidNumber(ints)
-	fmt.Println("Part 1 =", invalidNumber)
+	lib.PrintResultAndAssert(1, invalidNumber, 14360655)
 
 	block := findContiguousBlock(ints, invalidNumber)
 	min, max := minMaxInts(block)
-	fmt.Println("Part 2 =", min+max)
-}
-
-func asInts(lines []string) []int {
-	ints := []int{}
-	for _, line := range lines {
-		i, err := strconv.Atoi(line)
-		lib.Check(err)
-		ints = append(ints, i)
-	}
-	return ints
+	lib.PrintResultAndAssert(2, min+max, 1962331)
 }
 
 func firstInvalidNumber(ints []int) int {

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/peter554/adventofcode/2020/day08/compute"
 	"github.com/peter554/adventofcode/2020/day08/parse"
 	"github.com/peter554/adventofcode/2020/lib"
@@ -13,7 +11,7 @@ func main() {
 	instructions := parse.Parse(lines)
 
 	result := compute.Run(instructions)
-	fmt.Println(result)
+	lib.PrintResultAndAssert(1, result.Acc, 1475)
 
 	idxs := findIdxs(instructions, func(instruction parse.Instruction) bool {
 		return instruction.Op == "jmp" || instruction.Op == "nop"
@@ -30,7 +28,7 @@ func main() {
 
 		result := compute.Run(copiedInstructions)
 		if result.ExitCode == 0 {
-			fmt.Println(result)
+			lib.PrintResultAndAssert(2, result.Acc, 1270)
 			return
 		}
 	}

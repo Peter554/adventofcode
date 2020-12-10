@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/peter554/adventofcode/2020/day07/parse"
 	"github.com/peter554/adventofcode/2020/lib"
 )
@@ -16,8 +14,8 @@ func main() {
 		parent2Children[parent] = children
 	}
 
-	fmt.Println("Part 1 =", len(uniqueParents(parent2Children, "shiny gold")))
-	fmt.Println("Part 2 =", countChildren(parent2Children, "shiny gold"))
+	lib.PrintResultAndAssert(1, len(uniqueParents(parent2Children, "shiny gold")), 242)
+	lib.PrintResultAndAssert(2, countChildren(parent2Children, "shiny gold"), 176035)
 }
 
 func uniqueParents(parent2Children map[string]map[string]int, child string) map[string]bool {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/peter554/adventofcode/2020/lib"
@@ -9,8 +8,8 @@ import (
 
 func main() {
 	lines := lib.ReadInput()
-	fmt.Println("Part 1 =", Part1(lines))
-	fmt.Println("Part 2 =", Part2(lines))
+	lib.PrintResultAndAssert(1, Part1(lines), 6683)
+	lib.PrintResultAndAssert(2, Part2(lines), 3122)
 }
 
 func Part1(lines []string) int {
