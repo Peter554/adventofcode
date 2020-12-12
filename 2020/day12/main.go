@@ -11,24 +11,34 @@ import (
 
 func main() {
 	lines := lib.ReadInput()
-	instructions := parseInstructions(lines)
+	instructions := ParseInstructions(lines)
 
 	ship := &Ship{
 		Position: vector.New(0, 0),
 		Engine:   SimpleEngine(),
 	}
 	ship.Execute(instructions)
-	lib.PrintResultAndAssert(1, ship.Position.Manhattan(), 508)
+
+	lib.Result{
+		Part:          1,
+		Value:         ship.Position.Manhattan(),
+		ExpectedValue: 508,
+	}.Execute()
 
 	ship = &Ship{
 		Position: vector.New(0, 0),
 		Engine:   WaypointEngine(10, 1),
 	}
 	ship.Execute(instructions)
-	lib.PrintResultAndAssert(2, ship.Position.Manhattan(), 30761)
+
+	lib.Result{
+		Part:          2,
+		Value:         ship.Position.Manhattan(),
+		ExpectedValue: 30761,
+	}.Execute()
 }
 
-func parseInstructions(lines []string) []Instruction {
+func ParseInstructions(lines []string) []Instruction {
 	o := []Instruction{}
 	re := regexp.MustCompile(`^([NSEWLRF])(\d+)$`)
 	for _, line := range lines {
