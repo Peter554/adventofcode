@@ -8,9 +8,7 @@ import (
 
 func main() {
 	lines := lib.ReadInput()
-
 	lib.Result{Part: 1, Value: Part1(lines)}.Print()
-
 	lib.Result{Part: 2, Value: Part2(lines)}.Print()
 }
 
