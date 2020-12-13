@@ -8,8 +8,8 @@ import (
 
 func main() {
 	lines := lib.ReadInput()
-	lib.PrintResultAndAssert(1, Part1(lines), 6683)
-	lib.PrintResultAndAssert(2, Part2(lines), 3122)
+	lib.Result{Part: 1, Value: Part1(lines)}.Print()
+	lib.Result{Part: 2, Value: Part2(lines)}.Print()
 }
 
 func Part1(lines []string) int {

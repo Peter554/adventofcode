@@ -11,10 +11,16 @@ import (
 
 func main() {
 	lines := lib.ReadInput()
-	validPassportsCount := countValidPassports(lines, func(p *passport) bool { return p.isValidSimple() })
-	lib.PrintResultAndAssert(1, validPassportsCount, 250)
-	validPassportsCount = countValidPassports(lines, func(p *passport) bool { return p.isValid() })
-	lib.PrintResultAndAssert(2, validPassportsCount, 158)
+	lib.Result{Part: 1, Value: Part1(lines)}.Print()
+	lib.Result{Part: 2, Value: Part2(lines)}.Print()
+}
+
+func Part1(lines []string) int {
+	return countValidPassports(lines, func(p *passport) bool { return p.isValidSimple() })
+}
+
+func Part2(lines []string) int {
+	return countValidPassports(lines, func(p *passport) bool { return p.isValid() })
 }
 
 func countValidPassports(lines []string, validator func(p *passport) bool) int {

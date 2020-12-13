@@ -20,10 +20,9 @@ func main() {
 	ship.Execute(instructions)
 
 	lib.Result{
-		Part:          1,
-		Value:         ship.Position.Manhattan(),
-		ExpectedValue: 508,
-	}.Execute()
+		Part:  1,
+		Value: ship.Position.Manhattan(),
+	}.Print()
 
 	ship = &Ship{
 		Position: vector.New(0, 0),
@@ -32,10 +31,9 @@ func main() {
 	ship.Execute(instructions)
 
 	lib.Result{
-		Part:          2,
-		Value:         ship.Position.Manhattan(),
-		ExpectedValue: 30761,
-	}.Execute()
+		Part:  2,
+		Value: ship.Position.Manhattan(),
+	}.Print()
 }
 
 func ParseInstructions(lines []string) []Instruction {
@@ -47,7 +45,7 @@ func ParseInstructions(lines []string) []Instruction {
 			panic("Line did not match regex")
 		}
 		i, err := strconv.Atoi(match[2])
-		lib.Check(err)
+		lib.CheckError(err)
 		o = append(o, Instruction{match[1], i})
 	}
 	return o

@@ -11,7 +11,7 @@ func main() {
 	instructions := parse.Parse(lines)
 
 	result := compute.Run(instructions)
-	lib.PrintResultAndAssert(1, result.Acc, 1475)
+	lib.Result{Part: 1, Value: result.Acc}.Print().Assert(1475)
 
 	idxs := findIdxs(instructions, func(instruction parse.Instruction) bool {
 		return instruction.Op == "jmp" || instruction.Op == "nop"
@@ -28,10 +28,39 @@ func main() {
 
 		result := compute.Run(copiedInstructions)
 		if result.ExitCode == 0 {
-			lib.PrintResultAndAssert(2, result.Acc, 1270)
+			lib.Result{Part: 2, Value: result.Acc}.Print().Assert(1270)
 			return
 		}
 	}
+}
+
+func Part1(lines []string) int {
+	instructions := parse.Parse(lines)
+	return compute.Run(instructions).Acc
+}
+
+func Part2(lines []string) int {
+	instructions := parse.Parse(lines)
+
+	idxs := findIdxs(instructions, func(instruction parse.Instruction) bool {
+		return instruction.Op == "jmp" || instruction.Op == "nop"
+	})
+
+	for _, idx := range idxs {
+		copiedInstructions := copy(instructions)
+
+		if copiedInstructions[idx].Op == "jmp" {
+			copiedInstructions[idx].Op = "nop"
+		} else {
+			copiedInstructions[idx].Op = "jmp"
+		}
+
+		result := compute.Run(copiedInstructions)
+		if result.ExitCode == 0 {
+			return result.Acc
+		}
+	}
+	panic("not found")
 }
 
 func findIdxs(instructions []parse.Instruction, filter func(instruction parse.Instruction) bool) []int {

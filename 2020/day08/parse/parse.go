@@ -22,7 +22,7 @@ func Parse(lines []string) []Instruction {
 		}
 		op := match[1]
 		value, err := strconv.Atoi(match[2])
-		lib.Check(err)
+		lib.CheckError(err)
 		instructions = append(instructions, Instruction{Op: op, Value: value})
 	}
 	return instructions

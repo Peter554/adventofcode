@@ -6,6 +6,10 @@ import (
 
 func main() {
 	lines := lib.ReadInput()
+	lib.Result{Part: 2, Value: Part2(lines)}.Print()
+}
+
+func Part2(lines []string) int {
 	env := asRunes(lines)
 
 	slopes := []slope{
@@ -29,7 +33,7 @@ func main() {
 		results = append(results, treeCount)
 	}
 
-	lib.PrintResultAndAssert(2, reduce(results, func(acc, next int) int { return acc * next }), 2122848000)
+	return reduce(results, func(acc, next int) int { return acc * next })
 }
 
 func asRunes(lines []string) [][]rune {

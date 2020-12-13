@@ -7,21 +7,21 @@ import (
 )
 
 func TestPart1(t *testing.T) {
-	lib.UseInput("sample1")
+	lib.UseInput("sample")
 	lines := lib.ReadInput()
-	lib.Expect(t, 2, Part1(lines))
+	lib.Expect(t, 37, Part1(lines))
 
 	lib.UseInput("input")
 	lines = lib.ReadInput()
-	lib.Expect(t, 250, Part1(lines))
+	lib.Expect(t, 2359, Part1(lines))
 }
 
 func TestPart2(t *testing.T) {
-	lib.UseInput("sample2")
+	lib.UseInput("sample")
 	lines := lib.ReadInput()
-	lib.Expect(t, 4, Part2(lines))
+	lib.Expect(t, 26, Part2(lines))
 
 	lib.UseInput("input")
 	lines = lib.ReadInput()
-	lib.Expect(t, 158, Part2(lines))
+	lib.Expect(t, 2131, Part2(lines))
 }

@@ -6,13 +6,19 @@ import (
 
 func main() {
 	ints := lib.ReadInputAsInts()
+	lib.Result{Part: 1, Value: Part1(ints)}.Print()
+	lib.Result{Part: 2, Value: Part2(ints)}.Print()
+}
 
+func Part1(ints []int) int {
+	return firstInvalidNumber(ints)
+}
+
+func Part2(ints []int) int {
 	invalidNumber := firstInvalidNumber(ints)
-	lib.PrintResultAndAssert(1, invalidNumber, 14360655)
-
 	block := findContiguousBlock(ints, invalidNumber)
 	min, max := minMaxInts(block)
-	lib.PrintResultAndAssert(2, min+max, 1962331)
+	return min + max
 }
 
 func firstInvalidNumber(ints []int) int {

@@ -7,11 +7,13 @@ import (
 )
 
 func TestPart1(t *testing.T) {
+	lib.UseInput("input")
 	lines := lib.ReadInput()
-	lib.Expect(t, 813, Part1(lines))
+	lib.Expect(t, 1475, Part1(lines))
 }
 
 func TestPart2(t *testing.T) {
+	lib.UseInput("input")
 	lines := lib.ReadInput()
-	lib.Expect(t, 612, Part2(lines))
+	lib.Expect(t, 1270, Part2(lines))
 }

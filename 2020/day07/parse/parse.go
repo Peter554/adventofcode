@@ -21,7 +21,7 @@ func Parse(line string) (parent string, children map[string]int) {
 	for _, s := range strings.Split(strings.Split(line, "bags contain")[1], ",") {
 		match := re.FindStringSubmatch(s)
 		i, err := strconv.Atoi(match[1])
-		lib.Check(err)
+		lib.CheckError(err)
 		children[strings.TrimSpace(match[2])] = i
 	}
 	return

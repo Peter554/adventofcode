@@ -7,15 +7,26 @@ import (
 
 func main() {
 	lines := lib.ReadInput()
+	lib.Result{Part: 1, Value: Part1(lines)}.Print()
+	lib.Result{Part: 2, Value: Part2(lines)}.Print()
+}
 
+func Part1(lines []string) int {
 	parent2Children := map[string]map[string]int{}
 	for _, line := range lines {
 		parent, children := parse.Parse(line)
 		parent2Children[parent] = children
 	}
+	return len(uniqueParents(parent2Children, "shiny gold"))
+}
 
-	lib.PrintResultAndAssert(1, len(uniqueParents(parent2Children, "shiny gold")), 242)
-	lib.PrintResultAndAssert(2, countChildren(parent2Children, "shiny gold"), 176035)
+func Part2(lines []string) int {
+	parent2Children := map[string]map[string]int{}
+	for _, line := range lines {
+		parent, children := parse.Parse(line)
+		parent2Children[parent] = children
+	}
+	return countChildren(parent2Children, "shiny gold")
 }
 
 func uniqueParents(parent2Children map[string]map[string]int, child string) map[string]bool {

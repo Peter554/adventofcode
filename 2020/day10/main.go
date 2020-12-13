@@ -8,13 +8,14 @@ import (
 
 func main() {
 	ints := lib.ReadInputAsInts()
-	ints = append(ints, 0, maxInt(ints)+3)
-	sort.Slice(ints, func(i, j int) bool { return ints[i] < ints[j] })
-	lib.PrintResultAndAssert(1, part1(ints), 2040)
-	lib.PrintResultAndAssert(2, part2(ints), 28346956187648)
+	lib.Result{Part: 1, Value: Part1(ints)}.Print()
+	lib.Result{Part: 2, Value: Part2(ints)}.Print()
 }
 
-func part1(ints []int) int {
+func Part1(ints []int) int {
+	ints = append(ints, 0, maxInt(ints)+3)
+	sort.Slice(ints, func(i, j int) bool { return ints[i] < ints[j] })
+
 	m := map[int]int{}
 	for idx := 1; idx < len(ints); idx++ {
 		diff := ints[idx] - ints[idx-1]
@@ -27,7 +28,10 @@ func part1(ints []int) int {
 	return m[1] * m[3]
 }
 
-func part2(ints []int) int {
+func Part2(ints []int) int {
+	ints = append(ints, 0, maxInt(ints)+3)
+	sort.Slice(ints, func(i, j int) bool { return ints[i] < ints[j] })
+
 	memo := map[int]int{}
 
 	var f func(startFrom int) int

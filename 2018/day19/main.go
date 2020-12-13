@@ -28,7 +28,7 @@ func parseInstructionPointer(s string) int {
 		panic("Instruction pointer did not match regex")
 	}
 	i, err := strconv.Atoi(match[1])
-	common.Check(err)
+	common.CheckError(err)
 	return i
 }
 
@@ -57,7 +57,7 @@ func parseInstruction(s string) []int {
 	instruction = append(instruction, opCodeMap[split[0]])
 	for _, part := range split[1:] {
 		i, err := strconv.Atoi(part)
-		common.Check(err)
+		common.CheckError(err)
 		instruction = append(instruction, i)
 	}
 	return instruction

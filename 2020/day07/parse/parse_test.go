@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func Test_Parse(t *testing.T) {
+func TestParse(t *testing.T) {
 	cases := []struct {
 		line     string
 		parent   string

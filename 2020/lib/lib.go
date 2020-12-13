@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 	"testing"
 )
 
@@ -16,27 +15,27 @@ func init() {
 	flag.StringVar(&inputPath, "input", "input", "The input file")
 }
 
-func Check(err error) {
+func CheckError(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
 func UseInput(input string) {
-	Check(flag.Set("input", input))
+	CheckError(flag.Set("input", input))
 }
 
 func ReadInput() []string {
 	flag.Parse()
 	file, err := os.Open(inputPath)
-	Check(err)
+	CheckError(err)
 	defer file.Close()
 	lines := []string{}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	Check(scanner.Err())
+	CheckError(scanner.Err())
 	return lines
 }
 
@@ -51,13 +50,8 @@ func ReadInputAsInts() []int {
 
 func AsInt(s string) int {
 	i, err := strconv.Atoi(s)
-	Check(err)
+	CheckError(err)
 	return i
-}
-
-func TestLines(raw string) []string {
-	lines := strings.Split(raw, "\n")
-	return lines[1:]
 }
 
 func Expect(t *testing.T, want, got interface{}) {
@@ -72,22 +66,19 @@ func Assert(want, got interface{}) {
 	}
 }
 
-func PrintResultAndAssert(part int, result int, expectedResult int) {
-	fmt.Printf("Part %d = %d\n", part, result)
-	if inputPath == "input" {
-		Assert(expectedResult, result)
-	}
-}
-
 type Result struct {
-	Part          int
-	Value         int
-	ExpectedValue int
+	Part  int
+	Value int
 }
 
-func (r Result) Execute() {
+func (r Result) Print() Result {
 	fmt.Printf("Part %d = %d\n", r.Part, r.Value)
+	return r
+}
+
+func (r Result) Assert(value int) Result {
 	if inputPath == "input" {
-		Assert(r.ExpectedValue, r.Value)
+		Assert(value, r.Value)
 	}
+	return r
 }

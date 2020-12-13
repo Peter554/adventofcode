@@ -8,10 +8,10 @@ import (
 
 func TestPart1(t *testing.T) {
 	lines := lib.ReadInput()
-	lib.Expect(t, 813, Part1(lines))
+	lib.Expect(t, 242, Part1(lines))
 }
 
 func TestPart2(t *testing.T) {
 	lines := lib.ReadInput()
-	lib.Expect(t, 612, Part2(lines))
+	lib.Expect(t, 176035, Part2(lines))
 }

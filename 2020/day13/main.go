@@ -9,17 +9,9 @@ import (
 func main() {
 	lines := lib.ReadInput()
 
-	lib.Result{
-		Part:          1,
-		Value:         Part1(lines),
-		ExpectedValue: 115,
-	}.Execute()
+	lib.Result{Part: 1, Value: Part1(lines)}.Print()
 
-	lib.Result{
-		Part:          2,
-		Value:         Part2(lines),
-		ExpectedValue: 756261495958122,
-	}.Execute()
+	lib.Result{Part: 2, Value: Part2(lines)}.Print()
 }
 
 func Part1(lines []string) int {

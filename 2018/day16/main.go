@@ -22,7 +22,7 @@ func parseInstruction(s string) []int {
 	instruction := []int{}
 	for _, v := range strings.Split(s, " ") {
 		i, err := strconv.Atoi(v)
-		common.Check(err)
+		common.CheckError(err)
 		instruction = append(instruction, i)
 	}
 	return instruction

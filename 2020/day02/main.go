@@ -9,12 +9,15 @@ import (
 
 func main() {
 	lines := lib.ReadInput()
+	lib.Result{Part: 1, Value: Part1(lines)}.Print()
+	lib.Result{Part: 2, Value: Part2(lines)}.Print()
+}
 
+func Part1(lines []string) int {
 	records := []record{}
 	for _, line := range lines {
 		records = append(records, parseLine(line))
 	}
-
 	validPasswordsCount := 0
 	for _, r := range records {
 		letterCount := 0
@@ -27,9 +30,15 @@ func main() {
 			validPasswordsCount++
 		}
 	}
-	lib.PrintResultAndAssert(1, validPasswordsCount, 546)
+	return validPasswordsCount
+}
 
-	validPasswordsCount = 0
+func Part2(lines []string) int {
+	records := []record{}
+	for _, line := range lines {
+		records = append(records, parseLine(line))
+	}
+	validPasswordsCount := 0
 	for _, r := range records {
 		isValid := false
 		for idx, letter := range r.Password {
@@ -41,7 +50,7 @@ func main() {
 			validPasswordsCount++
 		}
 	}
-	lib.PrintResultAndAssert(2, validPasswordsCount, 275)
+	return validPasswordsCount
 }
 
 type record struct {

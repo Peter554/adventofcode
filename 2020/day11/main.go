@@ -8,13 +8,21 @@ import (
 func main() {
 	lines := lib.ReadInput()
 
-	lib.PrintResultAndAssert(
-		1,
-		seats.New(lines, 1, 4).Evolve().CountOccupied(),
-		2359)
+	lib.Result{
+		Part:  1,
+		Value: Part1(lines),
+	}.Print()
 
-	lib.PrintResultAndAssert(
-		2,
-		seats.New(lines, -1, 5).Evolve().CountOccupied(),
-		2131)
+	lib.Result{
+		Part:  2,
+		Value: Part2(lines),
+	}.Print()
+
+}
+
+func Part1(lines []string) int {
+	return seats.New(lines, 1, 4).Evolve().CountOccupied()
+}
+func Part2(lines []string) int {
+	return seats.New(lines, -1, 5).Evolve().CountOccupied()
 }
