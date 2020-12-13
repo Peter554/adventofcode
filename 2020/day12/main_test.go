@@ -8,14 +8,9 @@ import (
 )
 
 func TestExample(t *testing.T) {
-	lines := lib.TestLines(`
-F10
-N3
-F7
-R90
-F11`)
-
-	instructions := parseInstructions(lines)
+	lib.UseInput("sample")
+	lines := lib.ReadInput()
+	instructions := ParseInstructions(lines)
 
 	lib.Expect(
 		t,
