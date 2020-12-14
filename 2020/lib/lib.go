@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"testing"
 )
@@ -54,6 +55,12 @@ func AsInt(s string) int {
 	return i
 }
 
+func ParseInt(s string, base int) int {
+	i, err := strconv.ParseInt(s, base, 64)
+	CheckError(err)
+	return int(i)
+}
+
 func Expect(t *testing.T, want, got interface{}) {
 	if want != got {
 		t.Errorf("Expected %v, got %v", want, got)
@@ -81,4 +88,27 @@ func (r Result) Assert(value int) Result {
 		Assert(value, r.Value)
 	}
 	return r
+}
+
+type regex struct {
+	r *regexp.Regexp
+}
+
+func RE(pattern string) *regex {
+	return &regex{regexp.MustCompile(pattern)}
+}
+
+func (r *regex) Test(s string) bool {
+	return r.r.MatchString(s)
+}
+
+func (r *regex) Groups(s string) []string {
+	match := r.r.FindStringSubmatch(s)
+	if match == nil {
+		panic(fmt.Sprintf("\"%s\" did not match pattern \"%v\"", s, r.r))
+	}
+	if len(match) == 0 {
+		panic("No groups found.")
+	}
+	return match[1:]
 }
