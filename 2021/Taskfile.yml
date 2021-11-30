@@ -1,0 +1,15 @@
+version: '3'
+
+tasks:
+  test:
+    cmds:
+      - poetry run pytest {{.CLI_ARGS}}
+
+  lint:
+    cmds:
+      - poetry run black --check ./day*/
+      - poetry run mypy ./day*/
+
+  fmt:
+    cmds:
+      - poetry run black ./day*/

@@ -1,5 +1,9 @@
-on: [push, pull_request]
-name: Test 2020
+name: CI 2020
+on:
+  push:
+    branches:
+      - main
+      - '2020-*'
 jobs:
   test:
     runs-on: ubuntu-latest
