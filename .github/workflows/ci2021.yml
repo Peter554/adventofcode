@@ -1,0 +1,28 @@
+name: CI 2021
+on:
+  push: 
+    branches:
+      - main
+      - '2021-*'
+jobs:
+  check-code:
+    name: Check the code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install taskfile
+        run: sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+      - name: Install poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install
+        working-directory: ./2021
+      - name: Lint
+        run: task lint
+        working-directory: ./2021
+      - name: Test
+        run: task test
+        working-directory: ./2021
