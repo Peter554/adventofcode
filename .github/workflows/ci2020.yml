@@ -2,7 +2,7 @@ name: CI 2020
 on:
   push:
     branches:
-      - main
+      - master
       - '2020-*'
 jobs:
   test:

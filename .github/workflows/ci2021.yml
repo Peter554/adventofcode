@@ -1,8 +1,8 @@
 name: CI 2021
 on:
-  push: 
+  push:
     branches:
-      - main
+      - master
       - '2021-*'
 jobs:
   check-code:
