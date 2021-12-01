@@ -7,9 +7,9 @@ tasks:
 
   lint:
     cmds:
-      - poetry run black --check ./day*/
-      - poetry run mypy ./day*/
+      - poetry run black --check .
+      - poetry run mypy .
 
   fmt:
     cmds:
-      - poetry run black ./day*/
+      - poetry run black .
