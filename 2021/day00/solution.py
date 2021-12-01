@@ -1,8 +1,5 @@
-from typing import Optional
-
-
 # 2020 day 1
-def part_1(file_path) -> Optional[int]:
+def part_1(file_path) -> int:
     with open(file_path, "r") as f:
         numbers = [int(line) for line in f.readlines()]
     for i, n in enumerate(numbers):
@@ -11,4 +8,4 @@ def part_1(file_path) -> Optional[int]:
                 continue
             if n + m == 2020:
                 return n * m
-    return None
+    raise Exception("no solution found")
