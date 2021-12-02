@@ -1,7 +1,7 @@
 # 2020 day 1
 def part_1(file_path) -> int:
     with open(file_path, "r") as f:
-        numbers = [int(line) for line in f.readlines()]
+        numbers = [int(line) for line in f]
     for i, n in enumerate(numbers):
         for j, m in enumerate(numbers):
             if i == j:
