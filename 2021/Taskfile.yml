@@ -1,14 +1,19 @@
 version: '3'
 
 tasks:
-  test:
-    cmds:
-      - poetry run pytest {{.CLI_ARGS}}
-
   lint:
     cmds:
       - poetry run black --check .
       - poetry run mypy .
+
+  test:
+    cmds:
+      - poetry run pytest {{.CLI_ARGS}}
+
+  check:
+    cmds:
+      - task: lint
+      - task: test
 
   fmt:
     cmds:
