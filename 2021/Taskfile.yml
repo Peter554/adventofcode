@@ -4,7 +4,7 @@ tasks:
   lint:
     cmds:
       - poetry run black --check .
-      - poetry run mypy .
+      - poetry run mypy --strict .
 
   test:
     cmds:

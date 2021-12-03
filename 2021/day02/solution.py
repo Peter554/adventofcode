@@ -1,4 +1,4 @@
-def part_1(file_path) -> int:
+def part_1(file_path: str) -> int:
     with open(file_path, "r") as f:
         lines = f.read().splitlines()
     x, depth = 0, 0
@@ -13,7 +13,7 @@ def part_1(file_path) -> int:
     return x * depth
 
 
-def part_2(file_path) -> int:
+def part_2(file_path: str) -> int:
     with open(file_path, "r") as f:
         lines = f.read().splitlines()
     x, depth, aim = 0, 0, 0

@@ -1,18 +1,18 @@
 import statistics
 
 
-def part_1(file_path) -> int:
+def part_1(file_path: str) -> int:
     with open(file_path, "r") as f:
         lines = f.read().splitlines()
     gamma, l = 0, len(lines[0])
     for i in range(l):
         if int(statistics.mode([line[i] for line in lines])):
             gamma += 2 ** (l - i - 1)
-    epsilon = (2 ** l - 1) ^ gamma
+    epsilon = int((2 ** l - 1) ^ gamma)  # mypy requires int cast?
     return gamma * epsilon
 
 
-def part_2(file_path) -> int:
+def part_2(file_path: str) -> int:
     with open(file_path, "r") as f:
         lines = f.read().splitlines()
     l = len(lines[0])
