@@ -1,6 +1,6 @@
 def part_1(file_path) -> int:
     with open(file_path, "r") as f:
-        lines = f.readlines()
+        lines = f.read().splitlines()
     x, depth = 0, 0
     for line in lines:
         cmd, n = line.split()
@@ -15,7 +15,7 @@ def part_1(file_path) -> int:
 
 def part_2(file_path) -> int:
     with open(file_path, "r") as f:
-        lines = f.readlines()
+        lines = f.read().splitlines()
     x, depth, aim = 0, 0, 0
     for line in lines:
         cmd, n = line.split()
