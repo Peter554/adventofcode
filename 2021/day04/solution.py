@@ -1,4 +1,3 @@
-import uuid
 import copy
 import itertools
 
@@ -10,15 +9,11 @@ class BingoCard:
             itertools.product(range(5), range(5))
         )
 
-        self._id = uuid.uuid4().int
         self._numbers_to_positions = copy.deepcopy(numbers_to_positions)
         self._positions_to_numbers = {
             v: k for k, v in self._numbers_to_positions.items()
         }
         self._marks: set[tuple[int, int]] = set()
-
-    def __hash__(self) -> int:
-        return self._id
 
     def mark(self, number: int) -> None:
         if number in self._numbers_to_positions:
