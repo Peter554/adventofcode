@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-import copy
+import dataclasses
 import collections
 
 
+@dataclasses.dataclass(frozen=True)
 class Point:
-    def __init__(self, *, x: int, y: int):
-        self.x = x
-        self.y = y
-
-    def __repr__(self) -> str:
-        return f"Point({self.x}, {self.y})"
+    x: int
+    y: int
 
     def __add__(self, other: Point) -> Point:
         return Point(x=self.x + other.x, y=self.y + other.y)
@@ -18,60 +15,37 @@ class Point:
     def __sub__(self, other: Point) -> Point:
         return Point(x=self.x - other.x, y=self.y - other.y)
 
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Point):
-            return False
-        return (self.x == other.x) and (self.y == other.y)
-
-    def __hash__(self) -> int:
-        return hash((self.x, self.y))
-
 
 class Path:
     """A vertical, horizontal or 45°-diagonal path of points."""
 
     def __init__(self, *, x1: int, y1: int, x2: int, y2: int):
-        self._points: list[Point] = self._get_points(x1, y1, x2, y2)
-
-    def __repr__(self) -> str:
-        return "Path(" + "->".join([repr(p) for p in self._points]) + ")"
-
-    @property
-    def points(self) -> list[Point]:
-        return copy.deepcopy(self._points)
+        self.points: tuple[Point, ...] = self._get_points(x1, y1, x2, y2)
 
     @property
     def is_diagonal(self) -> bool:
-        delta = self._points[-1] - self._points[0]
+        delta = self.points[-1] - self.points[0]
         return delta.x != 0 and delta.y != 0
 
     @staticmethod
-    def _get_points(x1: int, y1: int, x2: int, y2: int) -> list[Point]:
-        points: list[Point] = [
-            Point(
-                x=x1,
-                y=y1,
-            )
-        ]
-        last_point = Point(
-            x=x2,
-            y=y2,
-        )
+    def _get_points(x1: int, y1: int, x2: int, y2: int) -> tuple[Point, ...]:
+        points: list[Point] = [Point(x=x1, y=y1)]
+        last_point = Point(x=x2, y=y2)
         if last_point == points[0]:
-            return points
+            return tuple(points)
         delta = last_point - points[0]
         assert (
             (abs(delta.x) == abs(delta.y)) or delta.x == 0 or delta.y == 0
         ), "Invalid path angle."  # sanity check
-        if abs(delta.x) > 0:
-            delta.x = int(delta.x / abs(delta.x))
-        if abs(delta.y) > 0:
-            delta.y = int(delta.y / abs(delta.y))
+        delta = Point(
+            x=int(delta.x / abs(delta.x)) if delta.x else 0,
+            y=int(delta.y / abs(delta.y)) if delta.y else 0,
+        )
         while True:
             points.append(points[-1] + delta)
             if points[-1] == last_point:
                 break
-        return points
+        return tuple(points)
 
 
 def part_1(file_path: str) -> int:
