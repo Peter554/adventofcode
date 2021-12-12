@@ -6,14 +6,14 @@ def part_1(file_path: str) -> int:
         lines = f.read().splitlines()
 
     caves = collections.defaultdict(set)
-    visit_once = set()
+    small_caves = set()
     for line in lines:
         cave_from, cave_to = line.split("-")
         caves[cave_from].add(cave_to)
         caves[cave_to].add(cave_from)
         for cave in (cave_from, cave_to):
             if cave == cave.lower():
-                visit_once.add(cave)
+                small_caves.add(cave)
 
     paths: set[tuple[str, ...]] = {("start",)}
     while True:
@@ -21,7 +21,7 @@ def part_1(file_path: str) -> int:
             if path[-1] == "end":
                 continue
             paths.remove(path)
-            unvisitable = {cave for cave in path if cave in visit_once}
+            unvisitable = {cave for cave in path if cave in small_caves}
             for cave in caves[path[-1]] - unvisitable:
                 paths.add((*path, cave))
         if all([p[-1] == "end" for p in paths]):

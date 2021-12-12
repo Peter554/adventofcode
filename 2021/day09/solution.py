@@ -3,7 +3,7 @@ def part_1(file_path: str) -> int:
         heights = [[int(n) for n in list(line.strip())] for line in f]
     count = 0
     for i, row in enumerate(heights):
-        for j, height in enumerate(heights[i]):
+        for j, height in enumerate(row):
             low = True
             for (i2, j2) in [(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)]:
                 if i2 < 0 or i2 >= len(heights) or j2 < 0 or j2 >= len(heights[0]):
@@ -22,7 +22,7 @@ def part_2(file_path: str) -> int:
 
     points: set[tuple[int, int]] = set()
     for i, row in enumerate(heights):
-        for j, height in enumerate(heights[i]):
+        for j, height in enumerate(row):
             if height == 9:
                 continue
             points.add((i, j))
