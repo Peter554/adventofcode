@@ -26,9 +26,9 @@ def part_1(file_path: str) -> int:
                 flashing.remove(k)
                 flashed.add(k)
             flashing = {k for k, v in states.items() if v >= 10 and k not in flashed}
-        flashes += len(flashed)
         for k in flashed:
             states[k] = 0
+        flashes += len(flashed)
     return flashes
 
 
