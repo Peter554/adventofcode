@@ -8,10 +8,10 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class InputUtils {
-    public static String readInputAsString(Object testClass) {
+    public static String readInputAsString(Object testClass, String filename) {
         Path inputPath;
         try {
-            inputPath = Paths.get(testClass.getClass().getResource("input").toURI());
+            inputPath = Paths.get(testClass.getClass().getResource(filename).toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -23,10 +23,14 @@ public class InputUtils {
         }
     }
 
-    public static List<String> readInputAsStrings(Object testClass) {
+    public static String readInputAsString(Object testClass) {
+        return readInputAsString(testClass, "input");
+    }
+
+    public static List<String> readInputAsStrings(Object testClass, String filename) {
         Path inputPath;
         try {
-            inputPath = Paths.get(testClass.getClass().getResource("input").toURI());
+            inputPath = Paths.get(testClass.getClass().getResource(filename).toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -36,5 +40,9 @@ public class InputUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static List<String> readInputAsStrings(Object testClass) {
+        return readInputAsStrings(testClass, "input");
     }
 }
