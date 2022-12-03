@@ -3,22 +3,28 @@ on:
   push:
     branches:
       - master
-      - '2022-*'
+      - "2022-*"
 jobs:
   check-code:
     name: Check the code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - name: Install taskfile
         run: sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
       - name: Install poetry
         run: curl -sSL https://install.python-poetry.org | python -
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: poetry install
+        working-directory: ./2022
+      - name: Install JS/TS dependencies
+        run: npm install
         working-directory: ./2022
       - name: Check
         run: task check
