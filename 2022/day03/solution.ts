@@ -26,14 +26,12 @@ export function part2(filePath: string): number {
   let prioritySum = 0;
   for (let i = 0; i < fileData.length - 2; i += 3) {
     const elfGroupRucksacks = fileData.slice(i, i + 3);
-
     const commonItems = elfGroupRucksacks
       .map((rucksack) => rucksack.split(""))
       .map((rucksackContents) => new Set(rucksackContents))
       .reduce((state, action) => {
         return setIntersection(state, action);
       });
-
     let commonItem = [...commonItems][0];
     if (commonItem.toLowerCase() != commonItem) {
       commonItem = commonItem.toLowerCase();
