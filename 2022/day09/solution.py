@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 import dataclasses
+import time
 from typing import Literal
+import argparse
+
+from rich.live import Live
+from rich.text import Text
 
 
 @dataclasses.dataclass(frozen=True)
@@ -80,3 +85,47 @@ def part_1(file_path: str) -> int:
 
 def part_2(file_path: str) -> int:
     return solve_puzzle(file_path, 10)
+
+
+def render_rope_state(
+    rope_state: tuple[Point2D, ...], render_box: tuple[Point2D, Point2D]
+):
+    bottom_left, top_right = render_box
+    s = ""
+    for y in range(top_right.y, bottom_left.y - 1, -1):
+        for x in range(bottom_left.x, top_right.x + 1):
+            p = Point2D(x, y)
+            if p in rope_state:
+                if p == rope_state[0]:
+                    s += "H"
+                elif p == rope_state[-1]:
+                    s += "T"
+                else:
+                    s += "#"
+            else:
+                s += "."
+        s += "\n"
+    return Text(s)
+
+
+if __name__ == "__main__":
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("--file", default="day09/sample2")
+    arg_parser.add_argument("--xmax", type=int, default=20)
+    arg_parser.add_argument("--ymax", type=int, default=20)
+    arg_parser.add_argument("--dt", type=float, default=0.2)
+    args = arg_parser.parse_args()
+
+    with open(args.file) as f:
+        instructions = [line.strip() for line in f.readlines()]
+
+    rope = Rope(10)
+    render_box = (Point2D(-args.xmax, -args.ymax), Point2D(args.xmax, args.ymax))
+    with Live(render_rope_state(rope.state, render_box), auto_refresh=False) as live:
+        for instruction in instructions:
+            direction, count = instruction.split(" ")
+            for _ in range(int(count)):
+                time.sleep(args.dt)
+                rope.evolve(parse_direction(direction))
+                live.update(render_rope_state(rope.state, render_box))
+                live.refresh()
