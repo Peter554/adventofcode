@@ -17,9 +17,6 @@ class Point2D:
     def touching(self, other: Point2D) -> bool:
         return max(abs(self.x - other.x), abs(self.y - other.y)) <= 1
 
-    def same_row_column(self, other: Point2D) -> bool:
-        return self.x == other.x or self.y == other.y
-
 
 DIRECTION_MAPPING = {
     "R": Point2D(1, 0),
@@ -37,14 +34,22 @@ def part_1(file_path: str) -> int:
     tail_history = {tail}
     for instruction in instructions:
         direction, count = instruction.split(" ")
-        delta = DIRECTION_MAPPING[direction]
         for _ in range(int(count)):
             t = head
-            head = head + delta
+            head = head + DIRECTION_MAPPING[direction]
             if not tail.touching(head):
                 tail = t
                 tail_history.add(tail)
     return len(tail_history)
+
+
+def get_delta(p1: Point2D, p2: Point2D) -> Point2D:
+    if p1.touching(p2):
+        return Point2D(0, 0)
+    return Point2D(
+        (p2.x - p1.x) // (abs(p2.x - p1.x) or 1),
+        (p2.y - p1.y) // (abs(p2.y - p1.y) or 1),
+    )
 
 
 def part_2(file_path: str) -> int:
@@ -58,33 +63,8 @@ def part_2(file_path: str) -> int:
         for _ in range(int(count)):
             next_rope = [rope[0] + DIRECTION_MAPPING[direction]]
             for idx in range(1, 10):
-                if rope[idx].touching(next_rope[idx - 1]):
-                    # no need to move
-                    next_rope.append(rope[idx])
-                else:
-                    # need to move
-                    if rope[idx].same_row_column(next_rope[idx - 1]):
-                        # move horizontally
-                        deltas = [
-                            Point2D(1, 0),
-                            Point2D(-1, 0),
-                            Point2D(0, 1),
-                            Point2D(0, -1),
-                        ]
-                    else:
-                        # move diagonally
-                        deltas = [
-                            Point2D(1, 1),
-                            Point2D(1, -1),
-                            Point2D(-1, 1),
-                            Point2D(-1, -1),
-                        ]
-                    for delta in deltas:
-                        if (candidate := rope[idx] + delta).touching(
-                            next_rope[idx - 1]
-                        ):
-                            next_rope.append(candidate)
-                            break
+                delta = get_delta(rope[idx], next_rope[idx - 1])
+                next_rope.append(rope[idx] + delta)
             rope = next_rope
             tail_history.add(rope[-1])
     return len(tail_history)
