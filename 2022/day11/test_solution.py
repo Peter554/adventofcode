@@ -7,6 +7,5 @@ def test_part_1():
 
 
 def test_part_2():
-    ...
-    # assert solution.part_2("day11/sample") == 2713310158
-    # assert solution.part_2("day11/input") == 1
+    assert solution.part_2("day11/sample") == 2713310158
+    assert solution.part_2("day11/input") == 14314925001

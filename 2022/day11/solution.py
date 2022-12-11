@@ -4,6 +4,7 @@ import dataclasses
 import re
 from collections import deque
 from typing import Callable
+import functools
 
 
 @dataclasses.dataclass
@@ -12,6 +13,7 @@ class Monkey:
     item_worries: deque[int]
     inspection_operation: Callable[[int], int]
     inspection_test: Callable[[int], int]
+    inspection_test_factor: int
 
     def __post_init__(self):
         self.inspection_count = 0
@@ -60,6 +62,7 @@ class Monkey:
             item_worries,
             inspection_operation,
             lambda x: monkey_on_true if x % test_divisible_by == 0 else monkey_on_false,
+            test_divisible_by,
         )
 
     def act(
@@ -94,9 +97,17 @@ def part_2(file_path: str) -> int:
     monkeys_list = [Monkey.parse(raw_monkey) for raw_monkey in raw_monkeys]
     monkeys = {monkey.id: monkey for monkey in monkeys_list}
 
+    factor = functools.reduce(
+        lambda a, b: a * b,
+        [monkey.inspection_test_factor for monkey in monkeys.values()],
+    )
+
+    def relief_operation(worry: int) -> int:
+        return worry - factor * (worry // factor)
+
     for _ in range(10_000):
         for monkey in monkeys.values():
-            monkey.act(monkeys, lambda worry: worry)
+            monkey.act(monkeys, relief_operation)
 
     monkey_inspection_counts = sorted(
         [monkey.inspection_count for monkey in monkeys.values()], reverse=True
