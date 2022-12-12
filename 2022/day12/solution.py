@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import dataclasses
-import heapq
+
+from common.shortest_path import find_shortest_paths
 
 
 @dataclasses.dataclass(frozen=True)
@@ -27,32 +28,15 @@ def part_1(file_path: str) -> int:
     raw_data[destination] = "z"
     terrain = {k: ord(v) - ord("a") for k, v in raw_data.items()}
 
-    def get_neighbors(point: Point2D):
+    def get_state_transitions(state: Point2D):
         return tuple(
-            (point + delta, 1)
-            for delta in [
-                Point2D(1, 0),
-                Point2D(-1, 0),
-                Point2D(0, 1),
-                Point2D(0, -1),
-            ]
-            if point + delta in terrain and terrain[point + delta] <= terrain[point] + 1
+            (1, state + delta)
+            for delta in [Point2D(1, 0), Point2D(-1, 0), Point2D(0, 1), Point2D(0, -1)]
+            if state + delta in terrain and terrain[state + delta] <= terrain[state] + 1
         )
 
-    shortest_paths: dict[Point2D, int] = {}
-    to_visit: list[tuple[int, int, Point2D]] = []  # heapq
-    tie_break = 0  # in case of equal cost
-    heapq.heappush(to_visit, (0, tie_break, origin))
-    while to_visit:
-        cost, _, point = heapq.heappop(to_visit)
-        if point in shortest_paths and shortest_paths[point] <= cost:
-            continue
-        shortest_paths[point] = cost
-        for neighbor, delta_cost in get_neighbors(point):
-            tie_break += 1
-            heapq.heappush(to_visit, (cost + delta_cost, tie_break, neighbor))
-
-    return shortest_paths[destination]
+    shortest_paths = find_shortest_paths(origin, get_state_transitions)
+    return shortest_paths[destination].cost
 
 
 def part_2(file_path: str) -> int:
@@ -70,29 +54,14 @@ def part_2(file_path: str) -> int:
     raw_data[destination] = "z"
     terrain = {k: ord(v) - ord("a") for k, v in raw_data.items()}
 
-    def get_neighbors(point: Point2D):
+    def get_state_transitions(state: Point2D):
         return tuple(
-            (point + delta, 1)
-            for delta in [
-                Point2D(1, 0),
-                Point2D(-1, 0),
-                Point2D(0, 1),
-                Point2D(0, -1),
-            ]
-            if point + delta in terrain and terrain[point + delta] >= terrain[point] - 1
+            (1, state + delta)
+            for delta in [Point2D(1, 0), Point2D(-1, 0), Point2D(0, 1), Point2D(0, -1)]
+            if state + delta in terrain and terrain[state + delta] >= terrain[state] - 1
         )
 
-    shortest_paths: dict[Point2D, int] = {}
-    to_visit: list[tuple[int, int, Point2D]] = []  # heapq
-    tie_break = 0  # in case of equal cost
-    heapq.heappush(to_visit, (0, tie_break, destination))
-    while to_visit:
-        cost, _, point = heapq.heappop(to_visit)
-        if point in shortest_paths and shortest_paths[point] <= cost:
-            continue
-        shortest_paths[point] = cost
-        for neighbor, delta_cost in get_neighbors(point):
-            tie_break += 1
-            heapq.heappush(to_visit, (cost + delta_cost, tie_break, neighbor))
-
-    return min(shortest_paths[origin] for origin in origins if origin in shortest_paths)
+    shortest_paths = find_shortest_paths(destination, get_state_transitions)
+    return min(
+        shortest_paths[origin].cost for origin in origins if origin in shortest_paths
+    )
