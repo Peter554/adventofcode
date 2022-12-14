@@ -1,17 +1,5 @@
-from __future__ import annotations
-
-import dataclasses
-
+from common.point2d import Point2D
 from common.shortest_path import find_shortest_paths
-
-
-@dataclasses.dataclass(frozen=True)
-class Point2D:
-    x: int
-    y: int
-
-    def __add__(self, other: Point2D) -> Point2D:
-        return Point2D(self.x + other.x, self.y + other.y)
 
 
 def part_1(file_path: str) -> int:

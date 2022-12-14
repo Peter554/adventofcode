@@ -1,6 +1,3 @@
-from __future__ import annotations
-
-import dataclasses
 import time
 from typing import Literal
 import argparse
@@ -8,20 +5,11 @@ import argparse
 from rich.live import Live
 from rich.text import Text
 
+from common.point2d import Point2D
 
-@dataclasses.dataclass(frozen=True)
-class Point2D:
-    x: int
-    y: int
 
-    def __add__(self, other: Point2D) -> Point2D:
-        return Point2D(self.x + other.x, self.y + other.y)
-
-    def __mul__(self, f: int) -> Point2D:
-        return Point2D(self.x * f, self.y * f)
-
-    def touching(self, other: Point2D) -> bool:
-        return max(abs(self.x - other.x), abs(self.y - other.y)) <= 1
+def touching(p1: Point2D, p2: Point2D) -> bool:
+    return max(abs(p1.x - p2.x), abs(p1.y - p2.y)) <= 1
 
 
 Direction = Literal["U", "D", "L", "R"]
@@ -56,7 +44,7 @@ class Rope:
 
     @staticmethod
     def _get_delta(tail: Point2D, head: Point2D) -> Point2D:
-        if tail.touching(head):
+        if touching(tail, head):
             return Point2D(0, 0)
         # same row/column: move horizontal
         # else: move diagonal
