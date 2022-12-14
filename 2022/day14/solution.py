@@ -1,18 +1,24 @@
-from __future__ import annotations
-
-import dataclasses
-
-from common.point2d import Point2D
+import enum
 
 
-def normalize(p: Point2D) -> Point2D:
-    assert p.x == 0 or p.y == 0
-    size = abs(p.x) + abs(p.y)
-    return Point2D(p.x // size, p.y // size)
+class CaveTexture(enum.Enum):
+    EMPTY = enum.auto()
+    ROCK = enum.auto()
+    SAND = enum.auto()
 
 
-def parse_rock(raw_rocks: list[str]) -> set[Point2D]:
-    rock: set[Point2D] = set()
+Cave = list[list[CaveTexture]]
+
+
+def initialize_cave(raw_rocks: list[str], floor_depth: int | None) -> Cave:
+    from common.point2d import Point2D
+
+    def normalize(p: Point2D) -> Point2D:
+        assert p.x == 0 or p.y == 0
+        size = abs(p.x) + abs(p.y)
+        return Point2D(p.x // size, p.y // size)
+
+    rocks: set[Point2D] = set()
     for raw_rock in raw_rocks:
         vertices = [
             Point2D(int(raw_vertex.split(",")[0]), int(raw_vertex.split(",")[1]))
@@ -23,78 +29,56 @@ def parse_rock(raw_rocks: list[str]) -> set[Point2D]:
             segment_rocks = [vertex_from]
             while vertex_to != segment_rocks[-1]:
                 segment_rocks.append(segment_rocks[-1] + delta)
-            rock.update(segment_rocks)
-    return rock
+            rocks.update(segment_rocks)
+
+    cave: list[list[CaveTexture]] = []
+    for y in range(max(rock.y for rock in rocks) + 1 + (floor_depth or 1) - 1):
+        cave.append([])
+        for x in range(1000):  # assume big enough
+            cave[-1].append(
+                CaveTexture.ROCK if Point2D(x, y) in rocks else CaveTexture.EMPTY
+            )
+    if floor_depth is not None:
+        cave.append([CaveTexture.ROCK] * 1000)
+    return cave
 
 
-@dataclasses.dataclass
-class SandWorldV1:
-    rock: set[Point2D]
-    sand_falling: Point2D | None = None
-    sand_resting: set[Point2D] = dataclasses.field(default_factory=set)
+def drop_sand(cave: Cave, from_: tuple[int, int] = (500, 0)) -> bool:
+    x, y = from_
+    if y == len(cave) - 1:
+        # falls into the abyss
+        return False
+    if cave[y + 1][x] not in (CaveTexture.ROCK, CaveTexture.SAND):
+        return drop_sand(cave, (x, y + 1))
+    elif cave[y + 1][x - 1] not in (CaveTexture.ROCK, CaveTexture.SAND):
+        return drop_sand(cave, (x - 1, y + 1))
+    elif cave[y + 1][x + 1] not in (CaveTexture.ROCK, CaveTexture.SAND):
+        return drop_sand(cave, (x + 1, y + 1))
+    cave[y][x] = CaveTexture.SAND
+    return True
 
-    @property
-    def overflowing(self) -> bool:
-        return self.sand_falling is not None and self.sand_falling.y > max(
-            p.y for p in self.rock
-        )
 
-    def evolve(self) -> None:
-        if self.sand_falling is None:
-            self.sand_falling = Point2D(500, 0)
-            return
-
-        for delta in [Point2D(0, 1), Point2D(-1, 1), Point2D(1, 1)]:
-            p = self.sand_falling + delta
-            if p not in self.rock and p not in self.sand_resting:
-                self.sand_falling = p
-                return
-        self.sand_resting.add(self.sand_falling)
-        self.sand_falling = None
+def count_sand(cave: Cave) -> int:
+    return sum(
+        cave_texture == CaveTexture.SAND
+        for cave_row in cave
+        for cave_texture in cave_row
+    )
 
 
 def part_1(file_path: str) -> int:
     with open(file_path) as f:
         raw_rocks = [line.strip() for line in f.readlines()]
-    rock = parse_rock(raw_rocks)
-    sandworld = SandWorldV1(rock)
-    while not sandworld.overflowing:
-        sandworld.evolve()
-    return len(sandworld.sand_resting)
-
-
-@dataclasses.dataclass
-class SandWorldV2:
-    rock: set[Point2D]
-    sand_falling: Point2D | None = None
-    sand_resting: set[Point2D] = dataclasses.field(default_factory=set)
-
-    def __post_init__(self):
-        self.floor = max(p.y for p in self.rock) + 2
-
-    @property
-    def overflowing(self) -> bool:
-        return Point2D(500, 0) in self.sand_resting
-
-    def evolve(self) -> None:
-        if self.sand_falling is None:
-            self.sand_falling = Point2D(500, 0)
-            return
-
-        for delta in [Point2D(0, 1), Point2D(-1, 1), Point2D(1, 1)]:
-            p = self.sand_falling + delta
-            if p not in self.rock and p not in self.sand_resting and p.y < self.floor:
-                self.sand_falling = p
-                return
-        self.sand_resting.add(self.sand_falling)
-        self.sand_falling = None
+    cave = initialize_cave(raw_rocks, None)
+    while drop_sand(cave):
+        ...
+    return count_sand(cave)
 
 
 def part_2(file_path: str) -> int:
     with open(file_path) as f:
         raw_rocks = [line.strip() for line in f.readlines()]
-    rock = parse_rock(raw_rocks)
-    sandworld = SandWorldV2(rock)
-    while not sandworld.overflowing:
-        sandworld.evolve()
-    return len(sandworld.sand_resting)
+    cave = initialize_cave(raw_rocks, 2)
+    while drop_sand(cave) and cave[0][500] == CaveTexture.EMPTY:
+        ...
+    return count_sand(cave)
