@@ -46,19 +46,25 @@ def initialize_cave(raw_rocks: list[str], floor_depth: int | None) -> Cave:
     return cave
 
 
-def drop_sand(cave: Cave, from_: tuple[int, int] = (500, 0)) -> bool:
+Path = list[tuple[int, int]]
+
+
+def drop_sand(cave: Cave, from_: tuple[int, int]) -> tuple[bool, Path]:
     x, y = from_
     if y == len(cave) - 1:
         # falls into the abyss
-        return False
+        return False, [from_]
     if cave[y + 1][x] not in (CaveTexture.ROCK, CaveTexture.SAND):
-        return drop_sand(cave, (x, y + 1))
+        resting, path = drop_sand(cave, (x, y + 1))
+        return resting, [from_, *path]
     elif cave[y + 1][x - 1] not in (CaveTexture.ROCK, CaveTexture.SAND):
-        return drop_sand(cave, (x - 1, y + 1))
+        resting, path = drop_sand(cave, (x - 1, y + 1))
+        return resting, [from_, *path]
     elif cave[y + 1][x + 1] not in (CaveTexture.ROCK, CaveTexture.SAND):
-        return drop_sand(cave, (x + 1, y + 1))
+        resting, path = drop_sand(cave, (x + 1, y + 1))
+        return resting, [from_, *path]
     cave[y][x] = CaveTexture.SAND
-    return True
+    return True, [from_]
 
 
 def count_sand(cave: Cave) -> int:
@@ -73,8 +79,12 @@ def part_1(file_path: str) -> int:
     with open(file_path) as f:
         raw_rocks = [line.strip() for line in f.readlines()]
     cave = initialize_cave(raw_rocks, None)
-    while drop_sand(cave):
-        ...
+    path: Path = [(500, 0)]
+    while path:
+        resting, path_extension = drop_sand(cave, from_=path.pop())
+        path.extend(path_extension[:-1])
+        if not resting:
+            break
     return count_sand(cave)
 
 
@@ -82,8 +92,12 @@ def part_2(file_path: str) -> int:
     with open(file_path) as f:
         raw_rocks = [line.strip() for line in f.readlines()]
     cave = initialize_cave(raw_rocks, 2)
-    while drop_sand(cave) and cave[0][500] == CaveTexture.EMPTY:
-        ...
+    path: Path = [(500, 0)]
+    while path:
+        resting, path_extension = drop_sand(cave, from_=path.pop())
+        path.extend(path_extension[:-1])
+        if not resting:
+            break
     return count_sand(cave)
 
 
@@ -130,7 +144,11 @@ if __name__ == "__main__":
     with open("day14/input") as f:
         raw_rocks = [line.strip() for line in f.readlines()]
     cave = initialize_cave(raw_rocks, 2)
-    while drop_sand(cave) and cave[0][500] == CaveTexture.EMPTY:
-        ...
+    path: Path = [(500, 0)]
+    while path:
+        resting, path_extension = drop_sand(cave, from_=path.pop())
+        path.extend(path_extension[:-1])
+        if not resting:
+            break
     img = create_cave_image(cave)
     img.save("day14/cave.png")
