@@ -1,6 +1,7 @@
 import enum
 
-import numpy
+import numpy as np
+import numpy.typing as npt
 from PIL import Image
 
 
@@ -10,7 +11,7 @@ class CaveTexture(enum.Enum):
     SAND = enum.auto()
 
 
-Cave = list[list[CaveTexture]]
+Cave = npt.NDArray[np.uint8]
 
 
 def initialize_cave(raw_rocks: list[str], floor_depth: int | None) -> Cave:
@@ -34,15 +35,14 @@ def initialize_cave(raw_rocks: list[str], floor_depth: int | None) -> Cave:
                 segment_rocks.append(segment_rocks[-1] + delta)
             rocks.update(segment_rocks)
 
-    cave: list[list[CaveTexture]] = []
-    for y in range(max(rock.y for rock in rocks) + 1 + (floor_depth or 1) - 1):
-        cave.append([])
-        for x in range(1000):  # assume big enough
-            cave[-1].append(
-                CaveTexture.ROCK if Point2D(x, y) in rocks else CaveTexture.EMPTY
-            )
+    cave_height = max(rock.y for rock in rocks) + 1 + (floor_depth or 0)
+    cave: Cave = np.zeros(dtype=np.uint8, shape=(cave_height, 1000))
+    cave.fill(CaveTexture.EMPTY.value)
+    for (y, x), _ in np.ndenumerate(cave):
+        if Point2D(x, y) in rocks:
+            cave[y, x] = CaveTexture.ROCK.value
     if floor_depth is not None:
-        cave.append([CaveTexture.ROCK] * 1000)
+        cave[-1, :] = CaveTexture.ROCK.value
     return cave
 
 
@@ -54,25 +54,21 @@ def drop_sand(cave: Cave, from_: tuple[int, int]) -> tuple[bool, Path]:
     if y == len(cave) - 1:
         # falls into the abyss
         return False, [from_]
-    if cave[y + 1][x] not in (CaveTexture.ROCK, CaveTexture.SAND):
+    if cave[y + 1, x] not in (CaveTexture.ROCK.value, CaveTexture.SAND.value):
         resting, path = drop_sand(cave, (x, y + 1))
         return resting, [from_, *path]
-    elif cave[y + 1][x - 1] not in (CaveTexture.ROCK, CaveTexture.SAND):
+    elif cave[y + 1, x - 1] not in (CaveTexture.ROCK.value, CaveTexture.SAND.value):
         resting, path = drop_sand(cave, (x - 1, y + 1))
         return resting, [from_, *path]
-    elif cave[y + 1][x + 1] not in (CaveTexture.ROCK, CaveTexture.SAND):
+    elif cave[y + 1, x + 1] not in (CaveTexture.ROCK.value, CaveTexture.SAND.value):
         resting, path = drop_sand(cave, (x + 1, y + 1))
         return resting, [from_, *path]
-    cave[y][x] = CaveTexture.SAND
+    cave[y, x] = CaveTexture.SAND.value
     return True, [from_]
 
 
 def count_sand(cave: Cave) -> int:
-    return sum(
-        cave_texture == CaveTexture.SAND
-        for cave_row in cave
-        for cave_texture in cave_row
-    )
+    return np.count_nonzero(cave == CaveTexture.SAND.value)
 
 
 def part_1(file_path: str) -> int:
@@ -106,29 +102,29 @@ RGB = tuple[int, int, int]
 
 def create_cave_image(
     cave: Cave,
-    color_map: dict[CaveTexture, RGB] | None = None,
+    color_map: dict[int, RGB] | None = None,
     size_factor: int = 8,
 ):
     color_map = color_map or {
-        CaveTexture.EMPTY: (211, 211, 211),
-        CaveTexture.ROCK: (128, 128, 128),
-        CaveTexture.SAND: (194, 178, 128),
+        CaveTexture.EMPTY.value: (211, 211, 211),
+        CaveTexture.ROCK.value: (128, 128, 128),
+        CaveTexture.SAND.value: (194, 178, 128),
     }
 
     x_min = min(
         x
         for cave_row in cave
         for x, cave_texture in enumerate(cave_row)
-        if cave_texture == CaveTexture.SAND
+        if cave_texture == CaveTexture.SAND.value
     )
     x_max = max(
         x
         for cave_row in cave
         for x, cave_texture in enumerate(cave_row)
-        if cave_texture == CaveTexture.SAND
+        if cave_texture == CaveTexture.SAND.value
     )
-    img_array = numpy.zeros(
-        dtype=numpy.uint8,
+    img_array = np.zeros(
+        dtype=np.uint8,
         shape=(size_factor * len(cave), size_factor * (x_max - x_min + 1), 3),
     )
     for y, cave_row in enumerate(cave):
