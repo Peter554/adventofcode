@@ -16,3 +16,7 @@ class Point2D:
 
     def __mul__(self, f: int) -> Point2D:
         return Point2D(self.x * f, self.y * f)
+
+    def taxicab(self, other: Point2D) -> int:
+        p = self - other
+        return abs(p.x) + abs(p.y)

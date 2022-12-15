@@ -4,6 +4,8 @@ import numpy as np
 import numpy.typing as npt
 from PIL import Image
 
+from common.point2d import Point2D
+
 
 class CaveTexture(enum.Enum):
     EMPTY = enum.auto()
@@ -15,8 +17,6 @@ Cave = npt.NDArray[np.uint8]
 
 
 def initialize_cave(raw_rocks: list[str], floor_depth: int | None) -> Cave:
-    from common.point2d import Point2D
-
     def normalize(p: Point2D) -> Point2D:
         assert p.x == 0 or p.y == 0
         size = abs(p.x) + abs(p.y)
