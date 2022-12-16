@@ -1,6 +1,6 @@
 import dataclasses
 
-from common.shortest_path import find_shortest_paths
+from common.shortest_path import find_shortest_paths, find_shortest_paths_simple
 
 # https://de.wikipedia.org/wiki/Dijkstra-Algorithmus#Beispiel_mit_bekanntem_Zielknoten
 
@@ -75,6 +75,11 @@ def test_find_paths():
     )
     assert shortest_path.origin == FRANKFURT
     assert shortest_path.destination == MUENCHEN
+
+    assert (
+        find_shortest_paths_simple(FRANKFURT, lambda city: CONNECTIONS[city])[MUENCHEN]
+        == 487
+    )
 
 
 def test_find_paths_with_explicit_destination():
