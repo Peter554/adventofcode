@@ -51,7 +51,7 @@ def remove_useless_valves(
             if valves[destination] == 0:
                 continue
             next_tunnel_paths[origin][destination] = cost
-    return next_tunnel_paths, {k: v for k, v in valves.items() if v != 0}
+    return next_tunnel_paths, {k: v for k, v in valves.items() if v != 0 and k != "AA"}
 
 
 class TunnelState(typing.NamedTuple):
