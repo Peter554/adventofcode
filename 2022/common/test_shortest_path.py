@@ -80,25 +80,3 @@ def test_find_paths():
         find_shortest_paths_simple(FRANKFURT, lambda city: CONNECTIONS[city])[MUENCHEN]
         == 487
     )
-
-
-def test_find_paths_with_explicit_destination():
-    shortest_paths = find_shortest_paths(FRANKFURT, lambda city: CONNECTIONS[city])
-    assert shortest_paths[MUENCHEN].cost == 487
-    assert STUTTGART in shortest_paths
-
-    shortest_paths = find_shortest_paths(
-        FRANKFURT, lambda city: CONNECTIONS[city], destinations={MUENCHEN}
-    )
-    assert shortest_paths[MUENCHEN].cost == 487
-    assert STUTTGART not in shortest_paths
-
-    shortest_paths = find_shortest_paths(
-        FRANKFURT, lambda city: CONNECTIONS[city], max_cost=487
-    )
-    assert shortest_paths[MUENCHEN].cost == 487
-    assert STUTTGART not in shortest_paths
-    shortest_paths = find_shortest_paths(
-        FRANKFURT, lambda city: CONNECTIONS[city], max_cost=486
-    )
-    assert MUENCHEN not in shortest_paths
