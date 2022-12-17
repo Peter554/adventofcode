@@ -1,4 +1,4 @@
-from day16.solution_part_1 import solve, get_valve_tour_flow
+from day16.solution_part_1 import solve, get_valve_tour_flow, tweak_valve_tour
 
 
 def test_get_valve_tour_flow():
@@ -24,6 +24,13 @@ def test_get_valve_tour_flow():
     assert get_valve_tour_flow(valves, tunnel_paths, 6)(valve_tour) == 13 * 4 + 20
     assert get_valve_tour_flow(valves, tunnel_paths, 7)(valve_tour) == 13 * 5 + 20 * 2
     assert get_valve_tour_flow(valves, tunnel_paths, 8)(valve_tour) == 13 * 6 + 20 * 3
+
+
+def test_tweak_valve_tour():
+    valve_tour = ("A", "B", "C", "D", "E")
+    tweaked_valve_tour = tweak_valve_tour(valve_tour)
+    assert len(valve_tour) == len(tweaked_valve_tour)
+    assert set(tweaked_valve_tour) == set(valve_tour)
 
 
 def test_solve():

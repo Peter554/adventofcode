@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections
 import re
+import random
 
 from common.shortest_path import find_shortest_paths_simple
 
@@ -54,6 +55,12 @@ def get_valve_tour_flow(valves: Valves, tunnel_paths: TunnelPaths, end_timestep:
         return final_flow
 
     return f
+
+
+def tweak_valve_tour(vt: ValveTour) -> ValveTour:
+    start_idx = random.randint(0, len(vt) - 2)
+    end_idx = random.randint(start_idx + 1, len(vt) - 1)
+    return (*vt[:start_idx], *reversed(vt[start_idx : end_idx + 1]), *vt[end_idx + 1 :])
 
 
 def solve(file_path: str) -> int:
