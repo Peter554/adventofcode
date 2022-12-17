@@ -5,12 +5,13 @@ import re
 import random
 
 from common.shortest_path import find_shortest_paths_simple
+from common.simulated_annealing import anneal
 
 
 Valves = dict[str, int]
 TunnelConnections = dict[str, list[str]]
 TunnelPaths = dict[str, dict[str, int]]
-ValveTour: tuple[str, ...]
+ValveTour = tuple[str, ...]
 
 
 def parse_valves_and_tunnels(
@@ -70,4 +71,12 @@ def solve(file_path: str) -> int:
     tunnel_paths = derive_tunnel_paths(tunnel_connections)
     valves = {k: v for k, v in valves.items() if v != 0}
 
-    return 1
+    final_valve_tour = anneal(
+        initial_state=tuple(valves),
+        state_cost=lambda vt: -1 * get_valve_tour_flow(valves, tunnel_paths, 30)(vt),
+        tweak_state=tweak_valve_tour,
+        initial_temperature=1000,
+        iterations_per_temperature=500,
+        temperature_decay_factor=0.95,
+    )
+    return get_valve_tour_flow(valves, tunnel_paths, 30)(final_valve_tour)

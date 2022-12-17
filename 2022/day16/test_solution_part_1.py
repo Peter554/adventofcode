@@ -1,3 +1,5 @@
+import random
+
 from day16.solution_part_1 import solve, get_valve_tour_flow, tweak_valve_tour
 
 
@@ -29,10 +31,12 @@ def test_get_valve_tour_flow():
 def test_tweak_valve_tour():
     valve_tour = ("A", "B", "C", "D", "E")
     tweaked_valve_tour = tweak_valve_tour(valve_tour)
+    assert tweaked_valve_tour != valve_tour
     assert len(valve_tour) == len(tweaked_valve_tour)
     assert set(tweaked_valve_tour) == set(valve_tour)
 
 
 def test_solve():
+    random.seed(42)
     assert solve("day16/sample") == 1651
-    # assert solve("day16/input") == 1701
+    assert solve("day16/input") == 1701
