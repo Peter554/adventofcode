@@ -115,13 +115,13 @@ class RockChamber:
         rock = next(self.rock_cycle).move(Point2D(2, self.height + 3))
         while True:
             air_movement = next(self.air_cycle)
-            _, rock = self.try_move(rock, air_movement)
-            ok, rock = self.try_move(rock, Point2D(0, -1))
-            if not ok:
+            _, rock = self._try_move(rock, air_movement)
+            moved, rock = self._try_move(rock, Point2D(0, -1))
+            if not moved:
                 self.rubble = self.rubble.union(rock.atoms)
                 break
 
-    def try_move(self, rock: Rock, delta: Point2D) -> tuple[bool, Rock]:
+    def _try_move(self, rock: Rock, delta: Point2D) -> tuple[bool, Rock]:
         moved_rock = rock.move(delta)
         if min(atom.x for atom in moved_rock.atoms) < 1:
             return False, rock
@@ -132,6 +132,16 @@ class RockChamber:
         elif moved_rock.atoms.intersection(self.rubble):
             return False, rock
         return True, moved_rock
+
+    def __str__(self):
+        s = ""
+        for y in range(self.height, 0, -1):
+            s += "|"
+            for x in range(1, self.width + 1):
+                s += "#" if Point2D(x, y) in self.rubble else "."
+            s += "|\n"
+        s += "+" + "-" * self.width + "+\n"
+        return s
 
 
 def solve(file_path: str) -> int:
