@@ -33,32 +33,47 @@ def parse_air_cycle(s: str) -> Cycle[Point2D]:
 
 
 @dataclasses.dataclass(frozen=True)
-class Shape:
-    points: set[Point2D]
+class Rock:
+    atoms: set[Point2D]
 
-    def move(self, delta: Point2D) -> Shape:
-        return Shape(set(p + delta for p in self.points))
+    def move(self, delta: Point2D) -> Rock:
+        return Rock(set(p + delta for p in self.atoms))
 
 
 rock_cycle = Cycle(
     (
-        Shape({Point2D(1, 1), Point2D(2, 1), Point2D(3, 1), Point2D(4, 1)}),
-        Shape(
+        Rock({Point2D(1, 1), Point2D(2, 1), Point2D(3, 1), Point2D(4, 1)}),
+        Rock(
             {Point2D(2, 1), Point2D(1, 2), Point2D(2, 2), Point2D(3, 2), Point2D(2, 3)}
         ),
-        Shape(
+        Rock(
             {Point2D(1, 1), Point2D(2, 1), Point2D(3, 1), Point2D(3, 2), Point2D(3, 3)}
         ),
-        Shape({Point2D(1, 1), Point2D(1, 2), Point2D(1, 3), Point2D(1, 4)}),
-        Shape({Point2D(1, 1), Point2D(2, 1), Point2D(1, 2), Point2D(2, 2)}),
+        Rock({Point2D(1, 1), Point2D(1, 2), Point2D(1, 3), Point2D(1, 4)}),
+        Rock({Point2D(1, 1), Point2D(2, 1), Point2D(1, 2), Point2D(2, 2)}),
     )
 )
+
+
+@dataclasses.dataclass
+class RockChamber:
+    width: int
+    air_cycle: Cycle[Point2D]
+    rock_cycle: Cycle[Rock]
+    rocks: set[Rock]
+
+    def drop_rock(self):
+        ...
 
 
 def part_1(file_path: str) -> int:
     with open(file_path) as f:
         air_cycle = parse_air_cycle(f.readline().strip())
-    return 1
+
+    rock_chamber = RockChamber(7, air_cycle, rock_cycle, set())
+    for _ in range(2022):
+        rock_chamber.drop_rock()
+    return max(atom.y for rock in rock_chamber.rocks for atom in rock.atoms)
 
 
 def part_2(file_path: str) -> int:
