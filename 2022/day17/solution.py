@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import dataclasses
 from typing import Generic, TypeVar
 
 from common.point2d import Point2D
@@ -17,7 +20,7 @@ class Cycle(Generic[TCycle]):
         return o
 
 
-def parse_air_current(s: str) -> Cycle[Point2D]:
+def parse_air_cycle(s: str) -> Cycle[Point2D]:
     air_directions: list[Point2D] = []
     for char in s:
         air_directions.append(
@@ -29,10 +32,32 @@ def parse_air_current(s: str) -> Cycle[Point2D]:
     return Cycle(tuple(air_directions))
 
 
+@dataclasses.dataclass(frozen=True)
+class Shape:
+    points: set[Point2D]
+
+    def move(self, delta: Point2D) -> Shape:
+        return Shape(set(p + delta for p in self.points))
+
+
+rock_cycle = Cycle(
+    (
+        Shape({Point2D(1, 1), Point2D(2, 1), Point2D(3, 1), Point2D(4, 1)}),
+        Shape(
+            {Point2D(2, 1), Point2D(1, 2), Point2D(2, 2), Point2D(3, 2), Point2D(2, 3)}
+        ),
+        Shape(
+            {Point2D(1, 1), Point2D(2, 1), Point2D(3, 1), Point2D(3, 2), Point2D(3, 3)}
+        ),
+        Shape({Point2D(1, 1), Point2D(1, 2), Point2D(1, 3), Point2D(1, 4)}),
+        Shape({Point2D(1, 1), Point2D(2, 1), Point2D(1, 2), Point2D(2, 2)}),
+    )
+)
+
+
 def part_1(file_path: str) -> int:
     with open(file_path) as f:
-        air_current = parse_air_current(f.readline().strip())
-
+        air_cycle = parse_air_cycle(f.readline().strip())
     return 1
 
 
