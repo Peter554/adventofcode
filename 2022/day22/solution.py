@@ -1,12 +1,11 @@
 from __future__ import annotations
 
+import os
 import enum
 import re
+import importlib
 
-from common.point2d import Point2D
-
-ROUTE_PATH = "day22/route"
-MAPS_PATH = "day22/maps"
+from day22.base import Point2D, Direction, SwitchMap
 
 
 class Turn(enum.Enum):
@@ -17,8 +16,8 @@ class Turn(enum.Enum):
 Route = list[int | Turn]
 
 
-def parse_route() -> Route:
-    with open(ROUTE_PATH) as f:
+def parse_route(file_path: str) -> Route:
+    with open(file_path) as f:
         s = f.readline().strip()
     route: Route = []
     while s:
@@ -41,32 +40,30 @@ Map = set[Point2D]
 Maps = dict[int, Map]
 
 
-def parse_maps() -> Maps:
-    with open(MAPS_PATH) as f:
+def parse_maps(file_path: str) -> tuple[int, Maps]:
+    with open(file_path) as f:
         raw_maps = f.read().split("\n\n")
+    map_size = 0
     maps: Maps = {}
     for idx, raw_map in enumerate(raw_maps):
         map_: Map = set()
         for y, line in enumerate(raw_map.split()):
+            map_size = len(line.strip())
             for x, char in enumerate(line.strip()):
                 if char == "#":
                     continue
                 map_.add(Point2D(x, y))
         maps[idx] = map_
-    return maps
-
-
-class Direction(enum.Enum):
-    RIGHT = enum.auto()
-    DOWN = enum.auto()
-    LEFT = enum.auto()
-    UP = enum.auto()
+    return map_size, maps
 
 
 class Simulation:
-    def __init__(self, route: Route, maps: Maps):
+    def __init__(self, route: Route, map_size: int, maps: Maps, switch_map: SwitchMap):
         self.route = route
+        self.map_size = map_size
         self.maps = maps
+        self.switch_map = switch_map
+        #
         self.map_idx = 0
         self.position = Point2D(0, 0)
         self.direction = Direction.RIGHT
@@ -91,12 +88,13 @@ class Simulation:
                 Direction.LEFT: Direction.DOWN,
                 Direction.UP: Direction.LEFT,
             }[self.direction]
-        self.direction = {
-            Direction.RIGHT: Direction.DOWN,
-            Direction.DOWN: Direction.LEFT,
-            Direction.LEFT: Direction.UP,
-            Direction.UP: Direction.RIGHT,
-        }[self.direction]
+        else:
+            self.direction = {
+                Direction.RIGHT: Direction.DOWN,
+                Direction.DOWN: Direction.LEFT,
+                Direction.LEFT: Direction.UP,
+                Direction.UP: Direction.RIGHT,
+            }[self.direction]
 
     def step(self):
         delta = {
@@ -108,88 +106,31 @@ class Simulation:
         next_position = self.position + delta
         if (
             next_position.x < 0
-            or next_position.x > 49
+            or next_position.x > self.map_size - 1
             or next_position.y < 0
-            or next_position.y > 49
+            or next_position.y > self.map_size - 1
         ):
-            self.switch_map()
-            return
-        if next_position in self.map:
-            self.position = next_position
-
-    def switch_map(self):
-        if self.map_idx == 0:
-            next_map_idx = {
-                Direction.RIGHT: 1,
-                Direction.DOWN: 2,
-                Direction.LEFT: 1,
-                Direction.UP: 4,
-            }[self.direction]
-        elif self.map_idx == 1:
-            next_map_idx = {
-                Direction.RIGHT: 0,
-                Direction.DOWN: 1,
-                Direction.LEFT: 0,
-                Direction.UP: 1,
-            }[self.direction]
-        elif self.map_idx == 2:
-            next_map_idx = {
-                Direction.RIGHT: 2,
-                Direction.DOWN: 4,
-                Direction.LEFT: 2,
-                Direction.UP: 0,
-            }[self.direction]
-        elif self.map_idx == 3:
-            next_map_idx = {
-                Direction.RIGHT: 4,
-                Direction.DOWN: 5,
-                Direction.LEFT: 4,
-                Direction.UP: 5,
-            }[self.direction]
-        elif self.map_idx == 4:
-            next_map_idx = {
-                Direction.RIGHT: 3,
-                Direction.DOWN: 0,
-                Direction.LEFT: 3,
-                Direction.UP: 2,
-            }[self.direction]
-        elif self.map_idx == 5:
-            next_map_idx = {
-                Direction.RIGHT: 5,
-                Direction.DOWN: 3,
-                Direction.LEFT: 5,
-                Direction.UP: 3,
-            }[self.direction]
-        else:
-            assert 0
-        next_position = {
-            Direction.RIGHT: lambda p: Point2D(0, p.y),
-            Direction.DOWN: lambda p: Point2D(p.x, 0),
-            Direction.LEFT: lambda p: Point2D(49, p.y),
-            Direction.UP: lambda p: Point2D(p.x, 49),
-        }[self.direction](self.position)
-        if next_position in self.maps[next_map_idx]:
+            next_map_idx, next_position, next_direction = self.switch_map(
+                self.map_size, self.map_idx, self.position, self.direction
+            )
+            if next_position not in self.maps[next_map_idx]:
+                return
             self.map_idx = next_map_idx
             self.position = next_position
+            self.direction = next_direction
+        elif next_position in self.map:
+            self.position = next_position
 
 
-def score(map_idx: int, position: Point2D, direction: Direction) -> int:
-    x_offset = {
-        0: 50,
-        1: 100,
-        2: 50,
-        3: 0,
-        4: 50,
-        5: 0,
-    }[map_idx]
-    y_offset = {
-        0: 0,
-        1: 0,
-        2: 50,
-        3: 100,
-        4: 100,
-        5: 150,
-    }[map_idx]
+def score(
+    map_idx: int,
+    position: Point2D,
+    direction: Direction,
+    x_offsets: dict[int, int],
+    y_offsets: dict[int, int],
+) -> int:
+    x_offset = x_offsets[map_idx]
+    y_offset = y_offsets[map_idx]
     direction_score = {
         Direction.RIGHT: 0,
         Direction.DOWN: 1,
@@ -203,13 +144,22 @@ def score(map_idx: int, position: Point2D, direction: Direction) -> int:
     )
 
 
-def part_1() -> int:
-    route = parse_route()
-    maps = parse_maps()
-    simulation = Simulation(route, maps)
+def part_1(file_path: str) -> int:
+    route = parse_route(os.path.join(file_path, "route"))
+    map_size, maps = parse_maps(os.path.join(file_path, "maps"))
+    logic = importlib.import_module(file_path.replace("/", ".") + ".logic")
+
+    simulation = Simulation(route, map_size, maps, logic.switch_map_v1)
     simulation.execute()
-    return score(simulation.map_idx, simulation.position, simulation.direction)
+
+    return score(
+        simulation.map_idx,
+        simulation.position,
+        simulation.direction,
+        logic.X_OFFSETS,
+        logic.Y_OFFSETS,
+    )
 
 
-def part_2() -> int:
+def part_2(file_path: str) -> int:
     return 1
