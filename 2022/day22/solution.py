@@ -14,10 +14,13 @@ class Turn(enum.Enum):
     RIGHT = enum.auto()
 
 
-def parse_route() -> list[int | Turn]:
+Route = list[int | Turn]
+
+
+def parse_route() -> Route:
     with open(ROUTE_PATH) as f:
         s = f.readline().strip()
-    route: list[int | Turn] = []
+    route: Route = []
     while s:
         if s.startswith("L"):
             route.append(Turn.LEFT)
@@ -34,12 +37,16 @@ def parse_route() -> list[int | Turn]:
     return route
 
 
-def parse_maps() -> dict[int, set[Point2D]]:
+Map = set[Point2D]
+Maps = dict[int, Map]
+
+
+def parse_maps() -> Maps:
     with open(MAPS_PATH) as f:
         raw_maps = f.read().split("\n\n")
-    maps: dict[int, set[Point2D]] = {}
+    maps: Maps = {}
     for idx, raw_map in enumerate(raw_maps):
-        map_: set[Point2D] = set()
+        map_: Map = set()
         for y, line in enumerate(raw_map.split()):
             for x, char in enumerate(line.strip()):
                 if char == "#":
@@ -49,8 +56,75 @@ def parse_maps() -> dict[int, set[Point2D]]:
     return maps
 
 
+class Direction(enum.Enum):
+    UP = enum.auto()
+    DOWN = enum.auto()
+    LEFT = enum.auto()
+    RIGHT = enum.auto()
+
+
+class Simulation:
+    def __init__(self, route: Route, maps: Maps):
+        self.route = route
+        self.maps = maps
+        self.map_idx = 0
+        self.position = Point2D(0, 0)
+        self.direction = Direction.RIGHT
+
+    @property
+    def map(self) -> Map:
+        return self.maps[self.map_idx]
+
+    def execute(self):
+        for instruction in self.route:
+            if isinstance(instruction, Turn):
+                self.turn(instruction)
+            else:
+                for _ in range(instruction):
+                    self.step()
+
+    def turn(self, turn: Turn):
+        ...
+
+    def step(self):
+        ...
+
+def score(map_idx: int, position: Point2D, direction: Direction) -> int:
+    x_offset = {
+        0: 50,
+        1: 100,
+        2: 50,
+        3: 0,
+        4: 50,
+        5: 0,
+    }[map_idx]
+    y_offset = {
+        0: 0,
+        1: 0,
+        2: 50,
+        3: 100,
+        4: 100,
+        5: 150,
+    }[map_idx]
+    direction_score = {
+        Direction.RIGHT: 0,
+        Direction.DOWN: 1,
+        Direction.LEFT: 2,
+        Direction.UP: 3,
+    }[direction]
+    return (
+        1000 * (position.x + x_offset + 1)
+        + 4 * (position.y + y_offset + 1)
+        + direction_score
+    )
+
+
 def part_1() -> int:
-    return 1
+    route = parse_route()
+    maps = parse_maps()
+    simulation = Simulation(route, maps)
+    simulation.execute()
+    return score(simulation.map_idx, simulation.position, simulation.direction)
 
 
 def part_2() -> int:
