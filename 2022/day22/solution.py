@@ -99,7 +99,78 @@ class Simulation:
         }[self.direction]
 
     def step(self):
-        ...
+        delta = {
+            Direction.RIGHT: Point2D(1, 0),
+            Direction.DOWN: Point2D(0, 1),
+            Direction.LEFT: Point2D(-1, 0),
+            Direction.UP: Point2D(0, -1),
+        }[self.direction]
+        next_position = self.position + delta
+        if (
+            next_position.x < 0
+            or next_position.x > 49
+            or next_position.y < 0
+            or next_position.y > 49
+        ):
+            self.switch_map()
+            return
+        if next_position in self.map:
+            self.position = next_position
+
+    def switch_map(self):
+        if self.map_idx == 0:
+            next_map_idx = {
+                Direction.RIGHT: 1,
+                Direction.DOWN: 2,
+                Direction.LEFT: 1,
+                Direction.UP: 4,
+            }[self.direction]
+        elif self.map_idx == 1:
+            next_map_idx = {
+                Direction.RIGHT: 0,
+                Direction.DOWN: 1,
+                Direction.LEFT: 0,
+                Direction.UP: 1,
+            }[self.direction]
+        elif self.map_idx == 2:
+            next_map_idx = {
+                Direction.RIGHT: 2,
+                Direction.DOWN: 4,
+                Direction.LEFT: 2,
+                Direction.UP: 0,
+            }[self.direction]
+        elif self.map_idx == 3:
+            next_map_idx = {
+                Direction.RIGHT: 4,
+                Direction.DOWN: 5,
+                Direction.LEFT: 4,
+                Direction.UP: 5,
+            }[self.direction]
+        elif self.map_idx == 4:
+            next_map_idx = {
+                Direction.RIGHT: 3,
+                Direction.DOWN: 0,
+                Direction.LEFT: 3,
+                Direction.UP: 2,
+            }[self.direction]
+        elif self.map_idx == 5:
+            next_map_idx = {
+                Direction.RIGHT: 5,
+                Direction.DOWN: 3,
+                Direction.LEFT: 5,
+                Direction.UP: 3,
+            }[self.direction]
+        else:
+            assert 0
+        next_position = {
+            Direction.RIGHT: lambda p: Point2D(0, p.y),
+            Direction.DOWN: lambda p: Point2D(p.x, 0),
+            Direction.LEFT: lambda p: Point2D(49, p.y),
+            Direction.UP: lambda p: Point2D(p.x, 49),
+        }[self.direction](self.position)
+        if next_position in self.maps[next_map_idx]:
+            self.map_idx = next_map_idx
+            self.position = next_position
 
 
 def score(map_idx: int, position: Point2D, direction: Direction) -> int:
@@ -126,8 +197,8 @@ def score(map_idx: int, position: Point2D, direction: Direction) -> int:
         Direction.UP: 3,
     }[direction]
     return (
-        1000 * (position.x + x_offset + 1)
-        + 4 * (position.y + y_offset + 1)
+        1000 * (position.y + y_offset + 1)
+        + 4 * (position.x + x_offset + 1)
         + direction_score
     )
 
