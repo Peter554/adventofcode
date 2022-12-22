@@ -57,10 +57,10 @@ def parse_maps() -> Maps:
 
 
 class Direction(enum.Enum):
-    UP = enum.auto()
+    RIGHT = enum.auto()
     DOWN = enum.auto()
     LEFT = enum.auto()
-    RIGHT = enum.auto()
+    UP = enum.auto()
 
 
 class Simulation:
@@ -84,10 +84,23 @@ class Simulation:
                     self.step()
 
     def turn(self, turn: Turn):
-        ...
+        if turn == Turn.LEFT:
+            self.direction = {
+                Direction.RIGHT: Direction.UP,
+                Direction.DOWN: Direction.RIGHT,
+                Direction.LEFT: Direction.DOWN,
+                Direction.UP: Direction.LEFT,
+            }[self.direction]
+        self.direction = {
+            Direction.RIGHT: Direction.DOWN,
+            Direction.DOWN: Direction.LEFT,
+            Direction.LEFT: Direction.UP,
+            Direction.UP: Direction.RIGHT,
+        }[self.direction]
 
     def step(self):
         ...
+
 
 def score(map_idx: int, position: Point2D, direction: Direction) -> int:
     x_offset = {
