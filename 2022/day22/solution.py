@@ -162,4 +162,17 @@ def part_1(file_path: str) -> int:
 
 
 def part_2(file_path: str) -> int:
-    return 1
+    route = parse_route(os.path.join(file_path, "route"))
+    map_size, maps = parse_maps(os.path.join(file_path, "maps"))
+    logic = importlib.import_module(file_path.replace("/", ".") + ".logic")
+
+    simulation = Simulation(route, map_size, maps, logic.switch_map_v2)
+    simulation.execute()
+
+    return score(
+        simulation.map_idx,
+        simulation.position,
+        simulation.direction,
+        logic.X_OFFSETS,
+        logic.Y_OFFSETS,
+    )

@@ -73,3 +73,115 @@ def switch_map_v1(
         Direction.UP: lambda p: Point2D(p.x, map_size - 1),
     }[direction](position)
     return next_map_idx, next_position, direction
+
+
+def switch_map_v2(
+    map_size: int, map_idx: int, position: Point2D, direction: Direction
+) -> tuple[int, Point2D, Direction]:
+    p = position
+    s = map_size - 1
+    if map_idx == 0 and direction == Direction.RIGHT:
+        next_map_idx = 1
+        next_position = Point2D(0, p.y)
+        next_direction = Direction.RIGHT
+    elif map_idx == 0 and direction == Direction.DOWN:
+        next_map_idx = 2
+        next_position = Point2D(p.x, 0)
+        next_direction = Direction.DOWN
+    elif map_idx == 0 and direction == Direction.LEFT:
+        next_map_idx = 3
+        next_position = Point2D(0, s - p.y)
+        next_direction = Direction.RIGHT
+    elif map_idx == 0 and direction == Direction.UP:
+        next_map_idx = 5
+        next_position = Point2D(0, p.x)
+        next_direction = Direction.RIGHT
+    #
+    elif map_idx == 1 and direction == Direction.RIGHT:
+        next_map_idx = 4
+        next_position = Point2D(s, s - p.y)
+        next_direction = Direction.LEFT
+    elif map_idx == 1 and direction == Direction.DOWN:
+        next_map_idx = 2
+        next_position = Point2D(s, p.x)
+        next_direction = Direction.LEFT
+    elif map_idx == 1 and direction == Direction.LEFT:
+        next_map_idx = 0
+        next_position = Point2D(s, p.y)
+        next_direction = Direction.LEFT
+    elif map_idx == 1 and direction == Direction.UP:
+        next_map_idx = 5
+        next_position = Point2D(p.x, s)
+        next_direction = Direction.UP
+    #
+    elif map_idx == 2 and direction == Direction.RIGHT:
+        next_map_idx = 1
+        next_position = Point2D(p.y, s)
+        next_direction = Direction.UP
+    elif map_idx == 2 and direction == Direction.DOWN:
+        next_map_idx = 4
+        next_position = Point2D(p.x, 0)
+        next_direction = Direction.DOWN
+    elif map_idx == 2 and direction == Direction.LEFT:
+        next_map_idx = 3
+        next_position = Point2D(p.y, 0)
+        next_direction = Direction.DOWN
+    elif map_idx == 2 and direction == Direction.UP:
+        next_map_idx = 0
+        next_position = Point2D(p.x, s)
+        next_direction = Direction.UP
+    #
+    elif map_idx == 3 and direction == Direction.RIGHT:
+        next_map_idx = 4
+        next_position = Point2D(0, p.y)
+        next_direction = Direction.RIGHT
+    elif map_idx == 3 and direction == Direction.DOWN:
+        next_map_idx = 5
+        next_position = Point2D(p.x, 0)
+        next_direction = Direction.DOWN
+    elif map_idx == 3 and direction == Direction.LEFT:
+        next_map_idx = 0
+        next_position = Point2D(0, s - p.y)
+        next_direction = Direction.RIGHT
+    elif map_idx == 3 and direction == Direction.UP:
+        next_map_idx = 2
+        next_position = Point2D(0, p.x)
+        next_direction = Direction.RIGHT
+    #
+    elif map_idx == 4 and direction == Direction.RIGHT:
+        next_map_idx = 1
+        next_position = Point2D(s, s - p.y)
+        next_direction = Direction.LEFT
+    elif map_idx == 4 and direction == Direction.DOWN:
+        next_map_idx = 5
+        next_position = Point2D(s, p.x)
+        next_direction = Direction.LEFT
+    elif map_idx == 4 and direction == Direction.LEFT:
+        next_map_idx = 3
+        next_position = Point2D(s, p.y)
+        next_direction = Direction.LEFT
+    elif map_idx == 4 and direction == Direction.UP:
+        next_map_idx = 2
+        next_position = Point2D(p.x, s)
+        next_direction = Direction.UP
+    #
+    elif map_idx == 5 and direction == Direction.RIGHT:
+        next_map_idx = 4
+        next_position = Point2D(p.y, s)
+        next_direction = Direction.UP
+    elif map_idx == 5 and direction == Direction.DOWN:
+        next_map_idx = 1
+        next_position = Point2D(p.x, 0)
+        next_direction = Direction.DOWN
+    elif map_idx == 5 and direction == Direction.LEFT:
+        next_map_idx = 0
+        next_position = Point2D(p.y, 0)
+        next_direction = Direction.DOWN
+    elif map_idx == 5 and direction == Direction.UP:
+        next_map_idx = 3
+        next_position = Point2D(p.x, s)
+        next_direction = Direction.UP
+    #
+    else:
+        assert 0
+    return next_map_idx, next_position, next_direction
