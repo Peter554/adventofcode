@@ -1,34 +1,18 @@
 from __future__ import annotations
 
 import dataclasses
-from typing import Generic, TypeVar
+import itertools
 
 from common.point2d import Point2D
 
 
-TCycle = TypeVar("TCycle")
-
-
-class Cycle(Generic[TCycle]):
-    def __init__(self, t: tuple[TCycle, ...]):
-        self._t = t
-        self._i = 0
-
-    def __next__(self):
-        o = self._t[self._i]
-        self._i = (self._i + 1) % len(self._t)
-        return o
-
-
-def parse_air_cycle(s: str) -> Cycle[Point2D]:
-    return Cycle(
-        tuple(
-            {
-                "<": Point2D(-1, 0),
-                ">": Point2D(1, 0),
-            }[char]
-            for char in s
-        )
+def parse_air_cycle(s: str):
+    return itertools.cycle(
+        {
+            "<": Point2D(-1, 0),
+            ">": Point2D(1, 0),
+        }[char]
+        for char in s
     )
 
 
@@ -40,8 +24,8 @@ class Rock:
         return Rock(frozenset(atom + delta for atom in self.atoms))
 
 
-rock_cycle = Cycle(
-    (
+rock_cycle = itertools.cycle(
+    [
         Rock(
             frozenset(
                 {
@@ -94,15 +78,15 @@ rock_cycle = Cycle(
                 }
             )
         ),
-    )
+    ]
 )
 
 
 @dataclasses.dataclass
 class RockChamber:
     width: int
-    air_cycle: Cycle[Point2D]
-    rock_cycle: Cycle[Rock]
+    air_cycle: itertools.cycle[Point2D]
+    rock_cycle: itertools.cycle[Rock]
     rubble: set[Point2D]
 
     @property
