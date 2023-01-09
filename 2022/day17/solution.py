@@ -23,11 +23,6 @@ rock_templates = [
     [(1, 1), (2, 1), (1, 2), (2, 2)],
 ]
 
-rock_cycle = itertools.cycle(
-    frozenset(Point2D(x, y) for x, y in rock_template)
-    for rock_template in rock_templates
-)
-
 
 def move_rock(rock: frozenset[Point2D], delta: Point2D) -> frozenset[Point2D]:
     return frozenset(p + delta for p in rock)
@@ -54,6 +49,11 @@ def part_1(file_path: str) -> int:
             }[char]
             for char in f.readline().strip()
         )
+
+    rock_cycle = itertools.cycle(
+        frozenset(Point2D(x, y) for x, y in rock_template)
+        for rock_template in rock_templates
+    )
 
     rubble: set[Point2D] = set()
     rubble_height = 0
