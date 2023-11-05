@@ -15,6 +15,5 @@ jobs:
           java-version: '19'
           distribution: 'adopt'
       - name: Build with Maven
-        run: |
-          cd 2015/aoc2015java
-          mvn --batch-mode --update-snapshots verify
+        run: mvn --batch-mode --update-snapshots verify
+        working-directory: ./2015/java/aoc2015java
