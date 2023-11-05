@@ -16,4 +16,4 @@ jobs:
           distribution: 'adopt'
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots verify
-        working-directory: ./2015/java/aoc
+        working-directory: ./2015/java/aoc2015java
