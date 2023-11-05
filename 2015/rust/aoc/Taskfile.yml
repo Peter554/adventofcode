@@ -1,0 +1,19 @@
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+      - cargo fmt --check
+
+  test:
+    cmds:
+      - cargo test
+
+  check:
+    cmds:
+      - task: lint
+      - task: test
+
+  fmt:
+    cmds:
+      - cargo fmt

@@ -1,0 +1,16 @@
+name: CI 2015 Rust
+on:
+  push:
+    branches:
+      - master
+      - '2015-rs-*'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install taskfile
+        run: sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+      - name: Check
+        run: task check
+        working-directory: ./2015/rust/aoc
