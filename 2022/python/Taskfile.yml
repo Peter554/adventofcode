@@ -5,12 +5,10 @@ tasks:
     cmds:
       - poetry run black --check .
       - poetry run mypy .
-      - npx prettier --check ./**/*.ts
 
   test:
     cmds:
       - poetry run pytest {{.CLI_ARGS}}
-      - npx jest
 
   check:
     cmds:
@@ -20,4 +18,3 @@ tasks:
   fmt:
     cmds:
       - poetry run black .
-      - npx prettier --write ./**/*.ts

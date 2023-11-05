@@ -1,0 +1,19 @@
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+      - npx prettier --check ./**/*.ts
+
+  test:
+    cmds:
+      - npx jest
+
+  check:
+    cmds:
+      - task: lint
+      - task: test
+
+  fmt:
+    cmds:
+      - npx prettier --write ./**/*.ts

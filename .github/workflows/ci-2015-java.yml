@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-      - '2015-*'
+      - '2015-java-*'
 jobs:
   test:
     runs-on: ubuntu-latest
