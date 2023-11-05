@@ -3,6 +3,7 @@ version: '3'
 tasks:
   lint:
     cmds:
+      - cargo clippy --all-targets -- -D warnings
       - cargo fmt --check
 
   test:
@@ -13,6 +14,10 @@ tasks:
     cmds:
       - task: lint
       - task: test
+
+  fix:
+    cmds:
+      - cargo clippy --fix --allow-staged
 
   fmt:
     cmds:
