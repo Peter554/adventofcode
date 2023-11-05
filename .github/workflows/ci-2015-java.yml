@@ -1,4 +1,4 @@
-name: CI 2015
+name: CI 2015 Java
 on:
   push:
     branches:

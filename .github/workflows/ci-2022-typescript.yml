@@ -1,4 +1,4 @@
-name: CI 2022
+name: CI 2022 Typescript
 on:
   push:
     branches:
