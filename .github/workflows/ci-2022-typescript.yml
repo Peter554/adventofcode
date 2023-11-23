@@ -4,6 +4,8 @@ on:
     branches:
       - master
       - "2022-ts-*"
+    paths:
+      - '2022/typescript/**'
 jobs:
   check-code:
     name: Check the code

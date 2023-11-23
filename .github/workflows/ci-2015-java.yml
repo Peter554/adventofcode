@@ -4,6 +4,8 @@ on:
     branches:
       - master
       - '2015-java-*'
+    paths:
+      - '2015/java/**'
 jobs:
   test:
     runs-on: ubuntu-latest

@@ -4,6 +4,8 @@ on:
     branches:
       - master
       - '2023-rs-*'
+    paths:
+      - '2023/rust/**'
 jobs:
   test:
     runs-on: ubuntu-latest
