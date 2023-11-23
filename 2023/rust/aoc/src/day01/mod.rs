@@ -18,7 +18,7 @@ mod tests {
     #[test]
     fn test_part_1() {
         let input_path = Path::new("./src/day01/sample");
-        assert_eq!(part1(input_path).unwrap(), 43);
+        assert_eq!(part1(input_path).unwrap(), 42);
 
         let input_path = Path::new("./src/day01/input");
         assert_eq!(part1(input_path).unwrap(), 42);
