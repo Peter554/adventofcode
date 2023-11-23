@@ -12,8 +12,8 @@ tasks:
 
   check:
     cmds:
-      - task: lint
       - task: test
+      - task: lint
 
   fix:
     cmds:

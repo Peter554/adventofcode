@@ -18,12 +18,12 @@ use anyhow::Result;
 use std::{fs, path::Path};
 
 pub fn part1(input_path: &Path) -> Result<i64> {
-    _ = fs::read_to_string(input_path)?;
+    let _input = fs::read_to_string(input_path)?;
     Ok(42)
 }
 
 pub fn part2(input_path: &Path) -> Result<i64> {
-    _ = fs::read_to_string(input_path)?;
+    let _input = fs::read_to_string(input_path)?;
     Ok(42)
 }
 
