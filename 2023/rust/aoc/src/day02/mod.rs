@@ -1,9 +1,11 @@
+mod parser;
+
 use anyhow::Result;
 use std::{cmp, fs, path::Path};
 
 pub fn part1(input_path: &Path) -> Result<i64> {
     let input = fs::read_to_string(input_path)?;
-    let games = input.lines().map(parse_game).collect::<Vec<_>>();
+    let games = parser::parse(&input)?;
     Ok(games
         .iter()
         .filter(|g| {
@@ -17,7 +19,7 @@ pub fn part1(input_path: &Path) -> Result<i64> {
 
 pub fn part2(input_path: &Path) -> Result<i64> {
     let input = fs::read_to_string(input_path)?;
-    let games = input.lines().map(parse_game).collect::<Vec<_>>();
+    let games = parser::parse(&input)?;
     Ok(games
         .iter()
         .map(|g| {
@@ -33,52 +35,6 @@ pub fn part2(input_path: &Path) -> Result<i64> {
         .map(|(red, green, blue)| (red as i64, green as i64, blue as i64))
         .map(|(red, green, blue)| red * green * blue)
         .sum())
-}
-
-fn parse_game(raw_game: &str) -> Game {
-    let mut it = raw_game.split(':');
-    let id = it
-        .next()
-        .unwrap()
-        .strip_prefix("Game ")
-        .unwrap()
-        .parse::<u8>()
-        .unwrap();
-    let hands = it
-        .next()
-        .unwrap()
-        .split(';')
-        .map(|raw_hand| {
-            let mut hand = Hand {
-                red: 0,
-                green: 0,
-                blue: 0,
-            };
-            raw_hand.split(',').for_each(|raw_segment| {
-                let mut it = raw_segment.trim().split(' ');
-                let n = it.next().unwrap().parse::<u8>().unwrap();
-                match it.next().unwrap() {
-                    "red" => hand.red = n,
-                    "green" => hand.green = n,
-                    "blue" => hand.blue = n,
-                    _ => panic!(),
-                }
-            });
-            hand
-        })
-        .collect::<Vec<_>>();
-    Game { id, hands }
-}
-
-struct Game {
-    id: u8,
-    hands: Vec<Hand>,
-}
-
-struct Hand {
-    red: u8,
-    green: u8,
-    blue: u8,
 }
 
 #[cfg(test)]

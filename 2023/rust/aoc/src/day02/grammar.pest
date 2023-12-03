@@ -1,0 +1,7 @@
+file = { SOI ~ game* ~ EOI }
+game = { "Game " ~ number ~ ":" ~ hands ~ NEWLINE? }
+hands = { hand ~ (";" ~ hand)* }
+hand = { hand_part ~ ("," ~ hand_part)* }
+hand_part = { " " ~ number ~ " " ~ color }
+number = { ASCII_DIGIT+ }
+color = { "red" | "green" | "blue" }
