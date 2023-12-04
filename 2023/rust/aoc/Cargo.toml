@@ -9,3 +9,6 @@ edition = "2021"
 anyhow = "1.0.75"
 pest = "2.7.5"
 pest_derive = "2.7.5"
+
+[dev-dependencies]
+pretty_assertions = "1.4.0"

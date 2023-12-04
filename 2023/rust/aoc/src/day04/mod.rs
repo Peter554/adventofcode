@@ -90,6 +90,7 @@ fn parse_card(raw_card: &str) -> Card {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_part_1() {

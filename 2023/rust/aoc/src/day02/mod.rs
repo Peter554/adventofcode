@@ -40,6 +40,7 @@ pub fn part2(input_path: &Path) -> Result<i64> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_part_1() {

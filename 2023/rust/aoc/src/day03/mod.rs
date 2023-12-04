@@ -116,6 +116,7 @@ fn parse_input(input: &str) -> Result<(Vec<Number>, Vec<Symbol>)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_part_1() {
