@@ -14,9 +14,23 @@ pub fn part1(input_path: &Path) -> Result<i64> {
 
 pub fn part2(input_path: &Path) -> Result<i64> {
     let input = fs::read_to_string(input_path)?;
-    let input = parse_input(&input);
-    let _ = input;
-    Ok(42)
+    let input = {
+        let mut input = parse_input(&input);
+        input.seeds = input
+            .seeds
+            .as_slice()
+            .windows(2)
+            .step_by(2)
+            .flat_map(|window| (window[0]..window[0] + window[1]))
+            .collect();
+        input
+    };
+    Ok(input
+        .seeds
+        .into_iter()
+        .map(|seed| input.maps.iter().fold(seed, |value, map| map.apply(value)))
+        .min()
+        .unwrap() as i64)
 }
 
 fn parse_input(input: &str) -> Input {
@@ -97,11 +111,15 @@ mod tests {
     }
 
     #[test]
-    fn test_part_2() {
+    fn test_part_2_sample() {
         let input_path = Path::new("./src/day05/sample");
-        assert_eq!(part2(input_path).unwrap(), 42);
+        assert_eq!(part2(input_path).unwrap(), 46);
+    }
 
+    #[test]
+    #[cfg_attr(not(feature = "slow"), ignore = "slow")]
+    fn test_part_2_real() {
         let input_path = Path::new("./src/day05/input");
-        assert_eq!(part2(input_path).unwrap(), 42);
+        assert_eq!(part2(input_path).unwrap(), 51399228);
     }
 }

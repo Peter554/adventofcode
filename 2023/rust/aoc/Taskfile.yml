@@ -3,7 +3,7 @@ version: '3'
 tasks:
   test:
     cmds:
-      - cargo test
+      - cargo test {{ empty .RELEASE | ternary "" "--release" }}
 
   lint:
     cmds:
