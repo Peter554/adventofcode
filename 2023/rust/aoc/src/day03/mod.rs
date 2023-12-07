@@ -119,7 +119,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn test_part_1() {
+    fn test_part1() {
         let input_path = Path::new("./src/day03/sample");
         assert_eq!(part1(input_path).unwrap(), 4361);
 
@@ -128,7 +128,7 @@ mod tests {
     }
 
     #[test]
-    fn test_part_2() {
+    fn test_part2() {
         let input_path = Path::new("./src/day03/sample");
         assert_eq!(part2(input_path).unwrap(), 467835);
 

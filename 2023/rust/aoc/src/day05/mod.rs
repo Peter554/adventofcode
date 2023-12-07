@@ -123,7 +123,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn test_part_1() {
+    fn test_part1() {
         let input_path = Path::new("./src/day05/sample");
         assert_eq!(part1(input_path).unwrap(), 35);
 
@@ -132,14 +132,14 @@ mod tests {
     }
 
     #[test]
-    fn test_part_2_sample() {
+    fn test_part2_sample() {
         let input_path = Path::new("./src/day05/sample");
         assert_eq!(part2(input_path).unwrap(), 46);
     }
 
     #[test]
     #[cfg_attr(not(feature = "slow"), ignore = "slow")]
-    fn test_part_2_real() {
+    fn test_part2_real() {
         let input_path = Path::new("./src/day05/input");
         assert_eq!(part2(input_path).unwrap(), 51399228);
     }
