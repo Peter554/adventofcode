@@ -55,13 +55,13 @@ mod tests {
     }
 
     #[test]
-    fn test_part_1() {
+    fn test_part1() {
         assert_eq!(part1(sample()).unwrap(), 288);
         assert_eq!(part1(input()).unwrap(), 800280);
     }
 
     #[test]
-    fn test_part_2() {
+    fn test_part2() {
         assert_eq!(part2(sample2()).unwrap(), 71503);
         assert_eq!(part2(input2()).unwrap(), 45128024);
     }
