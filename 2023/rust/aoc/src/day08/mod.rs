@@ -1,19 +1,24 @@
 use anyhow::Result;
-use std::{collections::HashMap, fs, path::Path};
+use num::integer::lcm;
+use std::{
+    collections::{HashMap, HashSet},
+    fs,
+    path::Path,
+};
 
 pub fn part1(input_path: &Path) -> Result<i64> {
     let input = fs::read_to_string(input_path)?;
     let (directions, nodes) = parse_input(&input);
-    dbg!(&nodes);
 
     let mut counter = 0;
     let mut current_node = nodes.get("AAA").unwrap();
     while current_node.id != "ZZZ" {
-        let current_node_id = match directions[counter % directions.len()] {
+        let direction = &directions[counter % directions.len()];
+        let next_node_id = match direction {
             Direction::Left => current_node.left_node_id.clone(),
             Direction::Right => current_node.right_node_id.clone(),
         };
-        current_node = nodes.get(&current_node_id).unwrap();
+        current_node = nodes.get(&next_node_id).unwrap();
         counter += 1;
     }
     Ok(counter as i64)
@@ -21,8 +26,39 @@ pub fn part1(input_path: &Path) -> Result<i64> {
 
 pub fn part2(input_path: &Path) -> Result<i64> {
     let input = fs::read_to_string(input_path)?;
-    let _ = input;
-    Ok(42)
+    let (directions, nodes) = parse_input(&input);
+
+    let node_ids_ending_in_a = nodes
+        .keys()
+        .filter(|id| id.ends_with('A'))
+        .cloned()
+        .collect::<HashSet<_>>();
+    let node_ids_ending_in_z = nodes
+        .keys()
+        .filter(|id| id.ends_with('Z'))
+        .cloned()
+        .collect::<HashSet<_>>();
+
+    // Collect a counter for each start node and take the lowest common multiple (LCM).
+    // There is no guarantee that LCM is the correct solution here, but it seems to work.
+    // https://www.reddit.com/r/adventofcode/comments/18dfpub/2023_day_8_part_2_why_is_spoiler_correct/
+    let mut counters = vec![];
+    for start_node_id in node_ids_ending_in_a {
+        let mut counter = 0;
+        let mut current_node = nodes.get(&start_node_id).unwrap();
+        while !node_ids_ending_in_z.contains(&current_node.id) {
+            let direction = &directions[counter % directions.len()];
+            let next_node_id = match direction {
+                Direction::Left => current_node.left_node_id.clone(),
+                Direction::Right => current_node.right_node_id.clone(),
+            };
+            current_node = nodes.get(&next_node_id).unwrap();
+            counter += 1;
+        }
+        counters.push(counter);
+    }
+
+    Ok(counters.into_iter().fold(1, lcm) as i64)
 }
 
 fn parse_input(s: &str) -> (Vec<Direction>, HashMap<String, Node>) {
@@ -91,10 +127,10 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        let input_path = Path::new("./src/day08/sample");
-        assert_eq!(part2(input_path).unwrap(), 42);
+        let input_path = Path::new("./src/day08/sample2");
+        assert_eq!(part2(input_path).unwrap(), 6);
 
         let input_path = Path::new("./src/day08/input");
-        assert_eq!(part2(input_path).unwrap(), 42);
+        assert_eq!(part2(input_path).unwrap(), 12030780859469);
     }
 }
