@@ -6,6 +6,10 @@ use std::{
     path::Path,
 };
 
+use crate::utils::{BoundingBox2D, Point2D};
+
+type Point = Point2D<i16>;
+
 pub fn part1(input_path: &Path) -> Result<i64> {
     let input = fs::read_to_string(input_path)?;
     let input = parse_input(&input);
@@ -115,7 +119,7 @@ fn count_interior_points(loop_path: Vec<Point>, pipes: HashMap<Point, HashSet<Co
     // * blow up the space by a factor of 2, including the loop.
     // * find all the exterior points.
     // * count all interior points where x and y are even.
-    let bounding_box = get_bounding_box(&loop_path);
+    let bounding_box = BoundingBox2D::from_points(&loop_path).unwrap();
     let mut grid = HashSet::new();
     for x in 2 * bounding_box.x_min - 1..=2 * bounding_box.x_max + 1 {
         for y in 2 * bounding_box.y_min - 1..=2 * bounding_box.y_max + 1 {
@@ -145,28 +149,17 @@ fn count_interior_points(loop_path: Vec<Point>, pipes: HashMap<Point, HashSet<Co
     // We can be sure that top_left is exterior.
     let top_left = Point::new(2 * bounding_box.x_min - 1, 2 * bounding_box.y_min - 1);
     q.push_back(top_left);
-    while let Some(p) = q.pop_front() {
-        if exterior_points.contains(&p) {
+    while let Some(exterior_point) = q.pop_front() {
+        if exterior_points.contains(&exterior_point) {
             continue;
         } else {
-            exterior_points.insert(p.clone());
+            exterior_points.insert(exterior_point.clone());
         }
-        for neighbor in [
-            Point::new(p.x - 1, p.y),
-            Point::new(p.x + 1, p.y),
-            Point::new(p.x, p.y - 1),
-            Point::new(p.x, p.y + 1),
-            Point::new(p.x - 1, p.y - 1),
-            Point::new(p.x + 1, p.y - 1),
-            Point::new(p.x - 1, p.y + 1),
-            Point::new(p.x + 1, p.y + 1),
-        ] {
-            if !grid.contains(&neighbor) {
-                continue;
-            }
-            if loop_.contains(&neighbor) {
-                continue;
-            }
+        for neighbor in exterior_point
+            .neighbors8()
+            .filter(|neighbor| grid.contains(neighbor))
+            .filter(|neighbor| !loop_.contains(neighbor))
+        {
             q.push_back(neighbor);
         }
     }
@@ -176,22 +169,6 @@ fn count_interior_points(loop_path: Vec<Point>, pipes: HashMap<Point, HashSet<Co
         .filter(|p| !exterior_points.contains(p))
         .filter(|p| p.x % 2 == 0 && p.y % 2 == 0)
         .count() as i64
-}
-
-struct BoundingBox {
-    x_min: i16,
-    x_max: i16,
-    y_min: i16,
-    y_max: i16,
-}
-
-fn get_bounding_box(points: &[Point]) -> BoundingBox {
-    BoundingBox {
-        x_min: points.iter().map(|p| p.x).min().unwrap(),
-        x_max: points.iter().map(|p| p.x).max().unwrap(),
-        y_min: points.iter().map(|p| p.y).min().unwrap(),
-        y_max: points.iter().map(|p| p.y).max().unwrap(),
-    }
 }
 
 fn parse_input(input: &str) -> Input {
@@ -273,18 +250,6 @@ fn parse_input(input: &str) -> Input {
 struct Input {
     s_location: Point,
     pipes: HashMap<Point, HashSet<Connection>>,
-}
-
-#[derive(Debug, PartialEq, Eq, Clone, Hash)]
-struct Point {
-    x: i16,
-    y: i16,
-}
-
-impl Point {
-    fn new(x: i16, y: i16) -> Point {
-        Point { x, y }
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash)]
