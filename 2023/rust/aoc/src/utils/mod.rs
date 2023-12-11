@@ -1,10 +1,28 @@
-pub trait Int: num::Integer + From<i8> + Clone {}
-impl<T: num::Integer + From<i8> + Clone> Int for T {}
+use std::ops::{Add, Sub};
+
+pub trait Int: num::Integer + num::Signed + From<i8> + Clone {}
+impl<T: num::Integer + num::Signed + From<i8> + Clone> Int for T {}
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash)]
 pub struct Point2D<T: Int> {
     pub x: T,
     pub y: T,
+}
+
+impl<T: Int> Add for Point2D<T> {
+    type Output = Point2D<T>;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Point2D::new(self.x + rhs.x, self.y + rhs.y)
+    }
+}
+
+impl<T: Int> Sub for Point2D<T> {
+    type Output = Point2D<T>;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Point2D::new(self.x - rhs.x, self.y - rhs.y)
+    }
 }
 
 impl<T: Int> Point2D<T> {
@@ -13,20 +31,17 @@ impl<T: Int> Point2D<T> {
     }
 
     #[allow(dead_code)]
-    pub fn add(&self, other: &Point2D<T>) -> Point2D<T> {
-        Point2D::new(
-            self.x.clone() + other.x.clone(),
-            self.y.clone() + other.y.clone(),
-        )
+    pub fn manhattan(&self) -> T {
+        self.x.abs() + self.y.abs()
     }
 
     #[allow(dead_code)]
     pub fn neighbors4(&self) -> impl Iterator<Item = Point2D<T>> {
         vec![
-            self.add(&Point2D::new(T::from(1), T::from(0))),
-            self.add(&Point2D::new(T::from(-1), T::from(0))),
-            self.add(&Point2D::new(T::from(0), T::from(1))),
-            self.add(&Point2D::new(T::from(0), T::from(-1))),
+            self.clone() + Point2D::new(T::from(1), T::from(0)),
+            self.clone() + Point2D::new(T::from(-1), T::from(0)),
+            self.clone() + Point2D::new(T::from(0), T::from(1)),
+            self.clone() + Point2D::new(T::from(0), T::from(-1)),
         ]
         .into_iter()
     }
@@ -34,14 +49,14 @@ impl<T: Int> Point2D<T> {
     #[allow(dead_code)]
     pub fn neighbors8(&self) -> impl Iterator<Item = Point2D<T>> {
         vec![
-            self.add(&Point2D::new(T::from(1), T::from(0))),
-            self.add(&Point2D::new(T::from(-1), T::from(0))),
-            self.add(&Point2D::new(T::from(0), T::from(1))),
-            self.add(&Point2D::new(T::from(0), T::from(-1))),
-            self.add(&Point2D::new(T::from(1), T::from(1))),
-            self.add(&Point2D::new(T::from(-1), T::from(-1))),
-            self.add(&Point2D::new(T::from(1), T::from(-1))),
-            self.add(&Point2D::new(T::from(-1), T::from(1))),
+            self.clone() + Point2D::new(T::from(1), T::from(0)),
+            self.clone() + Point2D::new(T::from(-1), T::from(0)),
+            self.clone() + Point2D::new(T::from(0), T::from(1)),
+            self.clone() + Point2D::new(T::from(0), T::from(-1)),
+            self.clone() + Point2D::new(T::from(1), T::from(1)),
+            self.clone() + Point2D::new(T::from(-1), T::from(-1)),
+            self.clone() + Point2D::new(T::from(-1), T::from(1)),
+            self.clone() + Point2D::new(T::from(1), T::from(-1)),
         ]
         .into_iter()
     }
@@ -79,6 +94,24 @@ mod tests {
     use super::*;
     use maplit::hashset;
     use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_point2d_add() {
+        assert_eq!(Point2D::new(3, 7) + Point2D::new(4, -2), Point2D::new(7, 5))
+    }
+
+    #[test]
+    fn test_point2d_subtract() {
+        assert_eq!(
+            Point2D::new(3, 7) - Point2D::new(4, -2),
+            Point2D::new(-1, 9)
+        )
+    }
+
+    #[test]
+    fn test_point2d_manhattan() {
+        assert_eq!(Point2D::new(-3, 5).manhattan(), 8)
+    }
 
     #[test]
     fn test_point2d_neighbors4() {
