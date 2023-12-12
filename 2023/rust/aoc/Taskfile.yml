@@ -11,29 +11,33 @@ tasks:
       - defer: rustup default stable
       - cargo test --release -- -Z unstable-options --report-time  --test-threads 1
 
-  check.fmt:
+  lint.fmt:
     cmds:
       - cargo fmt --check
+
+  lint.clippy:
+    cmds:
+      - cargo clippy --all-targets -- -D warnings
+
+  lint:
+    cmds:
+      - task: lint.clippy
+      - task: lint.fmt
 
   fix.fmt:
     cmds:
       - cargo fmt
 
-  check.clippy:
-    cmds:
-      - cargo clippy --all-targets -- -D warnings
-
   fix.clippy:
     cmds:
       - cargo clippy --fix --allow-staged
-
-  check:
-    cmds:
-      - task: test
-      - task: check.clippy
-      - task: check.fmt
 
   fix:
     cmds:
       - task: fix.clippy
       - task: fix.fmt
+
+  check:
+    cmds:
+      - task: test
+      - task: lint

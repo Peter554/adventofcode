@@ -5,7 +5,15 @@ use crate::utils::{BoundingBox2D, Point2D};
 
 type Point = Point2D<i64>;
 
-pub fn solve(input_path: &Path, expansion_factor: i64) -> Result<i64> {
+pub fn part1(input_path: &Path) -> Result<i64> {
+    solve(input_path, 2)
+}
+
+pub fn part2(input_path: &Path) -> Result<i64> {
+    solve(input_path, 1_000_000)
+}
+
+fn solve(input_path: &Path, expansion_factor: i64) -> Result<i64> {
     let input = fs::read_to_string(input_path)?;
 
     // Parse the galaxies.
@@ -67,15 +75,15 @@ mod tests {
     #[test]
     fn test_part1() {
         let input_path = Path::new("./src/day11/sample");
-        assert_eq!(solve(input_path, 2).unwrap(), 374);
+        assert_eq!(part1(input_path).unwrap(), 374);
 
         let input_path = Path::new("./src/day11/input");
-        assert_eq!(solve(input_path, 2).unwrap(), 9565386);
+        assert_eq!(part1(input_path).unwrap(), 9565386);
     }
 
     #[test]
     fn test_part2() {
         let input_path = Path::new("./src/day11/input");
-        assert_eq!(solve(input_path, 1_000_000).unwrap(), 857986849428);
+        assert_eq!(part2(input_path).unwrap(), 857986849428);
     }
 }
