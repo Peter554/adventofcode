@@ -30,7 +30,6 @@ impl<T: Int> Point2D<T> {
         Point2D { x, y }
     }
 
-    #[allow(dead_code)]
     pub fn manhattan(&self) -> T {
         self.x.abs() + self.y.abs()
     }
@@ -46,7 +45,6 @@ impl<T: Int> Point2D<T> {
         .into_iter()
     }
 
-    #[allow(dead_code)]
     pub fn neighbors8(&self) -> impl Iterator<Item = Point2D<T>> {
         vec![
             self.clone() + Point2D::new(T::from(1), T::from(0)),

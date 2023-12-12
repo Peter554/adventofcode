@@ -34,8 +34,8 @@ tasks:
 
   fix:
     cmds:
-      - task: fix.clippy
       - task: fix.fmt
+      - task: fix.clippy
 
   check:
     cmds:

@@ -1,6 +1,6 @@
 use anyhow::Result;
 use std::{
-    collections::{HashMap, HashSet, VecDeque},
+    collections::{HashMap, HashSet},
     fs,
     path::Path,
 };
@@ -11,10 +11,10 @@ pub fn part1(input_path: &Path) -> Result<i64> {
         .lines()
         .map(parse_card)
         .map(|card| {
-            if card.len_my_winning_numbers == 0 {
+            if card.number_of_winning_numbers == 0 {
                 0
             } else {
-                1 << (card.len_my_winning_numbers - 1)
+                1 << (card.number_of_winning_numbers - 1)
             }
         })
         .sum())
@@ -22,30 +22,24 @@ pub fn part1(input_path: &Path) -> Result<i64> {
 
 pub fn part2(input_path: &Path) -> Result<i64> {
     let input = fs::read_to_string(input_path)?;
-    let cards = input
-        .lines()
-        .map(parse_card)
-        .map(|card| (card.id, card))
-        .collect::<HashMap<_, _>>();
-    let mut total_cards = 0;
-    let mut q = cards.values().collect::<VecDeque<_>>();
-    while !q.is_empty() {
-        total_cards += 1;
-        let card = q.pop_front().unwrap();
-        if card.len_my_winning_numbers == 0 {
-            continue;
-        } else {
-            for id in card.id + 1..=card.id + card.len_my_winning_numbers {
-                q.push_back(cards.get(&id).unwrap());
-            }
+    let cards = input.lines().map(parse_card).collect::<Vec<_>>();
+    let mut card_counts = HashMap::new();
+    for card in cards.iter() {
+        let this_card_count = *card_counts.entry(card.clone()).or_insert(1);
+        for other_card in
+            cards[(card.id as usize)..(card.id + card.number_of_winning_numbers) as usize].iter()
+        {
+            let other_card_count = card_counts.entry(other_card.clone()).or_insert(1);
+            *other_card_count += this_card_count;
         }
     }
-    Ok(total_cards)
+    Ok(card_counts.values().sum())
 }
 
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 struct Card {
     id: u8,
-    len_my_winning_numbers: u8,
+    number_of_winning_numbers: u8,
 }
 
 impl Card {
@@ -56,7 +50,7 @@ impl Card {
             .collect::<HashSet<u8>>();
         Card {
             id,
-            len_my_winning_numbers: my_winning_numbers.len() as u8,
+            number_of_winning_numbers: my_winning_numbers.len() as u8,
         }
     }
 }
@@ -102,14 +96,10 @@ mod tests {
     }
 
     #[test]
-    fn test_part2_sample() {
+    fn test_part2() {
         let input_path = Path::new("./src/day04/sample");
         assert_eq!(part2(input_path).unwrap(), 30);
-    }
 
-    #[test]
-    #[cfg_attr(not(feature = "slow"), ignore = "slow")]
-    fn test_part2_real() {
         let input_path = Path::new("./src/day04/input");
         assert_eq!(part2(input_path).unwrap(), 12263631);
     }
