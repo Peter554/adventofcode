@@ -1,7 +1,7 @@
 use anyhow::Result;
 use std::{fs, path::Path};
 
-use crate::utils::{BoundingBox2D, Point2D};
+use crate::utils::point2d::{BoundingBox2D, Point2D};
 
 type Point = Point2D<i64>;
 
