@@ -1,4 +1,5 @@
 use anyhow::Result;
+use array2d::Array2D;
 use itertools::Itertools;
 use std::{collections::HashSet, fs, path::Path};
 
@@ -14,18 +15,18 @@ pub fn part2(input_path: &Path) -> Result<i64> {
     let grid = parse_input(&input);
 
     let mut start_configurations = vec![];
-    for row_idx in 0..grid.len() {
+    for row_idx in 0..grid.num_rows() {
         start_configurations.push(State::new(row_idx as isize, 0, Direction::Right));
         start_configurations.push(State::new(
             row_idx as isize,
-            grid[0].len() as isize - 1,
+            grid.num_columns() as isize - 1,
             Direction::Left,
         ));
     }
-    for col_idx in 0..grid[0].len() {
+    for col_idx in 0..grid.num_columns() {
         start_configurations.push(State::new(0, col_idx as isize, Direction::Down));
         start_configurations.push(State::new(
-            grid.len() as isize - 1,
+            grid.num_rows() as isize - 1,
             col_idx as isize,
             Direction::Up,
         ));
@@ -38,8 +39,9 @@ pub fn part2(input_path: &Path) -> Result<i64> {
         .unwrap())
 }
 
-fn parse_input(s: &str) -> Vec<Vec<Cell>> {
-    s.lines()
+fn parse_input(s: &str) -> Array2D<Cell> {
+    let data = s
+        .lines()
         .map(|row| {
             row.chars()
                 .map(|c| match c {
@@ -52,10 +54,11 @@ fn parse_input(s: &str) -> Vec<Vec<Cell>> {
                 })
                 .collect()
         })
-        .collect()
+        .collect::<Vec<_>>();
+    Array2D::from_rows(&data).unwrap()
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 enum Cell {
     Empty,
     MirrorLU,  // /
@@ -72,7 +75,7 @@ enum Direction {
     Right,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 struct State {
     row_idx: isize,
     col_idx: isize,
@@ -98,14 +101,14 @@ impl State {
     }
 }
 
-fn count_energized_tiles(grid: &Vec<Vec<Cell>>, start: State) -> i64 {
+fn count_energized_tiles(grid: &Array2D<Cell>, start: State) -> i64 {
     let mut visited = HashSet::new();
     let mut q = vec![start];
     while let Some(state) = q.pop() {
         if visited.contains(&state) {
             continue;
         }
-        let cell = &grid[state.row_idx as usize][state.col_idx as usize];
+        let cell = &grid[(state.row_idx as usize, state.col_idx as usize)];
         let mut next_states = match cell {
             Cell::Empty => {
                 vec![state.step(state.direction.clone())]
@@ -150,11 +153,11 @@ fn count_energized_tiles(grid: &Vec<Vec<Cell>>, start: State) -> i64 {
         .count() as i64
 }
 
-fn is_inside_grid(state: &State, grid: &Vec<Vec<Cell>>) -> bool {
+fn is_inside_grid(state: &State, grid: &Array2D<Cell>) -> bool {
     state.row_idx >= 0
-        && (state.row_idx as usize) < grid.len()
+        && (state.row_idx as usize) < grid.num_rows()
         && state.col_idx >= 0
-        && (state.col_idx as usize) < grid[0].len()
+        && (state.col_idx as usize) < grid.num_columns()
 }
 
 #[cfg(test)]
