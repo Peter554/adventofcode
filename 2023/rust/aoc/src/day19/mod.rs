@@ -8,7 +8,7 @@ pub fn part1(input_path: &Path) -> Result<i64> {
     Ok(parts
         .into_iter()
         .filter(|part| is_accepted(&workflows, "in", part))
-        .map(|part| part.x + part.m + part.a + part.s)
+        .map(|part| part.iter().sum::<isize>())
         .sum::<isize>() as i64)
 }
 
@@ -18,16 +18,7 @@ pub fn part2(input_path: &Path) -> Result<i64> {
     let accepted_hypercubes = find_accepted_hypercubes(
         &workflows,
         "in",
-        &PartHypercube {
-            x_min: 1,
-            x_max: 4000,
-            m_min: 1,
-            m_max: 4000,
-            a_min: 1,
-            a_max: 4000,
-            s_min: 1,
-            s_max: 4000,
-        },
+        &PartHypercube([[1, 4000], [1, 4000], [1, 4000], [1, 4000]]),
     );
     Ok(accepted_hypercubes
         .into_iter()
@@ -56,12 +47,18 @@ fn parse_input(input: &str) -> (HashMap<String, Workflow>, Vec<Part>) {
                         ('>', Operator::GreaterThan)
                     };
                     let mut it = s.split(split_char);
-                    let dimension = it.next().unwrap().chars().next().unwrap();
+                    let axis = match it.next().unwrap().chars().next().unwrap() {
+                        'x' => 0,
+                        'm' => 1,
+                        'a' => 2,
+                        's' => 3,
+                        _ => panic!(),
+                    };
                     let mut it = it.next().unwrap().split(':');
                     let value = it.next().unwrap().parse().unwrap();
                     let outcome = it.next().unwrap().to_string();
                     WorkflowIfRule {
-                        dimension,
+                        axis,
                         operator,
                         value,
                         outcome,
@@ -91,12 +88,12 @@ fn parse_input(input: &str) -> (HashMap<String, Workflow>, Vec<Part>) {
         .lines()
         .map(|line| {
             let captures = re.captures(line).unwrap();
-            Part {
-                x: captures[1].parse().unwrap(),
-                m: captures[2].parse().unwrap(),
-                a: captures[3].parse().unwrap(),
-                s: captures[4].parse().unwrap(),
-            }
+            [
+                captures[1].parse().unwrap(),
+                captures[2].parse().unwrap(),
+                captures[3].parse().unwrap(),
+                captures[4].parse().unwrap(),
+            ]
         })
         .collect();
 
@@ -106,16 +103,9 @@ fn parse_input(input: &str) -> (HashMap<String, Workflow>, Vec<Part>) {
 fn is_accepted(workflows: &HashMap<String, Workflow>, workflow: &str, part: &Part) -> bool {
     let workflow = workflows.get(workflow).unwrap();
     for if_rule in workflow.if_rules.iter() {
-        let match_ = match (&if_rule.dimension, &if_rule.operator) {
-            ('x', Operator::LessThan) => part.x < if_rule.value,
-            ('x', Operator::GreaterThan) => part.x > if_rule.value,
-            ('m', Operator::LessThan) => part.m < if_rule.value,
-            ('m', Operator::GreaterThan) => part.m > if_rule.value,
-            ('a', Operator::LessThan) => part.a < if_rule.value,
-            ('a', Operator::GreaterThan) => part.a > if_rule.value,
-            ('s', Operator::LessThan) => part.s < if_rule.value,
-            ('s', Operator::GreaterThan) => part.s > if_rule.value,
-            _ => panic!(),
+        let match_ = match (&if_rule.axis, &if_rule.operator) {
+            (axis, Operator::LessThan) => part[*axis] < if_rule.value,
+            (axis, Operator::GreaterThan) => part[*axis] > if_rule.value,
         };
         if match_ {
             if if_rule.outcome == "A" {
@@ -144,16 +134,9 @@ fn find_accepted_hypercubes(
     let workflow = workflows.get(workflow).unwrap();
     for if_rule in workflow.if_rules.iter() {
         let (matching_hypercube, remaining_hypercube) = {
-            match (&if_rule.dimension, &if_rule.operator) {
-                ('x', Operator::LessThan) => hypercube.split_x_lt(if_rule.value),
-                ('x', Operator::GreaterThan) => hypercube.split_x_gt(if_rule.value),
-                ('m', Operator::LessThan) => hypercube.split_m_lt(if_rule.value),
-                ('m', Operator::GreaterThan) => hypercube.split_m_gt(if_rule.value),
-                ('a', Operator::LessThan) => hypercube.split_a_lt(if_rule.value),
-                ('a', Operator::GreaterThan) => hypercube.split_a_gt(if_rule.value),
-                ('s', Operator::LessThan) => hypercube.split_s_lt(if_rule.value),
-                ('s', Operator::GreaterThan) => hypercube.split_s_gt(if_rule.value),
-                _ => panic!(),
+            match (&if_rule.axis, &if_rule.operator) {
+                (axis, Operator::LessThan) => hypercube.split_lt(*axis, if_rule.value),
+                (axis, Operator::GreaterThan) => hypercube.split_gt(*axis, if_rule.value),
             }
         };
         if let Some(matching_hypercube) = matching_hypercube {
@@ -197,7 +180,7 @@ struct Workflow {
 
 #[derive(Debug)]
 struct WorkflowIfRule {
-    dimension: char,
+    axis: usize,
     operator: Operator,
     value: isize,
     outcome: String,
@@ -209,144 +192,42 @@ enum Operator {
     GreaterThan,
 }
 
-#[derive(Debug)]
-struct Part {
-    x: isize,
-    m: isize,
-    a: isize,
-    s: isize,
-}
+type Part = [isize; 4];
 
-#[derive(Debug, Clone)]
-struct PartHypercube {
-    x_min: isize,
-    x_max: isize,
-    m_min: isize,
-    m_max: isize,
-    a_min: isize,
-    a_max: isize,
-    s_min: isize,
-    s_max: isize,
-}
+#[derive(Clone)]
+struct PartHypercube([[isize; 2]; 4]);
 
 impl PartHypercube {
-    fn split_x_lt(&self, v: isize) -> (Option<PartHypercube>, Option<PartHypercube>) {
-        if self.x_min >= v {
+    fn split_lt(&self, axis: usize, v: isize) -> (Option<PartHypercube>, Option<PartHypercube>) {
+        if self.0[axis][0] >= v {
             (None, Some(self.clone()))
-        } else if self.x_max < v {
+        } else if self.0[axis][1] < v {
             (Some(self.clone()), None)
         } else {
             let mut matching = self.clone();
-            matching.x_max = v - 1;
+            matching.0[axis][1] = v - 1;
             let mut remaining = self.clone();
-            remaining.x_min = v;
+            remaining.0[axis][0] = v;
             (Some(matching), Some(remaining))
         }
     }
 
-    fn split_x_gt(&self, v: isize) -> (Option<PartHypercube>, Option<PartHypercube>) {
-        if self.x_max <= v {
+    fn split_gt(&self, axis: usize, v: isize) -> (Option<PartHypercube>, Option<PartHypercube>) {
+        if self.0[axis][1] <= v {
             (None, Some(self.clone()))
-        } else if self.x_min > v {
+        } else if self.0[axis][0] > v {
             (Some(self.clone()), None)
         } else {
             let mut matching = self.clone();
-            matching.x_min = v + 1;
+            matching.0[axis][0] = v + 1;
             let mut remaining = self.clone();
-            remaining.x_max = v;
-            (Some(matching), Some(remaining))
-        }
-    }
-
-    fn split_m_lt(&self, v: isize) -> (Option<PartHypercube>, Option<PartHypercube>) {
-        if self.m_min >= v {
-            (None, Some(self.clone()))
-        } else if self.m_max < v {
-            (Some(self.clone()), None)
-        } else {
-            let mut matching = self.clone();
-            matching.m_max = v - 1;
-            let mut remaining = self.clone();
-            remaining.m_min = v;
-            (Some(matching), Some(remaining))
-        }
-    }
-
-    fn split_m_gt(&self, v: isize) -> (Option<PartHypercube>, Option<PartHypercube>) {
-        if self.m_max <= v {
-            (None, Some(self.clone()))
-        } else if self.m_min > v {
-            (Some(self.clone()), None)
-        } else {
-            let mut matching = self.clone();
-            matching.m_min = v + 1;
-            let mut remaining = self.clone();
-            remaining.m_max = v;
-            (Some(matching), Some(remaining))
-        }
-    }
-
-    fn split_a_lt(&self, v: isize) -> (Option<PartHypercube>, Option<PartHypercube>) {
-        if self.a_min >= v {
-            (None, Some(self.clone()))
-        } else if self.a_max < v {
-            (Some(self.clone()), None)
-        } else {
-            let mut matching = self.clone();
-            matching.a_max = v - 1;
-            let mut remaining = self.clone();
-            remaining.a_min = v;
-            (Some(matching), Some(remaining))
-        }
-    }
-
-    fn split_a_gt(&self, v: isize) -> (Option<PartHypercube>, Option<PartHypercube>) {
-        if self.a_max <= v {
-            (None, Some(self.clone()))
-        } else if self.a_min > v {
-            (Some(self.clone()), None)
-        } else {
-            let mut matching = self.clone();
-            matching.a_min = v + 1;
-            let mut remaining = self.clone();
-            remaining.a_max = v;
-            (Some(matching), Some(remaining))
-        }
-    }
-
-    fn split_s_lt(&self, v: isize) -> (Option<PartHypercube>, Option<PartHypercube>) {
-        if self.s_min >= v {
-            (None, Some(self.clone()))
-        } else if self.s_max < v {
-            (Some(self.clone()), None)
-        } else {
-            let mut matching = self.clone();
-            matching.s_max = v - 1;
-            let mut remaining = self.clone();
-            remaining.s_min = v;
-            (Some(matching), Some(remaining))
-        }
-    }
-
-    fn split_s_gt(&self, v: isize) -> (Option<PartHypercube>, Option<PartHypercube>) {
-        if self.s_max <= v {
-            (None, Some(self.clone()))
-        } else if self.s_min > v {
-            (Some(self.clone()), None)
-        } else {
-            let mut matching = self.clone();
-            matching.s_min = v + 1;
-            let mut remaining = self.clone();
-            remaining.s_max = v;
+            remaining.0[axis][1] = v;
             (Some(matching), Some(remaining))
         }
     }
 
     fn volume(&self) -> usize {
-        (self.x_min..=self.x_max).count()
-            * (self.m_min..=self.m_max).count()
-            * (self.a_min..=self.a_max).count()
-            * (self.s_min..=self.s_max).count()
+        self.0.iter().map(|r| (r[0]..=r[1]).count()).product()
     }
 }
 
