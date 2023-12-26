@@ -19,6 +19,15 @@ slotmap = "1.0.7"
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"
+criterion = "0.5.1"
 
 [features]
 slow = []
+
+[[bench]]
+name = "benchmark"
+harness = false
+
+[lib]
+# https://bheisler.github.io/criterion.rs/book/faq.html#cargo-bench-gives-unrecognized-option-errors-for-valid-command-line-options
+bench = false
