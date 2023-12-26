@@ -1,4 +1,5 @@
 use anyhow::Result;
+use slotmap::{DefaultKey, Key, SlotMap};
 use std::{
     collections::{HashMap, VecDeque},
     fmt::Debug,
@@ -8,14 +9,14 @@ use std::{
 
 pub fn part1(input_path: &Path) -> Result<i64> {
     let input = fs::read_to_string(input_path)?;
-    let mut modules = parse_input(&input);
+    let (mut modules, index) = parse_input(&input);
     let mut n_low = 0;
     let mut n_high = 0;
     let mut q = VecDeque::new();
     for _ in 0..1000 {
         q.push_back(Pulse {
-            sender_id: "".to_string(),
-            receiver_id: "broadcaster".to_string(),
+            sender: DefaultKey::null(),
+            receiver: *index.get("broadcaster").unwrap(),
             type_: PulseType::Low,
         });
         while let Some(pulse) = q.pop_front() {
@@ -24,7 +25,7 @@ pub fn part1(input_path: &Path) -> Result<i64> {
             } else {
                 n_high += 1;
             }
-            let receiver = modules.get_mut(&pulse.receiver_id).unwrap();
+            let receiver = modules.get_mut(pulse.receiver).unwrap();
             for output_pulse in receiver.handle_pulse(&pulse) {
                 q.push_back(output_pulse);
             }
@@ -38,22 +39,28 @@ pub fn part2(input_path: &Path) -> Result<i64> {
     Ok(42)
 }
 
-fn parse_input(input: &str) -> HashMap<String, Box<dyn Module>> {
-    let mut out: HashMap<String, Box<dyn Module>> = HashMap::new();
+fn parse_input(
+    input: &str,
+) -> (
+    SlotMap<DefaultKey, Box<dyn Module>>,
+    HashMap<String, DefaultKey>,
+) {
+    let mut modules: SlotMap<DefaultKey, Box<dyn Module>> = SlotMap::with_key();
+    let mut index: HashMap<String, DefaultKey> = HashMap::new();
     for line in input.lines() {
         let mut it = line.split(" -> ");
         let id = it.next().unwrap();
         if id == "broadcaster" {
-            out.insert(
-                "broadcaster".to_string(),
-                Box::new(BroadcasterModule::new()),
-            );
+            let key = modules.insert(Box::new(BroadcasterModule::new()));
+            index.insert("broadcaster".to_string(), key);
         } else if id.starts_with('%') {
             let id: String = id.chars().skip(1).collect();
-            out.insert(id.clone(), Box::new(FlipFlopModule::new(id)));
+            let key = modules.insert(Box::new(FlipFlopModule::new()));
+            index.insert(id, key);
         } else if id.starts_with('&') {
             let id: String = id.chars().skip(1).collect();
-            out.insert(id.clone(), Box::new(ConjunctionModule::new(id)));
+            let key = modules.insert(Box::new(ConjunctionModule::new()));
+            index.insert(id, key);
         }
     }
     for line in input.lines() {
@@ -62,25 +69,30 @@ fn parse_input(input: &str) -> HashMap<String, Box<dyn Module>> {
         if sender_id.starts_with('%') || sender_id.starts_with('&') {
             sender_id = sender_id.chars().skip(1).collect();
         }
+        let sender_key = *index.get(&sender_id).unwrap();
         for receiver_id in it.next().unwrap().split(", ") {
-            let mut sender = out.remove(&sender_id).unwrap();
-            let mut receiver = match out.remove(receiver_id) {
-                Some(receiver) => receiver,
-                None => Box::new(OutputModule::new(receiver_id.to_string())),
+            let receiver_key = match index.get(receiver_id) {
+                Some(receiver_key) => *receiver_key,
+                None => {
+                    let key = modules.insert(Box::new(OutputModule::new()));
+                    index.insert(receiver_id.to_string(), key);
+                    key
+                }
             };
-            sender.connect_output(receiver.as_ref());
-            receiver.connect_input(sender.as_ref());
-            out.insert(sender.id().to_string(), sender);
-            out.insert(receiver.id().to_string(), receiver);
+            let [sender, receiver] = modules
+                .get_disjoint_mut([sender_key, receiver_key])
+                .unwrap();
+            sender.connect_output(&receiver_key);
+            receiver.connect_input(&sender_key);
         }
     }
-    out
+    (modules, index)
 }
 
 #[derive(Clone)]
 struct Pulse {
-    sender_id: String,
-    receiver_id: String,
+    sender: DefaultKey,
+    receiver: DefaultKey,
     type_: PulseType,
 }
 
@@ -91,45 +103,40 @@ enum PulseType {
 }
 
 trait Module: Debug {
-    fn id(&self) -> &str;
+    fn connect_input(&mut self, input: &DefaultKey);
 
-    fn connect_input(&mut self, input: &dyn Module);
-
-    fn connect_output(&mut self, output: &dyn Module);
+    fn connect_output(&mut self, output: &DefaultKey);
 
     fn handle_pulse(&mut self, pulse: &Pulse) -> Vec<Pulse>;
 }
 
 #[derive(Debug)]
 struct BroadcasterModule {
-    output_ids: Vec<String>,
+    outputs: Vec<DefaultKey>,
 }
 
 impl BroadcasterModule {
     fn new() -> BroadcasterModule {
-        BroadcasterModule { output_ids: vec![] }
+        BroadcasterModule { outputs: vec![] }
     }
 }
 
 impl Module for BroadcasterModule {
-    fn id(&self) -> &str {
-        "broadcaster"
-    }
-
-    fn connect_input(&mut self, _input: &dyn Module) {
+    fn connect_input(&mut self, _input: &DefaultKey) {
         panic!()
     }
 
-    fn connect_output(&mut self, output: &dyn Module) {
-        self.output_ids.push(output.id().to_string())
+    fn connect_output(&mut self, output: &DefaultKey) {
+        self.outputs.push(*output)
     }
 
     fn handle_pulse(&mut self, pulse: &Pulse) -> Vec<Pulse> {
-        self.output_ids
+        self.outputs
             .iter()
-            .map(|output_id| Pulse {
-                sender_id: self.id().to_string(),
-                receiver_id: output_id.to_string(),
+            .cloned()
+            .map(|output| Pulse {
+                sender: pulse.receiver,
+                receiver: output,
                 type_: pulse.type_.clone(),
             })
             .collect()
@@ -137,24 +144,18 @@ impl Module for BroadcasterModule {
 }
 
 #[derive(Debug)]
-struct OutputModule {
-    id: String,
-}
+struct OutputModule;
 
 impl OutputModule {
-    fn new(id: String) -> OutputModule {
-        OutputModule { id }
+    fn new() -> OutputModule {
+        OutputModule
     }
 }
 
 impl Module for OutputModule {
-    fn id(&self) -> &str {
-        &self.id
-    }
+    fn connect_input(&mut self, _input: &DefaultKey) {}
 
-    fn connect_input(&mut self, _input: &dyn Module) {}
-
-    fn connect_output(&mut self, _output: &dyn Module) {
+    fn connect_output(&mut self, _output: &DefaultKey) {
         panic!()
     }
 
@@ -165,30 +166,24 @@ impl Module for OutputModule {
 
 #[derive(Debug)]
 struct FlipFlopModule {
-    id: String,
     on: bool,
-    output_ids: Vec<String>,
+    outputs: Vec<DefaultKey>,
 }
 
 impl FlipFlopModule {
-    fn new(id: String) -> FlipFlopModule {
+    fn new() -> FlipFlopModule {
         FlipFlopModule {
-            id,
             on: false,
-            output_ids: vec![],
+            outputs: vec![],
         }
     }
 }
 
 impl Module for FlipFlopModule {
-    fn id(&self) -> &str {
-        &self.id
-    }
+    fn connect_input(&mut self, _input: &DefaultKey) {}
 
-    fn connect_input(&mut self, _input: &dyn Module) {}
-
-    fn connect_output(&mut self, output: &dyn Module) {
-        self.output_ids.push(output.id().to_string())
+    fn connect_output(&mut self, output: &DefaultKey) {
+        self.outputs.push(*output)
     }
 
     fn handle_pulse(&mut self, pulse: &Pulse) -> Vec<Pulse> {
@@ -198,11 +193,12 @@ impl Module for FlipFlopModule {
             }
             PulseType::Low => {
                 self.on = !self.on;
-                self.output_ids
+                self.outputs
                     .iter()
-                    .map(|output_id| Pulse {
-                        sender_id: self.id().to_string(),
-                        receiver_id: output_id.to_string(),
+                    .cloned()
+                    .map(|output| Pulse {
+                        sender: pulse.receiver,
+                        receiver: output,
                         type_: match self.on {
                             true => PulseType::High,
                             false => PulseType::Low,
@@ -216,44 +212,36 @@ impl Module for FlipFlopModule {
 
 #[derive(Debug)]
 struct ConjunctionModule {
-    id: String,
-    memory: HashMap<String, PulseType>,
-    output_ids: Vec<String>,
+    memory: HashMap<DefaultKey, PulseType>,
+    outputs: Vec<DefaultKey>,
 }
 
 impl ConjunctionModule {
-    fn new(id: String) -> ConjunctionModule {
+    fn new() -> ConjunctionModule {
         ConjunctionModule {
-            id,
             memory: HashMap::new(),
-            output_ids: vec![],
+            outputs: vec![],
         }
     }
 }
 
 impl Module for ConjunctionModule {
-    fn id(&self) -> &str {
-        &self.id
+    fn connect_input(&mut self, input: &DefaultKey) {
+        self.memory.entry(*input).or_insert(PulseType::Low);
     }
 
-    fn connect_input(&mut self, input: &dyn Module) {
-        self.memory
-            .entry(input.id().to_string())
-            .or_insert(PulseType::Low);
-    }
-
-    fn connect_output(&mut self, output: &dyn Module) {
-        self.output_ids.push(output.id().to_string())
+    fn connect_output(&mut self, output: &DefaultKey) {
+        self.outputs.push(*output)
     }
 
     fn handle_pulse(&mut self, pulse: &Pulse) -> Vec<Pulse> {
-        self.memory
-            .insert(pulse.sender_id.clone(), pulse.type_.clone());
-        self.output_ids
+        self.memory.insert(pulse.sender, pulse.type_.clone());
+        self.outputs
             .iter()
-            .map(|output_id| Pulse {
-                sender_id: self.id().to_string(),
-                receiver_id: output_id.to_string(),
+            .cloned()
+            .map(|output| Pulse {
+                sender: pulse.receiver,
+                receiver: output,
                 type_: if self.memory.values().all(|v| matches!(v, PulseType::High)) {
                     PulseType::Low
                 } else {
