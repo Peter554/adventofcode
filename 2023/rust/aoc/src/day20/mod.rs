@@ -1,4 +1,5 @@
 use anyhow::Result;
+use enum_dispatch::enum_dispatch;
 use slotmap::{DefaultKey, Key, SlotMap};
 use std::{
     collections::{HashMap, VecDeque},
@@ -39,27 +40,22 @@ pub fn part2(input_path: &Path) -> Result<i64> {
     Ok(42)
 }
 
-fn parse_input(
-    input: &str,
-) -> (
-    SlotMap<DefaultKey, Box<dyn Module>>,
-    HashMap<String, DefaultKey>,
-) {
-    let mut modules: SlotMap<DefaultKey, Box<dyn Module>> = SlotMap::with_key();
+fn parse_input(input: &str) -> (SlotMap<DefaultKey, Module>, HashMap<String, DefaultKey>) {
+    let mut modules: SlotMap<DefaultKey, Module> = SlotMap::with_key();
     let mut index: HashMap<String, DefaultKey> = HashMap::new();
     for line in input.lines() {
         let mut it = line.split(" -> ");
         let id = it.next().unwrap();
         if id == "broadcaster" {
-            let key = modules.insert(Box::new(BroadcasterModule::new()));
+            let key = modules.insert(Module::from(Broadcaster::new()));
             index.insert("broadcaster".to_string(), key);
         } else if id.starts_with('%') {
             let id: String = id.chars().skip(1).collect();
-            let key = modules.insert(Box::new(FlipFlopModule::new()));
+            let key = modules.insert(Module::from(FlipFlop::new()));
             index.insert(id, key);
         } else if id.starts_with('&') {
             let id: String = id.chars().skip(1).collect();
-            let key = modules.insert(Box::new(ConjunctionModule::new()));
+            let key = modules.insert(Module::from(Conjunction::new()));
             index.insert(id, key);
         }
     }
@@ -74,7 +70,7 @@ fn parse_input(
             let receiver_key = match index.get(receiver_id) {
                 Some(receiver_key) => *receiver_key,
                 None => {
-                    let key = modules.insert(Box::new(OutputModule::new()));
+                    let key = modules.insert(Module::from(Output::new()));
                     index.insert(receiver_id.to_string(), key);
                     key
                 }
@@ -102,7 +98,8 @@ enum PulseType {
     Low,
 }
 
-trait Module: Debug {
+#[enum_dispatch]
+trait TModule {
     fn connect_input(&mut self, input: &DefaultKey);
 
     fn connect_output(&mut self, output: &DefaultKey);
@@ -110,18 +107,26 @@ trait Module: Debug {
     fn handle_pulse(&mut self, pulse: &Pulse) -> Vec<Pulse>;
 }
 
+#[enum_dispatch(TModule)]
+enum Module {
+    Broadcaster,
+    FlipFlop,
+    Conjunction,
+    Output,
+}
+
 #[derive(Debug)]
-struct BroadcasterModule {
+struct Broadcaster {
     outputs: Vec<DefaultKey>,
 }
 
-impl BroadcasterModule {
-    fn new() -> BroadcasterModule {
-        BroadcasterModule { outputs: vec![] }
+impl Broadcaster {
+    fn new() -> Broadcaster {
+        Broadcaster { outputs: vec![] }
     }
 }
 
-impl Module for BroadcasterModule {
+impl TModule for Broadcaster {
     fn connect_input(&mut self, _input: &DefaultKey) {
         panic!()
     }
@@ -144,42 +149,21 @@ impl Module for BroadcasterModule {
 }
 
 #[derive(Debug)]
-struct OutputModule;
-
-impl OutputModule {
-    fn new() -> OutputModule {
-        OutputModule
-    }
-}
-
-impl Module for OutputModule {
-    fn connect_input(&mut self, _input: &DefaultKey) {}
-
-    fn connect_output(&mut self, _output: &DefaultKey) {
-        panic!()
-    }
-
-    fn handle_pulse(&mut self, _pulse: &Pulse) -> Vec<Pulse> {
-        vec![]
-    }
-}
-
-#[derive(Debug)]
-struct FlipFlopModule {
+struct FlipFlop {
     on: bool,
     outputs: Vec<DefaultKey>,
 }
 
-impl FlipFlopModule {
-    fn new() -> FlipFlopModule {
-        FlipFlopModule {
+impl FlipFlop {
+    fn new() -> FlipFlop {
+        FlipFlop {
             on: false,
             outputs: vec![],
         }
     }
 }
 
-impl Module for FlipFlopModule {
+impl TModule for FlipFlop {
     fn connect_input(&mut self, _input: &DefaultKey) {}
 
     fn connect_output(&mut self, output: &DefaultKey) {
@@ -211,21 +195,21 @@ impl Module for FlipFlopModule {
 }
 
 #[derive(Debug)]
-struct ConjunctionModule {
+struct Conjunction {
     memory: HashMap<DefaultKey, PulseType>,
     outputs: Vec<DefaultKey>,
 }
 
-impl ConjunctionModule {
-    fn new() -> ConjunctionModule {
-        ConjunctionModule {
+impl Conjunction {
+    fn new() -> Conjunction {
+        Conjunction {
             memory: HashMap::new(),
             outputs: vec![],
         }
     }
 }
 
-impl Module for ConjunctionModule {
+impl TModule for Conjunction {
     fn connect_input(&mut self, input: &DefaultKey) {
         self.memory.entry(*input).or_insert(PulseType::Low);
     }
@@ -249,6 +233,27 @@ impl Module for ConjunctionModule {
                 },
             })
             .collect()
+    }
+}
+
+#[derive(Debug)]
+struct Output;
+
+impl Output {
+    fn new() -> Output {
+        Output
+    }
+}
+
+impl TModule for Output {
+    fn connect_input(&mut self, _input: &DefaultKey) {}
+
+    fn connect_output(&mut self, _output: &DefaultKey) {
+        panic!()
+    }
+
+    fn handle_pulse(&mut self, _pulse: &Pulse) -> Vec<Pulse> {
+        vec![]
     }
 }
 
