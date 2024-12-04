@@ -5,10 +5,10 @@ require_relative 'main'
 
 class TestMain < Minitest::Test
   def test_part1
-    assert_equal 1_603_498, part1('day01/input')
+    assert_equal 299, part1('day02/input')
   end
 
   def test_part2
-    assert_equal 25_574_739, part2('day01/input')
+    assert_equal 364, part2('day02/input')
   end
 end
