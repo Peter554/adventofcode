@@ -1,0 +1,19 @@
+name: CI 2024 Ruby
+on:
+  push:
+    branches:
+      - master
+      - '2024-rb-*'
+    paths:
+      - '2024/ruby/**'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: ./2024/ruby
+          bundler-cache: true
+      - run: bundle exec rake
+        working-directory: ./2024/ruby
