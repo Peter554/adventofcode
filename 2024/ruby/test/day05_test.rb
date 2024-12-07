@@ -5,7 +5,7 @@ require_relative '../lib/day05'
 
 class TestDay05 < Minitest::Test
   def test_part1
-    assert_equal 142, Day05.part1('data/day05/example')
+    assert_equal 143, Day05.part1('data/day05/example')
     assert_equal 5964, Day05.part1('data/day05/input')
   end
 
