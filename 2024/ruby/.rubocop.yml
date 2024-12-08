@@ -16,3 +16,9 @@ Style/Documentation:
 
 Style/MultilineBlockChain:
   Enabled: false
+
+Naming/MethodParameterName:
+  Enabled: false
+
+Minitest/MultipleAssertions:
+  Enabled: false
