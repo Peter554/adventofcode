@@ -1,9 +1,15 @@
 # frozen_string_literal: true
 
 module Util
-  Point2D = Data.define(:x, :y)
+  Point2D = Data.define(:x, :y) do
+    def +(other)
+      Point2D.new(x + other.x, y + other.y)
+    end
+  end
 
   class Array2D
+    attr_reader :n_rows, :n_cols
+
     def initialize(n_rows, n_cols)
       @n_rows = n_rows
       @n_cols = n_cols
