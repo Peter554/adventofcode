@@ -1,0 +1,183 @@
+{
+    "machine_info": {
+        "node": "KT-MAC-LF3DVQNHYG",
+        "processor": "arm",
+        "machine": "arm64",
+        "python_compiler": "Clang 20.1.4 ",
+        "python_implementation": "CPython",
+        "python_implementation_version": "3.13.5",
+        "python_version": "3.13.5",
+        "python_build": [
+            "main",
+            "Jun 29 2025 16:04:58"
+        ],
+        "release": "24.6.0",
+        "system": "Darwin",
+        "cpu": {
+            "python_version": "3.13.5.final.0 (64 bit)",
+            "cpuinfo_version": [
+                9,
+                0,
+                0
+            ],
+            "cpuinfo_version_string": "9.0.0",
+            "arch": "ARM_8",
+            "bits": 64,
+            "count": 12,
+            "arch_string_raw": "arm64",
+            "brand_raw": "Apple M4 Pro"
+        }
+    },
+    "commit_info": {
+        "id": "5370034880f3f75569a32e2a2adfb27a74297d92",
+        "time": "2025-12-03T14:51:51+01:00",
+        "author_time": "2025-12-02T22:28:14+01:00",
+        "dirty": true,
+        "project": "adventofcode",
+        "branch": "master"
+    },
+    "benchmarks": [
+        {
+            "group": null,
+            "name": "test_part_1",
+            "fullname": "tests/test_day01.py::test_part_1",
+            "params": null,
+            "param": null,
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0003777500241994858,
+                "max": 0.0006919580046087503,
+                "mean": 0.00041015727736521513,
+                "stddev": 1.825712834478868e-05,
+                "rounds": 900,
+                "median": 0.0004080210055690259,
+                "iqr": 1.8707942217588425e-05,
+                "q1": 0.00039968802593648434,
+                "q3": 0.00041839596815407276,
+                "iqr_outliers": 15,
+                "stddev_outliers": 163,
+                "outliers": "163;15",
+                "ld15iqr": 0.0003777500241994858,
+                "hd15iqr": 0.0004474580055102706,
+                "ops": 2438.089131134867,
+                "total": 0.3691415496286936,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_part_2",
+            "fullname": "tests/test_day01.py::test_part_2",
+            "params": null,
+            "param": null,
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00040187500417232513,
+                "max": 0.0005438750376924872,
+                "mean": 0.00042806527460310413,
+                "stddev": 1.3530531632951497e-05,
+                "rounds": 2272,
+                "median": 0.0004292079829610884,
+                "iqr": 2.0541978301480412e-05,
+                "q1": 0.0004165000282227993,
+                "q3": 0.0004370420065242797,
+                "iqr_outliers": 6,
+                "stddev_outliers": 822,
+                "outliers": "822;6",
+                "ld15iqr": 0.00040187500417232513,
+                "hd15iqr": 0.00047158298548310995,
+                "ops": 2336.092318927728,
+                "total": 0.9725643038982525,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_part_1",
+            "fullname": "tests/test_day02.py::test_part_1",
+            "params": null,
+            "param": null,
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.053084874991327524,
+                "max": 0.05624662502668798,
+                "mean": 0.054389462790966625,
+                "stddev": 0.000854853665336239,
+                "rounds": 19,
+                "median": 0.05453737505013123,
+                "iqr": 0.0011825937253888696,
+                "q1": 0.05370263500662986,
+                "q3": 0.05488522873201873,
+                "iqr_outliers": 0,
+                "stddev_outliers": 7,
+                "outliers": "7;0",
+                "ld15iqr": 0.053084874991327524,
+                "hd15iqr": 0.05624662502668798,
+                "ops": 18.385914268785292,
+                "total": 1.0333997930283658,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_part_2",
+            "fullname": "tests/test_day02.py::test_part_2",
+            "params": null,
+            "param": null,
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0661392500041984,
+                "max": 0.06994983402546495,
+                "mean": 0.06852663340978324,
+                "stddev": 0.0008786799410643195,
+                "rounds": 15,
+                "median": 0.06851387501228601,
+                "iqr": 0.0010785517224576324,
+                "q1": 0.06806173974473495,
+                "q3": 0.06914029146719258,
+                "iqr_outliers": 1,
+                "stddev_outliers": 2,
+                "outliers": "2;1",
+                "ld15iqr": 0.0679560000426136,
+                "hd15iqr": 0.06994983402546495,
+                "ops": 14.59286630965931,
+                "total": 1.0278995011467487,
+                "iterations": 1
+            }
+        }
+    ],
+    "datetime": "2025-12-03T13:53:53.385067+00:00",
+    "version": "5.2.3"
+}

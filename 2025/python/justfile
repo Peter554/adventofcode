@@ -11,7 +11,7 @@ fmt:
 
 # Run the tests
 test *args:
-    @uv run pytest {{args}}
+    @uv run pytest --benchmark-disable {{args}}
 
 # Run the linters
 lint:
@@ -24,6 +24,6 @@ fix:
     @uv run ruff check --fix
     @just fmt
 
-# Serve docs
-doc:
-    @uv run pdoc aoc2025
+# Run benchmarks
+bench *args:
+    @uv run pytest --benchmark-only --benchmark-columns mean,stddev,rounds,iterations --benchmark-group-by=fullfunc {{args}}
