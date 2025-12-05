@@ -1,0 +1,26 @@
+name: CI 2019 Python
+
+on:
+  push:
+    branches:
+      - master
+      - "2019-py-*"
+    paths:
+      - "2019/python/**"
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install just
+        uses: extractions/setup-just@v3
+
+      - name: Run checks
+        run: just check
+        working-directory: ./2019/python
