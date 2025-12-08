@@ -7,6 +7,7 @@
 # ///
 
 from datetime import datetime
+from pathlib import Path
 
 from elf import OutputFormat, get_user_status
 from tabulate import tabulate
@@ -62,7 +63,7 @@ timestamp = datetime.now().strftime("%Y-%m-%d")
 markdown_table = tabulate(table_data, headers=headers, tablefmt="github")
 
 # Update README.md
-readme_path = "README.md"
+readme_path = Path(__file__).parent / "README.md"
 with open(readme_path, "r") as f:
     readme_content = f.read()
 
