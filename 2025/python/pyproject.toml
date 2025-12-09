@@ -4,7 +4,11 @@ version = "0.1.0"
 description = "Advent of code 2025"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "frozendict>=2.4.7",
+    "numba>=0.63.0",
+    "numpy>=2.3.5",
+]
 
 [build-system]
 requires = ["uv_build>=0.9.1,<0.10.0"]
@@ -15,6 +19,7 @@ dev = [
     "pdoc>=16.0.0",
     "pytest>=9.0.1",
     "pytest-benchmark>=5.2.3",
+    "rich>=14.2.0",
     "ruff>=0.14.7",
     "ty>=0.0.1a29",
 ]
