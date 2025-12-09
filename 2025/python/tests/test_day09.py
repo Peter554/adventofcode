@@ -12,4 +12,4 @@ def test_part_1(benchmark):
 
 def test_part_2(benchmark):
     assert day09.part_2(DATA_DIR / "example.txt") == 24
-    # assert benchmark(lambda: day09.part_2(DATA_DIR / "input.txt")) == 1566346198
+    assert benchmark(lambda: day09.part_2(DATA_DIR / "input.txt")) == 1566346198

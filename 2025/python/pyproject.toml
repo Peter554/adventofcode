@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "Advent of code 2025"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "numba>=0.63.0",
+    "numpy>=2.3.5",
+]
 
 [build-system]
 requires = ["uv_build>=0.9.1,<0.10.0"]

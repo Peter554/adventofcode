@@ -3,7 +3,11 @@ from __future__ import annotations
 import dataclasses
 import functools
 import itertools
+from collections.abc import Iterable
 from pathlib import Path
+
+import numba
+import numpy as np
 
 
 def part_1(input: Path) -> int:
@@ -22,16 +26,7 @@ def part_2(input: Path) -> int:
         key=lambda r: r.area,
         reverse=True,
     ):
-        if (
-            # Check vertices first to speed up rejection.
-            all(polygon.contains_point(p) for p in rectange.vertices)
-            and
-            # If all vertices are contained then check the entire perimeter.
-            all(polygon.contains_point(p) for p in rectange.perimeter_points)
-        ):
-            # If all the rectange perimeter points are contained within the polygon,
-            # then the rectangle is contained within the polygon (since this is a
-            # rectilinear polygon).
+        if polygon.contains_rectange(rectange):
             return rectange.area
     return -1
 
@@ -72,45 +67,44 @@ class Rectange:
             Point(min_x, max_y),
         )
 
-    @property
-    def perimeter_points(self) -> frozenset[Point]:
-        return frozenset(perimeter_points(self.vertices))
+    @functools.cached_property
+    def perimeter_points(self) -> tuple[Point, ...]:
+        return tuple(_perimeter_points(self.vertices))
 
 
 @dataclasses.dataclass(frozen=True)
 class RectilinearPolygon:
     vertices: tuple[Point, ...]
 
+    def contains_rectange(self, rectange: Rectange) -> bool:
+        if not self._contains_points(rectange.vertices):
+            return False
+
+        if not self._contains_points(rectange.perimeter_points[::100]):
+            return False
+
+        return self._contains_points(rectange.perimeter_points)
+
+    def _contains_points(self, points: Iterable[Point]) -> bool:
+        points_x = np.array([p.x for p in points], dtype=np.int_)
+        points_y = np.array([p.y for p in points], dtype=np.int_)
+        vertices_x, vertices_y = self._vertices_as_arrays
+        return bool(
+            np.all(
+                _points_are_contained_by_polygon(
+                    points_x, points_y, vertices_x, vertices_y
+                )
+            )
+        )
+
     @functools.cached_property
-    def perimeter_points(self) -> frozenset[Point]:
-        return frozenset(perimeter_points(self.vertices))
-
-    def contains_point(self, p: Point) -> bool:
-        if p in self.perimeter_points:
-            # `p` is in the perimeter.
-            return True
-
-        # `p` is not in the perimeter.
-        # Cast a horizontal ray from `p` to infinity.
-        # Look for an odd number of crossings of verticle edges.
-        crossings = 0
-        for p1, p2 in zip(self.vertices, [*self.vertices[1:], self.vertices[0]]):
-            y_min, y_max = min(p1.y, p2.y), max(p1.y, p2.y)
-            if (
-                # Verticle edge
-                p1.x == p2.x
-                and
-                # Edge is to the right of `p`.
-                p.x < p1.x
-                and
-                # Edge is crossed by ray from `p`.
-                (y_min <= p.y < y_max)
-            ):
-                crossings += 1
-        return crossings % 2 == 1
+    def _vertices_as_arrays(self):
+        vertices_x = np.array([v.x for v in self.vertices], dtype=np.int_)
+        vertices_y = np.array([v.y for v in self.vertices], dtype=np.int_)
+        return vertices_x, vertices_y
 
 
-def perimeter_points(vertices: tuple[Point, ...]) -> tuple[Point, ...]:
+def _perimeter_points(vertices: tuple[Point, ...]) -> tuple[Point, ...]:
     points = []
     for p1, p2 in zip(vertices, [*vertices[1:], vertices[0]]):
         if p1.x == p2.x:
@@ -122,3 +116,53 @@ def perimeter_points(vertices: tuple[Point, ...]) -> tuple[Point, ...]:
             points.append(p)
             p += delta
     return tuple(points)
+
+
+@numba.njit
+def _points_are_contained_by_polygon(
+    points_x,
+    points_y,
+    polygon_vertices_x,
+    polygon_vertices_y,
+):
+    n_points = len(points_x)
+    results = np.empty(n_points, dtype=numba.boolean)
+    for i in range(n_points):
+        results[i] = _point_is_contained_by_polygon(
+            points_x[i], points_y[i], polygon_vertices_x, polygon_vertices_y
+        )
+    return results
+
+
+@numba.njit
+def _point_is_contained_by_polygon(
+    px,
+    py,
+    polygon_vertices_x,
+    polygon_vertices_y,
+):
+    # Iterate over edges.
+    # Look for:
+    # * Point is part of the edge.
+    # * Crossings of vertical edges for a horizontal ray from (px, py) to infinity.
+    crossings = 0
+    n = len(polygon_vertices_x)
+    for i in range(n):
+        p1x, p1y = polygon_vertices_x[i], polygon_vertices_y[i]
+        p2x, p2y = polygon_vertices_x[(i + 1) % n], polygon_vertices_y[(i + 1) % n]
+
+        x_min = min(p1x, p2x)
+        x_max = max(p1x, p2x)
+        y_min = min(p1y, p2y)
+        y_max = max(p1y, p2y)
+
+        # Check if (px, py) is part of the edge.
+        if px == p1x == p2x and y_min <= py <= y_max:
+            return True
+        if py == p1y == p2y and x_min <= px <= x_max:
+            return True
+
+        # Check if this is a vertical edge that crosses our ray.
+        if p1x == p2x and px < p1x and y_min <= py < y_max:
+            crossings += 1
+    return crossings % 2 == 1
