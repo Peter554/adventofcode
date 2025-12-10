@@ -8,6 +8,7 @@ dependencies = [
     "frozendict>=2.4.7",
     "numba>=0.63.0",
     "numpy>=2.3.5",
+    "z3-solver>=4.15.4.0",
 ]
 
 [build-system]
