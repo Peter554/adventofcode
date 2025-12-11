@@ -32,10 +32,14 @@ headers = ["**Year**", "🌟"] + [f"**{d}**" for d in range(1, 26)]
 table_data = []
 
 # Add table rows
+total_stars_available = 0
+total_stars_obtained = 0
 for year in sorted(progress_by_year.keys()):
     year_progress = progress_by_year.get(year, {})
     year_stars_available = len(year_progress) * 2
+    total_stars_available += year_stars_available
     year_stars_obtained = sum(year_progress.values())
+    total_stars_obtained += year_stars_obtained
     row = [f"**{year}**"]
     if year_stars_obtained == year_stars_available:
         row.append(f"**{year_stars_obtained}/{year_stars_available}**&nbsp;🌟")
@@ -75,9 +79,15 @@ if start_marker in readme_content and end_marker in readme_content:
     before_start = readme_content.split(start_marker)[0]
     after_end = readme_content.split(end_marker)[1]
 
-    new_progress = (
-        f"{start_marker}\nUpdated {timestamp}.\n\n{markdown_table}\n{end_marker}"
-    )
+    new_progress = f"""\
+{start_marker}
+Updated {timestamp}.
+
+{markdown_table}
+
+Total stars: {total_stars_obtained}/{total_stars_available}
+{end_marker}"""
+
     new_content = f"{before_start}{new_progress}{after_end}"
 
     with open(readme_path, "w") as f:
