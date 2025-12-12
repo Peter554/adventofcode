@@ -19,13 +19,13 @@ def part_1(input: Path) -> int:
 def part_2(input: Path) -> int:
     total_joltage = 0
     for bank in input.read_text().splitlines():
-        joltages = [0] * 12
-        for idx, joltage in enumerate(bank):
-            joltage = int(joltage)
-            for idx2 in range(12):
-                if idx <= len(bank) - (12 - idx2) and joltage > joltages[idx2]:
-                    joltages[idx2] = joltage
-                    joltages[idx2 + 1 :] = [0] * (12 - (idx2 + 1))
-                    break
-        total_joltage += int("".join(str(j) for j in joltages))
+        bank_joltages: str = ""
+        window_start_idx, window_end_idx = 0, -11
+        for _ in range(12):
+            window = bank[window_start_idx : (window_end_idx or None)]
+            window_max_joltage = max(window)
+            bank_joltages += window_max_joltage
+            window_start_idx += window.index(window_max_joltage) + 1
+            window_end_idx += 1
+        total_joltage += int(bank_joltages)
     return total_joltage
