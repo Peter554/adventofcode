@@ -1,3 +1,4 @@
+import itertools
 import math
 from pathlib import Path
 
@@ -27,34 +28,33 @@ def part_1(input: Path) -> int:
 
 
 def part_2(input: Path) -> int:
-    text = [[c for c in line] for line in input.read_text().splitlines()]
-    len_longest_line = max(len(line) for line in text)
-    text = [line + [" "] * (len_longest_line - len(line)) for line in text]
+    text = transpose_text(input.read_text())
 
     answers = []
     this_problem_numbers = []
-    for col in range(len(text[0]) - 1, -1, -1):
-        number: int | None = None
-        operator: str | None = None
-        for row in range(len(text)):
-            char = text[row][col]
-            if char.isnumeric():
-                if number is None:
-                    number = int(char)
-                else:
-                    number = 10 * number + int(char)
-            elif char != " ":
-                operator = char
-        if number is not None:
-            this_problem_numbers.append(number)
-        if operator is not None:
-            match operator:
+    for line in reversed(text.splitlines()):
+        if not line:
+            continue
+        if line.endswith("+") or line.endswith("*"):
+            this_problem_numbers.append(int(line[:-1]))
+            match line[-1]:
                 case "+":
                     answers.append(sum(this_problem_numbers))
                 case "*":
                     answers.append(math.prod(this_problem_numbers))
                 case _:
-                    raise ValueError(f"Invalid operator: {operator}")
+                    raise ValueError(f"Invalid operator: {line[-1]}")
             this_problem_numbers = []
+        else:
+            this_problem_numbers.append(int(line))
 
     return sum(answers)
+
+
+def transpose_text(s: str) -> str:
+    lines = s.splitlines()
+    transposed_lines = [
+        "".join(chars).rstrip()
+        for chars in itertools.zip_longest(*lines, fillvalue=" ")
+    ]
+    return "\n".join(transposed_lines)
