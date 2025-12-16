@@ -67,7 +67,7 @@ fn parse_input(input: &str) -> (HashMap<String, Workflow>, Vec<Part>) {
                 .collect();
             let else_outcome = s
                 .clone()
-                .last()
+                .next_back()
                 .unwrap()
                 .strip_suffix('}')
                 .unwrap()
@@ -120,9 +120,9 @@ fn is_accepted(workflows: &HashMap<String, Workflow>, workflow: &str, part: &Par
     if workflow.else_outcome == "A" {
         true
     } else if workflow.else_outcome == "R" {
-        return false;
+        false
     } else {
-        return is_accepted(workflows, &workflow.else_outcome, part);
+        is_accepted(workflows, &workflow.else_outcome, part)
     }
 }
 
@@ -165,9 +165,9 @@ fn find_accepted_hypercubes(
     if workflow.else_outcome == "A" {
         vec![hypercube.clone()]
     } else if workflow.else_outcome == "R" {
-        return vec![];
+        vec![]
     } else {
-        return find_accepted_hypercubes(workflows, &workflow.else_outcome, hypercube);
+        find_accepted_hypercubes(workflows, &workflow.else_outcome, hypercube)
     }
 }
 

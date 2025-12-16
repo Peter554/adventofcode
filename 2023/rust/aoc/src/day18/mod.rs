@@ -1,6 +1,6 @@
 use anyhow::Result;
 use itertools::Itertools;
-use std::{fs, isize, path::Path};
+use std::{fs, path::Path};
 
 pub fn part1(input_path: &Path) -> Result<i64> {
     let input = fs::read_to_string(input_path)?;
@@ -92,7 +92,7 @@ fn get_n_boundary_coordinates(vertices: &[(isize, isize)]) -> isize {
     vertices
         .iter()
         .circular_tuple_windows::<(_, _)>()
-        .map(|window| (window.1 .0 - window.0 .0).abs() + (window.1 .1 - window.0 .1).abs())
+        .map(|window| (window.1.0 - window.0.0).abs() + (window.1.1 - window.0.1).abs())
         .sum::<isize>()
 }
 
@@ -101,7 +101,7 @@ fn get_n_interior_coordinates(vertices: &[(isize, isize)]) -> isize {
     let area = vertices
         .iter()
         .circular_tuple_windows::<(_, _)>()
-        .map(|window| window.0 .0 * window.1 .1 - window.1 .0 * window.0 .1)
+        .map(|window| window.0.0 * window.1.1 - window.1.0 * window.0.1)
         .sum::<isize>()
         / 2;
 

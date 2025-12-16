@@ -1,43 +1,21 @@
-version: '3'
+version: "3"
 
 tasks:
-  test:
-    cmds:
-      - cargo test
-
-  test.timed:
-    cmds:
-      - rustup default nightly
-      - defer: rustup default stable
-      - cargo test --release -- -Z unstable-options --report-time  --test-threads 1
-
-  lint.fmt:
-    cmds:
-      - cargo fmt --check
-
-  lint.clippy:
-    cmds:
-      - cargo clippy --all-targets -- -D warnings
-
-  lint:
-    cmds:
-      - task: lint.clippy
-      - task: lint.fmt
-
-  fix.fmt:
-    cmds:
-      - cargo fmt
-
-  fix.clippy:
-    cmds:
-      - cargo clippy --fix --allow-staged
-
-  fix:
-    cmds:
-      - task: fix.fmt
-      - task: fix.clippy
-
   check:
     cmds:
       - task: test
       - task: lint
+
+  test:
+    cmds:
+      - cargo test
+
+  lint:
+    cmds:
+      - cargo clippy --all-targets --all-features -- -D warnings
+      - cargo fmt --check
+
+  fix:
+    cmds:
+      - cargo clippy --all-targets --all-features --fix --allow-staged
+      - cargo fmt

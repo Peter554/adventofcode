@@ -1,7 +1,7 @@
 use anyhow::Result;
 use itertools::Itertools;
 use slotmap::{DefaultKey, SecondaryMap, SlotMap};
-use std::{cmp::Ordering, collections::HashSet, fs, path::Path, usize};
+use std::{cmp::Ordering, collections::HashSet, fs, path::Path};
 
 pub fn part1(input_path: &Path) -> Result<i64> {
     let input = fs::read_to_string(input_path)?;
