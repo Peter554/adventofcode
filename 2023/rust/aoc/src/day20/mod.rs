@@ -1,5 +1,6 @@
 use anyhow::Result;
 use enum_dispatch::enum_dispatch;
+use num::integer::lcm;
 use slotmap::{DefaultKey, Key, SlotMap};
 use std::{
     collections::{HashMap, VecDeque},
@@ -36,8 +37,49 @@ pub fn part1(input_path: &Path) -> Result<i64> {
 }
 
 pub fn part2(input_path: &Path) -> Result<i64> {
-    let _input = fs::read_to_string(input_path)?;
-    Ok(42)
+    let input = fs::read_to_string(input_path)?;
+    let (mut modules, index) = parse_input(&input);
+
+    // rx is fed by vf (conjunction).
+    // vf is fed by: pm, mk, pk, hf.
+    // We need to find the first high pulse of each and take the LCM of cycles.
+    let mut cycles: HashMap<DefaultKey, usize> = HashMap::from([
+        (*index.get("pm").unwrap(), 0),
+        (*index.get("mk").unwrap(), 0),
+        (*index.get("pk").unwrap(), 0),
+        (*index.get("hf").unwrap(), 0),
+    ]);
+
+    let mut q = VecDeque::new();
+    for i in 1.. {
+        q.push_back(Pulse {
+            sender: DefaultKey::null(),
+            receiver: *index.get("broadcaster").unwrap(),
+            type_: PulseType::Low,
+        });
+        while let Some(pulse) = q.pop_front() {
+            let receiver = modules.get_mut(pulse.receiver).unwrap();
+            for output_pulse in receiver.handle_pulse(&pulse) {
+                q.push_back(output_pulse);
+            }
+        }
+        for (k, v) in cycles.iter_mut() {
+            if *v == 0 {
+                match modules.get(*k) {
+                    Some(Module::Conjunction(conjunction)) => {
+                        if conjunction.has_produced_high_pulse {
+                            *v = i;
+                        }
+                    }
+                    _ => panic!("unexpected module type"),
+                }
+            }
+        }
+        if cycles.values().all(|&v| v != 0) {
+            return Ok(cycles.values().fold(1, |x, y: &usize| lcm(x, *y)) as i64);
+        }
+    }
+    unreachable!()
 }
 
 fn parse_input(input: &str) -> (SlotMap<DefaultKey, Module>, HashMap<String, DefaultKey>) {
@@ -198,6 +240,7 @@ impl TModule for FlipFlop {
 struct Conjunction {
     memory: HashMap<DefaultKey, PulseType>,
     outputs: Vec<DefaultKey>,
+    has_produced_high_pulse: bool,
 }
 
 impl Conjunction {
@@ -205,6 +248,7 @@ impl Conjunction {
         Conjunction {
             memory: HashMap::new(),
             outputs: vec![],
+            has_produced_high_pulse: false,
         }
     }
 }
@@ -220,28 +264,32 @@ impl TModule for Conjunction {
 
     fn handle_pulse(&mut self, pulse: &Pulse) -> Vec<Pulse> {
         self.memory.insert(pulse.sender, pulse.type_.clone());
+        let pulse_type_to_produce = if self.memory.values().any(|v| matches!(v, PulseType::Low)) {
+            PulseType::High
+        } else {
+            PulseType::Low
+        };
+        if !self.has_produced_high_pulse && matches!(pulse_type_to_produce, PulseType::High) {
+            self.has_produced_high_pulse = true;
+        }
         self.outputs
             .iter()
             .cloned()
             .map(|output| Pulse {
                 sender: pulse.receiver,
                 receiver: output,
-                type_: if self.memory.values().any(|v| matches!(v, PulseType::Low)) {
-                    PulseType::High
-                } else {
-                    PulseType::Low
-                },
+                type_: pulse_type_to_produce.clone(),
             })
             .collect()
     }
 }
 
 #[derive(Debug)]
-struct Output;
+struct Output {}
 
 impl Output {
     fn new() -> Output {
-        Output
+        Output {}
     }
 }
 
@@ -276,10 +324,7 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        let input_path = Path::new("./src/day20/sample");
-        assert_eq!(part2(input_path).unwrap(), 42);
-
         let input_path = Path::new("./src/day20/input");
-        assert_eq!(part2(input_path).unwrap(), 42);
+        assert_eq!(part2(input_path).unwrap(), 243548140870057);
     }
 }
