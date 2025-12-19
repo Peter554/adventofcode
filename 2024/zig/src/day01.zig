@@ -1,7 +1,7 @@
 const std = @import("std");
 
 pub fn part1(allocator: std.mem.Allocator, input_path: []const u8) !u64 {
-    const left_numbers, const right_numbers = try parse_input(allocator, input_path);
+    const left_numbers, const right_numbers = try parseInput(allocator, input_path);
     defer allocator.free(left_numbers);
     defer allocator.free(right_numbers);
 
@@ -16,7 +16,7 @@ pub fn part1(allocator: std.mem.Allocator, input_path: []const u8) !u64 {
 }
 
 pub fn part2(allocator: std.mem.Allocator, input_path: []const u8) !u64 {
-    const left_numbers, const right_numbers = try parse_input(allocator, input_path);
+    const left_numbers, const right_numbers = try parseInput(allocator, input_path);
     defer allocator.free(left_numbers);
     defer allocator.free(right_numbers);
 
@@ -34,7 +34,7 @@ pub fn part2(allocator: std.mem.Allocator, input_path: []const u8) !u64 {
     return similarity;
 }
 
-fn parse_input(allocator: std.mem.Allocator, input_path: []const u8) !struct { []u64, []u64 } {
+fn parseInput(allocator: std.mem.Allocator, input_path: []const u8) !struct { []u64, []u64 } {
     const file = try std.fs.cwd().readFileAlloc(input_path, allocator, .unlimited);
     defer allocator.free(file);
 

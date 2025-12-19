@@ -7,8 +7,10 @@ Review the solution code for day $1.
 
 Provide concise feedback on:
 * What I've done well.
-* Quality of the Zig code. Is it correct and idiomatic?
+* Correctness.
 * Ways to solve the puzzle better. Methodological or algorithmic concerns.
 * Ways to simplify the implementation.
+* Quality of the Zig code. Is it idiomatic?
+* Adherence to Zig's style guide https://ziglang.org/documentation/master/#Style-Guide.
 
 You can run the tests with `zig build test -Dday={day}` (e.g. `zig build test -Dday=1` for day 1).
