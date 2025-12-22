@@ -12,5 +12,6 @@ Provide concise feedback on:
 * Ways to simplify the implementation.
 * Quality of the Zig code. Is it idiomatic?
 * Adherence to Zig's style guide https://ziglang.org/documentation/master/#Style-Guide.
+* Check for remaining TODOs.
 
 You can run the tests with `zig build test -Dday={day}` (e.g. `zig build test -Dday=1` for day 1).
