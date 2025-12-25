@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(zig build test:*)",
-      "WebFetch(domain:ziglang.org)"
+      "WebFetch(domain:ziglang.org)",
+      "Bash(zig test:*)"
     ]
   }
 }
