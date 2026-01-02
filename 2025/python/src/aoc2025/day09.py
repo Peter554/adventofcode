@@ -14,7 +14,7 @@ from frozendict import frozendict
 def part_1(input: Path) -> int:
     red_tiles = parse_red_tiles(input)
     return max(
-        [Rectange(p1, p2).area() for p1, p2 in itertools.combinations(red_tiles, 2)]
+        [Rectangle(p1, p2).area() for p1, p2 in itertools.combinations(red_tiles, 2)]
     )
 
 
@@ -22,15 +22,15 @@ def part_2(input: Path) -> int:
     red_tiles = parse_red_tiles(input)
     map = CoordinateCompressionMap.from_points(red_tiles)
     red_tiles = tuple(map.compress(p) for p in red_tiles)
-    rectanges = [Rectange(p1, p2) for p1, p2 in itertools.combinations(red_tiles, 2)]
+    rectangles = [Rectangle(p1, p2) for p1, p2 in itertools.combinations(red_tiles, 2)]
     polygon = RectilinearPolygon(red_tiles)
-    for rectange in sorted(
-        rectanges,
+    for rectangle in sorted(
+        rectangles,
         key=lambda r: r.area(map),
         reverse=True,
     ):
-        if polygon.contains_rectange(rectange):
-            return rectange.area(map)
+        if polygon.contains_rectangle(rectangle):
+            return rectangle.area(map)
     return -1
 
 
@@ -99,7 +99,7 @@ class CoordinateCompressionMap:
 
 
 @dataclasses.dataclass(frozen=True)
-class Rectange:
+class Rectangle:
     p1: Point
     p2: Point
 
@@ -132,14 +132,14 @@ class Rectange:
 class RectilinearPolygon:
     vertices: tuple[Point, ...]
 
-    def contains_rectange(self, rectange: Rectange) -> bool:
-        if not self._contains_points(rectange.vertices):
+    def contains_rectangle(self, rectangle: Rectangle) -> bool:
+        if not self._contains_points(rectangle.vertices):
             return False
 
-        if not self._contains_points(rectange.perimeter_points[::100]):
+        if not self._contains_points(rectangle.perimeter_points[::100]):
             return False
 
-        return self._contains_points(rectange.perimeter_points)
+        return self._contains_points(rectangle.perimeter_points)
 
     def _contains_points(self, points: Iterable[Point]) -> bool:
         points_x = np.array([p.x for p in points], dtype=np.int_)

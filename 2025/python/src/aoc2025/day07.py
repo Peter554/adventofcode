@@ -43,6 +43,6 @@ def part_2(input: Path) -> int:
                 (head[0] + 1, head[1] - 1)
             )
         else:
-            assert False, "unexpect grid character"
+            assert False, "unexpected grid character"
 
     return follow_beam(source)
