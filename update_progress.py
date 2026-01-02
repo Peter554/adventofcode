@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 
 from elf import OutputFormat, get_user_status
+from elf.exceptions import StatusFetchError
 from tabulate import tabulate
 
 current_year = datetime.now().year
@@ -20,8 +21,8 @@ progress_by_year: dict[int, dict[int, int]] = {}
 for year in years:
     try:
         status = get_user_status(year, fmt=OutputFormat.MODEL)
-    except ValueError as e:
-        if "Invalid year" in str(e):
+    except StatusFetchError as e:
+        if "Event page not found for year" in str(e):
             continue
         else:
             raise
