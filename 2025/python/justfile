@@ -4,7 +4,7 @@ _default:
 
 # Run all checks
 check *args:
-    @just test {{args}}
+    @just test {{ args }}
     @just lint
 
 # Format the code
@@ -13,13 +13,15 @@ fmt:
 
 # Run the tests
 test *args:
-    @uv run pytest --benchmark-disable {{args}}
+    @uv run pytest --benchmark-disable {{ args }}
 
 # Run the linters
 lint:
     @uv run ty check
     @uv run ruff check
     @uv run ruff format --check
+    @uv run deptry .
+    @typos ./src ./tests
 
 # Auto-fix issues
 fix:
@@ -28,4 +30,4 @@ fix:
 
 # Run benchmarks
 bench *args:
-    @uv run pytest --benchmark-only --benchmark-columns mean,stddev,rounds,iterations --benchmark-group-by=fullfunc {{args}}
+    @uv run pytest --benchmark-only --benchmark-columns mean,stddev,rounds,iterations --benchmark-group-by=fullfunc {{ args }}

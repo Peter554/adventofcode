@@ -21,6 +21,13 @@ jobs:
       - name: Install just
         uses: extractions/setup-just@v3
 
+      - name: Install typos
+        uses: crate-ci/typos@v1.41.0
+        with:
+          files: ./README.md
+      - name: Move typos into path
+        run: mv ./typos /usr/local/bin/
+
       - name: Run checks
         run: just check
         working-directory: ./2025/python

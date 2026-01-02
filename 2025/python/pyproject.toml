@@ -17,6 +17,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "deptry>=0.24.0",
     "pdoc>=16.0.0",
     "pytest>=9.0.1",
     "pytest-benchmark>=5.2.3",
