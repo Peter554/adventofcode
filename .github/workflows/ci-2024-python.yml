@@ -1,0 +1,33 @@
+name: CI 2024 Python
+
+on:
+  push:
+    branches:
+      - master
+      - "2024-py-*"
+    paths:
+      - "2024/python/**"
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install just
+        uses: extractions/setup-just@v3
+
+      - name: Install typos
+        uses: crate-ci/typos@v1.41.0
+        with:
+          files: ./README.md
+      - name: Move typos into path
+        run: mv ./typos /usr/local/bin/
+
+      - name: Run checks
+        run: just check
+        working-directory: ./2024/python

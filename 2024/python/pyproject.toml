@@ -1,0 +1,22 @@
+[project]
+name = "aoc2024"
+version = "0.1.0"
+description = "Advent of Code 2024"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+
+
+[build-system]
+requires = ["uv_build>=0.9.1,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "deptry>=0.24.0",
+    "pdoc>=16.0.0",
+    "pytest>=9.0.2",
+    "ruff>=0.14.10",
+    "ty>=0.0.8",
+]
