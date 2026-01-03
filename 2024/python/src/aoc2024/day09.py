@@ -66,7 +66,7 @@ class Disk:
 
     def defragment(self) -> None:
         for occupied_block in reversed(self.occupied_blocks):
-            # Find the vacant block to occupy
+            # Find the vacant block to occupy.
             vacant_block_to_occupy_key: str | None = None
             for vacant_block_key, vacant_block in self.vacant_blocks.items():
                 if vacant_block.address > occupied_block.address:
@@ -76,7 +76,7 @@ class Disk:
                 vacant_block_to_occupy_key = vacant_block_key
                 break
 
-            # Occupy the vacant block
+            # Occupy the vacant block.
             if vacant_block_to_occupy_key is not None:
                 vacant_block_to_occupy = self.vacant_blocks[vacant_block_to_occupy_key]
                 occupied_block.address = vacant_block_to_occupy.address
@@ -85,6 +85,10 @@ class Disk:
                 else:
                     vacant_block_to_occupy.address += occupied_block.size
                     vacant_block_to_occupy.size -= occupied_block.size
+
+                # There's technically a new vacant block at the address where the occupied
+                # block was previously. We know that this block will never be occupied though,
+                # so we don't need to track it.
 
     def checksum(self) -> int:
         return sum(
