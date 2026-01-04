@@ -11,6 +11,6 @@ def test_part_1():
     assert day15.part_1(DATA_DIR / "input.txt") == 1442192
 
 
-# def test_part_2():
-#     assert day15.part_2(DATA_DIR / "example.txt") == 42
-#     assert day15.part_2(DATA_DIR / "input.txt") == 42
+def test_part_2():
+    assert day15.part_2(DATA_DIR / "example_large.txt") == 9021
+    # assert day15.part_2(DATA_DIR / "input.txt") == 42
