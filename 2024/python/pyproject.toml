@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Advent of Code 2024"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "z3-solver>=4.15.4.0",
+]
 
 
 
